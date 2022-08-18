@@ -56,8 +56,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	/*
 	 * Fazer as cidades
 	 * Fazer as casas
-	 * Fazer os eventos ao cliclar com o botão direito em um tile
-	 * Conseguir salvar lava, água, velocidade, escadas, etc. (testar, acho que ja funciona)
+	 * Fazer os eventos ao cliclar com o botï¿½o direito em um tile
+	 * Conseguir salvar lava, ï¿½gua, velocidade, escadas, etc. (testar, acho que ja funciona)
 	 */
 	
 	public Gerador(){
@@ -145,7 +145,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 							escolhido.adicionar_sprite_selecionado();
 						}
 					}else if(Ui.sprite_reajivel){
-						escolhido.adicionar_sprite_reajível();
+						escolhido.adicionar_sprite_reajivel();
 					}else {
 						escolhido.adicionar_sprite_selecionado();
 					}
@@ -156,7 +156,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 				else if (Ui.colocar_escada) escolhido.vip(solido);
 				else escolhido.setSpeed_modifier(Gerador.ui.getNew_speed());
 			}else if (Ui.opcao == Ui.opcoes[2]) {
-				World.colocar_construção(escolhido, ui.pegar_construcao_selecionada());
+				World.colocar_construcao(escolhido, ui.pegar_construcao_selecionada());
 			}else if (Ui.opcao == Ui.opcoes[3]) {
 				
 			}
@@ -309,7 +309,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 						solido = 0;
 					}else solido = 1;
 				}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1])) {
-					// 2 = água; 3 = lava; 4 = vip
+					// 2 = ï¿½gua; 3 = lava; 4 = vip
 					solido = escolhido.getSolid();
 					if (Ui.colocar_parede && !(solido == 2)) solido = 1;
 					else if (Ui.sprite_reajivel && !(solido == 3)) solido = 1;

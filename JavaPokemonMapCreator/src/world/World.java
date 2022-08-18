@@ -104,7 +104,7 @@ public class World {
 		    HIGH = Integer.parseInt(high.getText());
 		    
 		    if (WIDTH <= 20 || HEIGHT <= 20 || HIGH <= 0) {
-		    	JOptionPane.showMessageDialog(null, "alguns dados não foram inseridos ou foram inseridos incorretamente;\n Inserindo valores padrão");
+		    	JOptionPane.showMessageDialog(null, "alguns dados nï¿½o foram inseridos ou foram inseridos incorretamente;\n Inserindo valores padrï¿½o");
 		    	valores_padrao();
 		    }
 		    
@@ -216,7 +216,7 @@ public class World {
 		for (int i = 0; i < HIGH-Gerador.player.getZ()-1; i++) {
 			t = pegar_chao(((Gerador.quadrado.x >> log_ts) + (i+1) + (i+1)*WIDTH + (Gerador.quadrado.y>>log_ts)*WIDTH)*HIGH+Gerador.player.getZ()+1); // trocar por player.x e player.y
 			if  ( t.existe() ) {
-				maxZ = t.getZ(); // caso exista uma imagem que não dê para ser vista, ela some
+				maxZ = t.getZ(); // caso exista uma imagem que nï¿½o dï¿½ para ser vista, ela some
 				break;
 			}
 		}
@@ -242,7 +242,7 @@ public class World {
 			try {
 				String nome = null;
 				do {
-					nome = JOptionPane.showInputDialog("Insira um nome válido para esse mundo");
+					nome = JOptionPane.showInputDialog("Insira um nome vï¿½lido para esse mundo");
 					if (nome == null) {
 						if (JOptionPane.showConfirmDialog(null, "Tem certeza que deseja cancelar?") == 0) return; 
 					}
@@ -264,7 +264,7 @@ public class World {
 	}
 	
 	private static void ordenar_valores(Tile pontoA, Tile pontoB) {
-		// coloca os valores minimos e máximos
+		// coloca os valores minimos e mï¿½ximos
 		if (pontoA.getX() < pontoB.getX()) {
 			minX = pontoA.getX() >> log_ts;
 			maxX = pontoB.getX() >> log_ts; 
@@ -315,7 +315,7 @@ public class World {
 			}
 	}
 	
-	public static ArrayList<Tile> pegar_construção(Tile pontoA, Tile pontoB) {
+	public static ArrayList<Tile> pegar_construcao(Tile pontoA, Tile pontoB) {
 		ordenar_valores(pontoA, pontoB);
 		ArrayList<Tile> construcao = new ArrayList<Tile>();
 		
@@ -330,12 +330,12 @@ public class World {
 		return construcao;
 	}
 	
-	public static void colocar_construção(Tile inicial, Build construcao) {
+	public static void colocar_construcao(Tile inicial, Build construcao) {
 		if (construcao == null) return;
 		ArrayList<Tile> tiles_construcao = salvarCarregar.carregar_construcao(construcao);
 		int i = 0, x_ini = inicial.getX()>>log_ts, y_ini = inicial.getY() >> log_ts, z_ini = inicial.getZ();
 		if (x_ini+construcao.getHorizontal() >= WIDTH || y_ini+construcao.getVertical() >= HEIGHT) {
-			JOptionPane.showMessageDialog(null, "A construção não poderá ser feita aqui pois sairá do mapa");
+			JOptionPane.showMessageDialog(null, "A construï¿½ï¿½o nï¿½o poderï¿½ ser feita aqui pois sairï¿½ do mapa");
 			return;
 		}
 		for (int xx = 0; xx < construcao.getHorizontal(); xx++) 
