@@ -20,17 +20,17 @@ public class Ui {
 	private static BufferedImage[] setas, sprite_opcoes;
 	public static boolean mostrar, colocar_parede, sprite_reajivel, colocar_escada, substituir;
 	private Rectangle colocar_paredes, caixinha_dos_sprites, caixinha_dos_livros,
-	preencher_tudo, fazer_caixa, limpar_selecao, salvar_construcao, substitui, // preencher coloca em todos os tiles, sem excess„o, j· a caixa deixa a parte de "dentro" vazia
+	preencher_tudo, fazer_caixa, limpar_selecao, salvar_construcao, substitui, // preencher coloca em todos os tiles, sem excess√£o, j√° a caixa deixa a parte de "dentro" vazia
 	colocar_escadas, direcao_escadas, caixa_das_opcoes, caixa_sprite_reajivel, adicionar_nova_cidade, voltar;
 	private Rectangle[] escadas;
-	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "NÌvel nos tiles: ", altura = "Altura: ", limpar = "limpar_seleÁ„o", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajÌvel", salva_construcao = "salvar construÁ„o";
-	public static final String[] opcoes = {"colocar sprites", "configurar", "colocar construÁıes", "criar casas/cidades"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
+	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "N√≠vel nos tiles: ", altura = "Altura: ", limpar = "limpar_sele√ß√£o", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reaj√≠vel", salva_construcao = "salvar constru√ß√£o";
+	public static final String[] opcoes = {"colocar sprites", "configurar", "colocar constru√ß√µes", "criar casas/cidades"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego, new_speed;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
 	private static ArrayList<ArrayList<Tile>> tiles_salvos;
 	private static ArrayList<String> nome_livros;
-	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens est·ticas World.sprites.get(array)[lista]
-	public static int tiles_nivel, max_tiles_nivel, modo_escadas, escadas_direction; // corresponde a qual sprite ser· guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
+	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens est√°ticas World.sprites.get(array)[lista]
+	public static int tiles_nivel, max_tiles_nivel, modo_escadas, escadas_direction; // corresponde a qual sprite ser√° guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	public Tile pontoA, pontoB; // selecione 2 pontos para preenche-lo com as opcoes abaixo
 	public static String opcao;
 	private static String a_selecionar;
@@ -45,7 +45,7 @@ public class Ui {
 		cidades = new ArrayList<Cidade>();
 		opcao = opcoes[0];
 		modo_escadas = salvar_nesse_livro = 0;
-		livro = 0; // os livros podem ser adicionados depois, a fim de criar novas p·ginas para maior facilidade de achar sprites
+		livro = 0; // os livros podem ser adicionados depois, a fim de criar novas p√°ginas para maior facilidade de achar sprites
 		pagina = new ArrayList<Integer>();
 		max_pagina = new ArrayList<Integer>();
 		comecar_por = new ArrayList<Integer>();
@@ -236,7 +236,7 @@ public class Ui {
 	}
 
 	private void desenhar_cidades(Graphics g) {
-		// Agora È sÛ fazer desenhas a lista das cidades
+		// Agora √© s√≥ fazer desenhas a lista das cidades
 		g.drawString("CIDADES:", caixinha_dos_sprites.x+caixinha_dos_sprites.width/2 - g.getFontMetrics().stringWidth("CIDADES:")/2, 60);
 	}
 
@@ -272,11 +272,11 @@ public class Ui {
 			s = "speed: "+new_speed;
 			w1 = g.getFontMetrics().stringWidth(s);
 			g.drawString(s, caixinha_dos_sprites.x+caixinha_dos_sprites.width/2-w1/2, caixinha_dos_sprites.y+40);
-			s = "pressione \"-\" para torn·-la negativo";
+			s = "pressione \"-\" para torn√°-la negativo";
 			w1 = g.getFontMetrics().stringWidth(s);
 			g.drawString(s, caixinha_dos_sprites.x+caixinha_dos_sprites.width/2-w1/2, caixinha_dos_sprites.y+60);
 		}
-		s = "¡gua";
+		s = "√°gua";
 		w1 = g.getFontMetrics().stringWidth(s);
 		g.drawString(s, colocar_paredes.x-colocar_paredes.width-w1, colocar_paredes.y+colocar_paredes.height);
 		s = "Lava";
@@ -532,7 +532,7 @@ public class Ui {
 		if (py == pagina.size()) {
 			String nome = null;
 			do {
-				nome = JOptionPane.showInputDialog("Insira um nome que j· n„o seja um nome do livro");
+				nome = JOptionPane.showInputDialog("Insira um nome que j√° n√£o seja um nome do livro");
 				if (nome == null || nome.isBlank()) return;
 			} while (nome_livros.contains(nome));
 			adicionar_livro(nome);
@@ -613,7 +613,7 @@ public class Ui {
 	public void selecionar_livro() {
 		if (salvar_nesse_livro != livro) {
 			salvar_nesse_livro = livro;
-			if (salvar_nesse_livro != 0) JOptionPane.showMessageDialog(null, "VocÍ ir· salvar as coisas em: "+nome_livros.get(livro));
+			if (salvar_nesse_livro != 0) JOptionPane.showMessageDialog(null, "Voc√™ ir√° salvar as coisas em: "+nome_livros.get(livro));
 			return;
 		}else{
 			adicionar_novo_tile_ao_livro(salvar_nesse_livro);
@@ -623,7 +623,7 @@ public class Ui {
 	private void adicionar_novo_tile_ao_livro(int livro2) {
 		if (Ui.array.size() == 0) return;
 		if (livro2 == 0 && salvar_nesse_livro == 0) {
-			JOptionPane.showMessageDialog(null, "Primeiro vocÍ precisa selecionar um livro! V· atÈ o livro e aperte '+'");
+			JOptionPane.showMessageDialog(null, "Primeiro voc√™ precisa selecionar um livro! V√° at√© o livro e aperte '+'");
 			return;
 		}
 		Tile tile = new Tile(0, 0, 0);

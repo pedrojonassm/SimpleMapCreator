@@ -15,15 +15,15 @@ import main.Gerador;
 
 public class Tile {
 	private ArrayList<ArrayList<int[]>> sprites;
-	private int x, y, z, speed_modifier, evento, solid, // solid: 0 = chao normal; 1 = parede; 2 = �gua; 3 = lava; 4 = vip
-	stairs_type, stairs_direction; // stairs_type 0 = n�o tem, 1 = escada "normal", 2 = escada de clique direito, 3 = buraco sempre aberto, 4 = Buraco fechado (usar picareta ou cavar para abr�-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
+	private int x, y, z, speed_modifier, evento, solid, // solid: 0 = chao normal; 1 = parede; 2 = água; 3 = lava; 4 = vip
+	stairs_type, stairs_direction; // stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito, 3 = buraco sempre aberto, 4 = Buraco fechado (usar picareta ou cavar para abrí-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
 	private boolean aberto_ou_fechado; // aberto_ou_fechado: usado para paredes; usado em conjunto para ver se esta aberto ou fechado
-	private int[] sprite_fechado, sprite_aberto; // sprites de rea��es
+	private int[] sprite_fechado, sprite_aberto; // sprites de reações
 	private String house_door;
 	
 	public Tile(int x,int y,int z){
-		house_door = ""; // ao criar a casa essa v�riavel recebe o nome da casa, isso serve para que ela possa ser comprada
-		evento = solid = 0; // quando o player interage com um tile, ocorre um evento, o evento � um int enviado para o servidor junto com o tile para ocorrer algo
+		house_door = ""; // ao criar a casa essa variável recebe o nome da casa, isso serve para que ela possa ser comprada
+		evento = solid = 0; // quando o player interage com um tile, ocorre um evento, o evento é um int enviado para o servidor junto com o tile para ocorrer algo
 		aberto_ou_fechado = true;
 		stairs_type = 0;
 		stairs_direction = 0;
@@ -204,7 +204,7 @@ public class Tile {
 			return true;
 		}
 		if (Ui.sprite_selecionado.size() != 2)	{
-			JOptionPane.showMessageDialog(null, "Necess�rio ter 2 esprites selecionados, o primeiro representa o fechado, enquanto o segundo aberto");
+			JOptionPane.showMessageDialog(null, "Necessário ter 2 esprites selecionados, o primeiro representa o fechado, enquanto o segundo aberto");
 			return false;
 		}
 		sprite_fechado = new int[2];
@@ -256,7 +256,7 @@ public class Tile {
 			}
 			retorno += "-";
 		}
-		// stairs_type 0 = n�o tem, 1 = escada "normal", 2 = escada de clique direito; mode 1 = subir, -1 = descer
+		// stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito; mode 1 = subir, -1 = descer
 		retorno += ";"+stairs_type+"-"+stairs_direction+"-"+speed_modifier+"-"+solid+"-"+house_door+"-"+evento;
 		if (sprite_aberto != null) {
 			retorno += ";"+sprite_fechado[0]+"a"+sprite_fechado[1]+"-"+sprite_aberto[0]+"a"+sprite_aberto[1];
@@ -318,7 +318,7 @@ public class Tile {
 	}
 
 	public void varios(int virar_solido) {
-		// A��o realizada no World.fill ou World.empty
+		// Ação realizada no World.fill ou World.empty
 		if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[0])) {
 			// Colocar sprites
 			if (Ui.substituir || !tem_sprites()) adicionar_sprite_selecionado();

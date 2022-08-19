@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class Cidade {
 	private ArrayList<Casa> casas; // casas da cidade
-	private String nome; // nome da cidade, pq nÈ
-	private int tile; // posicao do tp da cidade, caso necess·rio
+	private String nome; // nome da cidade, pq n√©
+	private int tile; // posicao do tp da cidade, caso necess√°rio
 	
 	public Cidade(int tile, String nome) {
 		this.tile = tile;

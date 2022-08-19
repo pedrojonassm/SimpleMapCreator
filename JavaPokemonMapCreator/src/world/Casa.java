@@ -3,7 +3,7 @@ package world;
 import java.util.ArrayList;
 
 public class Casa {
-	private ArrayList<Integer> tiles; // guarda a posição dos tiles do mundo
+	private ArrayList<Integer> tiles; // guarda a posiÃ§Ã£o dos tiles do mundo
 	private int door; // local em frente a porta, ao dar tp ela aparece ali
 	private String nome;
 	
