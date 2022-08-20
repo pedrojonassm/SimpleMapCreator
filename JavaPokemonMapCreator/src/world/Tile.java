@@ -8,11 +8,15 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import files.salvarCarregar;
 import graficos.Ui;
 import main.Gerador;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Tile {
 	private ArrayList<ArrayList<int[]>> sprites;
 	private int x, y, z, speed_modifier, evento, solid, // solid: 0 = chao normal; 1 = parede; 2 = água; 3 = lava; 4 = vip
@@ -21,7 +25,7 @@ public class Tile {
 	private int[] sprite_fechado, sprite_aberto; // sprites de reações
 	private String house_door;
 	
-	public Tile(int x,int y,int z){
+	public Tile(@JsonProperty("x") int x, @JsonProperty("y") int y, @JsonProperty("z") int z){
 		house_door = ""; // ao criar a casa essa variável recebe o nome da casa, isso serve para que ela possa ser comprada
 		evento = solid = 0; // quando o player interage com um tile, ocorre um evento, o evento é um int enviado para o servidor junto com o tile para ocorrer algo
 		aberto_ou_fechado = true;
@@ -37,6 +41,54 @@ public class Tile {
 		}
 	}
 	
+	public int getEvento() {
+		return evento;
+	}
+
+	public void setEvento(int evento) {
+		this.evento = evento;
+	}
+
+	public boolean isAberto_ou_fechado() {
+		return aberto_ou_fechado;
+	}
+
+	public void setAberto_ou_fechado(boolean aberto_ou_fechado) {
+		this.aberto_ou_fechado = aberto_ou_fechado;
+	}
+
+	public int[] getSprite_fechado() {
+		return sprite_fechado;
+	}
+
+	public void setSprite_fechado(int[] sprite_fechado) {
+		this.sprite_fechado = sprite_fechado;
+	}
+
+	public int[] getSprite_aberto() {
+		return sprite_aberto;
+	}
+
+	public void setSprite_aberto(int[] sprite_aberto) {
+		this.sprite_aberto = sprite_aberto;
+	}
+
+	public String getHouse_door() {
+		return house_door;
+	}
+
+	public void setHouse_door(String house_door) {
+		this.house_door = house_door;
+	}
+
+	public void setStairs_type(int stairs_type) {
+		this.stairs_type = stairs_type;
+	}
+
+	public void setStairs_direction(int stairs_direction) {
+		this.stairs_direction = stairs_direction;
+	}
+
 	public int getSpeed_modifier() {
 		return speed_modifier;
 	}
@@ -98,7 +150,7 @@ public class Tile {
 		}
 	}
 	
-	public ArrayList<BufferedImage> getSprite_atual() {
+	public ArrayList<BufferedImage> obterSprite_atual() {
 		ArrayList<BufferedImage> lDesenhoAtual = new ArrayList<BufferedImage>();
 		for (ArrayList<int[]> imagens : sprites) {
 			if (imagens != null && imagens.size() > 0) {
@@ -242,29 +294,10 @@ public class Tile {
 		this.z = z;
 	}
 	
-	public void teste() {
-		ObjectMapper lObjectMapper = new ObjectMapper();
+	public String salvar() {
+		return salvarCarregar.toJSON(this);
 	}
 	
-	public String salvar() {
-		String retorno = "";
-		retorno += sprites.size()+";";
-		for (ArrayList<int[]> sprite : sprites) {
-			retorno += sprite.size();
-			for (int[] a : sprite) {
-				retorno += ":"+a[0] + "a" + a[1];
-			}
-			retorno += "-";
-		}
-		// stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito; mode 1 = subir, -1 = descer
-		retorno += ";"+stairs_type+"-"+stairs_direction+"-"+speed_modifier+"-"+solid+"-"+house_door+"-"+evento;
-		if (sprite_aberto != null) {
-			retorno += ";"+sprite_fechado[0]+"a"+sprite_fechado[1]+"-"+sprite_aberto[0]+"a"+sprite_aberto[1];
-		}
-		
-		return retorno += "\n";
-	}
-
 	public boolean existe() {
 		for (ArrayList<int[]> spr : sprites) {
 			if (spr.size() > 0) {

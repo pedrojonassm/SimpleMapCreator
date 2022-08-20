@@ -438,7 +438,7 @@ public class Ui {
 			for (int i = 0; i < max_sprites_por_pagina && i+(max_sprites_por_pagina*pagina.get(livro)) < tiles.size(); i++) {
 				x = desenhando%(caixinha_dos_sprites.width/Gerador.quadrado.width);
 				y = desenhando/(caixinha_dos_sprites.width/Gerador.quadrado.width);
-				ArrayList<BufferedImage> lDesenhoAtual = tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).getSprite_atual();
+				ArrayList<BufferedImage> lDesenhoAtual = tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).obterSprite_atual();
 				for (BufferedImage iBufferedImage : lDesenhoAtual)
 					g.drawImage(iBufferedImage, x*Gerador.quadrado.width+caixinha_dos_sprites.x, y*Gerador.quadrado.width+caixinha_dos_sprites.y, Gerador.quadrado.width, Gerador.quadrado.height, null);
 				

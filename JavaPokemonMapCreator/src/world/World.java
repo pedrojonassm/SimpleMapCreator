@@ -29,7 +29,7 @@ public class World {
 	private static int minX, minY, minZ, maxX, maxY, maxZ;
 	
 	public static int tiles_index, tiles_animation_time, max_tiles_animation_time;
-	static File arquivo;
+	private static File arquivo;
 	public static boolean ready;
 	
 	public World(File file){
