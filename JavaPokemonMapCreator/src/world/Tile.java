@@ -119,37 +119,6 @@ public class Tile {
 		return z;
 	}
 	
-	public void carregar_sprites(String linha) {
-		sprites.clear();
-		// total de srpites; lista de sprites; tipo de escada - direcao da escada - solido? - speed_modifier; sprite ajustavel
-		String[] sla = linha.split(";"), sla2 = sla[1].split("-"), sla4 = sla[2].split("-");
-		for (int i = 0; i < Integer.parseInt(sla[0]); i++) {
-			ArrayList<int[]> sprite = new ArrayList<int[]>();
-			String[] sla3 = sla2[i].split(":");
-			for (int k = 0; k < Integer.parseInt(sla3[0]); k++) {
-				String[] s = sla3[k+1].split("a");
-				int[] a = {Integer.parseInt(s[0]), Integer.parseInt(s[1])};
-				sprite.add(a);
-			}
-			sprites.add(sprite);
-		}
-		stairs_type = Integer.parseInt(sla4[0]);
-		stairs_direction = Integer.parseInt(sla4[1]);
-		solid = Integer.parseInt(sla4[2]);
-		speed_modifier = Integer.parseInt(sla4[3]);
-		house_door = sla4[4]; 
-		evento = Integer.parseInt(sla4[5]);
-		if (stairs_type == 4) {
-			String[] sprites_buraco = sla[3].split("-"), fechado = sprites_buraco[0].split("a"), aberto = sprites_buraco[1].split("a");
-			sprite_fechado = new int[2];
-			sprite_aberto = new int[2];
-			for (int i = 0; i < 2; i++) {
-				sprite_fechado[i] = Integer.parseInt(fechado[i]);
-				sprite_aberto[i] = Integer.parseInt(aberto[i]);
-			}
-		}
-	}
-	
 	public ArrayList<BufferedImage> obterSprite_atual() {
 		ArrayList<BufferedImage> lDesenhoAtual = new ArrayList<BufferedImage>();
 		for (ArrayList<int[]> imagens : sprites) {

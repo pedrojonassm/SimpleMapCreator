@@ -59,10 +59,11 @@ public class World {
 				for(int xx = 0; xx < WIDTH; xx++)
 					for(int yy = 0; yy < HEIGHT; yy++)
 						for (int zz = 0; zz < HIGH; zz++) {
-							Tile t = new Tile(xx*Gerador.TS,yy*Gerador.TS, zz);
+							Tile t = (Tile) salvarCarregar.fromJson(reader.readLine(), Tile.class);
+							t.setX(xx*Gerador.TS);
+							t.setY(yy*Gerador.TS);
+							t.setZ(zz);
 							tiles[(xx + (yy * WIDTH))*HIGH+zz] = t;
-							String str = reader.readLine();
-							t.carregar_sprites(str);
 						}
 			 }
 			ready = true;
@@ -98,7 +99,7 @@ public class World {
 		};
 
 		int option = JOptionPane.showConfirmDialog(null, message, "Tamanho do mundo", JOptionPane.OK_CANCEL_OPTION);
-		if (option == JOptionPane.OK_OPTION && !width.getText().isBlank() && height.getText().isBlank() && high.getText().isBlank()) {
+		if (option == JOptionPane.OK_OPTION && !width.getText().isBlank() && !height.getText().isBlank() && !high.getText().isBlank()) {
 		    WIDTH = Integer.parseInt(width.getText());
 		    HEIGHT = Integer.parseInt(height.getText());
 		    HIGH = Integer.parseInt(high.getText());
@@ -397,7 +398,6 @@ public class World {
 	}
 
 	public static void carregar_mundo() {
-		
 		Gerador.fd.setVisible(true);
 		novo_mundo(Gerador.fd.getFiles()[0]);
 	}
