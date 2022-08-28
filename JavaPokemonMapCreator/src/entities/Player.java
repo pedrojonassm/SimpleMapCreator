@@ -59,8 +59,7 @@ public class Player {
 				vertical = 0;
 			}
 			if (mover) {
-				int pos = World.calcular_pos(x+Gerador.TS*horizontal, y+Gerador.TS*vertical, z);
-				if (pos >= 0 && pos < World.tiles.length) sqm_alvo = World.pegar_chao(pos);
+				sqm_alvo = World.pegar_chao(World.calcular_pos(x+Gerador.TS*horizontal, y+Gerador.TS*vertical, z));
 				
 				if (sqm_alvo != null && (sqm_alvo.getSolid() == 1 || (sqm_alvo.getSolid() == 2 && !can_surf) || (sqm_alvo.getSolid() == 3 && !can_walk_on_lava) || (sqm_alvo.getSolid() == 4 && !vip))) {
 					sqm_alvo = null;
@@ -81,6 +80,8 @@ public class Player {
 	
 	private void colidindo_com_escada() {
 		Tile t = World.pegar_chao(x+Gerador.TS/2, y+Gerador.TS/2, z+1);
+		if (t == null)
+			return;
 		if (t.getStairs_type() != 0 && t.pode_subir_com_colisao()) {
 			// subir
 			z++;

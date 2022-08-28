@@ -753,7 +753,7 @@ public class Ui {
 	}
 
 	public boolean addponto(int x, int y) {
-		Tile t = World.pegar_chao(x, y, Gerador.player.getZ());
+		Tile t = World.pegarAdicionarTileMundo(World.calcular_pos(x, y, Gerador.player.getZ()));
 		if (t == pontoA) {
 			pontoA = null;
 			return true;

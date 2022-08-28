@@ -45,7 +45,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	salvarCarregar memoria;
 	
 	public static Rectangle quadrado;
-	public Tile escolhido;
+	private int aPos;
 	private boolean clique_no_mapa;
 	public static boolean control, shift;
 	public static Random random;
@@ -53,17 +53,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	public static int sprite_selecionado_index;
 	private int sprite_selecionado_animation_time, solido;
 	
-	/*
-	 * Fazer as cidades
-	 * Fazer as casas
-	 * Fazer os eventos ao cliclar com o botão direito em um tile
-	 * Conseguir salvar lava, água, velocidade, escadas, etc. (testar, acho que ja funciona)
-	 */
-	
 	public Gerador(){
 		player = new Player(Gerador.TS*5, Gerador.TS*5, 0);
 		memoria = new salvarCarregar();
-		quadrado = new Rectangle(64, 64);
+		quadrado = new Rectangle(Gerador.TS, Gerador.TS);
 		ui = new Ui();
 		control = shift = clique_no_mapa = false;
 		random = new Random();
@@ -79,7 +72,6 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		
 		image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
 		sprite_selecionado_index = sprite_selecionado_animation_time = 0;
-		//Inicializando objetos.
 		
 	}
 	
@@ -112,11 +104,16 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			e.printStackTrace();
 		}
 	}
+	
+	/*TODO BUGS A RESOLVER
+	 * Ajustar colocação de construção
+	 * Ajustar clique direito quando o sprite selecionado for null
+	 * 
+	 */
+	
 	public static void main(String args[]){
-		//*
 		Gerador gerador = new Gerador();
 		gerador.start();
-		//*/
 	}
 	
 	public void tick(){
@@ -126,37 +123,41 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			}
 			if (Ui.opcao == Ui.opcoes[0]) {
 				if (shift) {
-					escolhido.pegarsprites();
+					if (World.tiles[aPos] != null)
+						World.tiles[aPos].pegarsprites();
 					clique_no_mapa = false;
 				}
-				else{
+				else {
+					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
 					if (Ui.colocar_parede) {
-						escolhido.setSolid(solido);
+						lEscolhido.setSolid(solido);
 						if (Ui.sprite_selecionado.size() > 0) {
-							 escolhido.adicionar_sprite_selecionado();
+							 lEscolhido.adicionar_sprite_selecionado();
 						}
 					}
 					else if (Ui.colocar_escada) {
-						if (escolhido.getZ() < World.HIGH-1) {
-							World.pegar_chao(escolhido.getX(), escolhido.getY(), escolhido.getZ()+1).virar_escada();
+						if (lEscolhido.getZ() < World.HIGH-1) {
+							World.pegar_chao(lEscolhido.getX(), lEscolhido.getY(), lEscolhido.getZ()+1).virar_escada();
 						}
 						 
 						if (Ui.modo_escadas < 2 && Ui.sprite_selecionado.size() > 0) {
-							escolhido.adicionar_sprite_selecionado();
+							lEscolhido.adicionar_sprite_selecionado();
 						}
 					}else if(Ui.sprite_reajivel){
-						escolhido.adicionar_sprite_reajivel();
+						lEscolhido.adicionar_sprite_reajivel();
 					}else {
-						escolhido.adicionar_sprite_selecionado();
+						lEscolhido.adicionar_sprite_selecionado();
+							
 					}
 				}
 			}else if (Ui.opcao == Ui.opcoes[1]) {
-				if (Ui.colocar_parede) escolhido.mar(solido);
-				else if (Ui.sprite_reajivel) escolhido.lava(solido);
-				else if (Ui.colocar_escada) escolhido.vip(solido);
-				else escolhido.setSpeed_modifier(Gerador.ui.getNew_speed());
+				Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
+				if (Ui.colocar_parede) lEscolhido.mar(solido);
+				else if (Ui.sprite_reajivel) lEscolhido.lava(solido);
+				else if (Ui.colocar_escada) lEscolhido.vip(solido);
+				else lEscolhido.setSpeed_modifier(Gerador.ui.getNew_speed());
 			}else if (Ui.opcao == Ui.opcoes[2]) {
-				World.colocar_construcao(escolhido, ui.pegar_construcao_selecionada());
+				World.colocar_construcao(aPos, ui.pegar_construcao_selecionada());
 			}else if (Ui.opcao == Ui.opcoes[3]) {
 				
 			}
@@ -180,10 +181,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		
 		g.setColor(Color.red);
 		
-		//g.drawRect(((int) (quadrado.x>>6))<<6, ((int) (quadrado.y>>6))<<6, quadrado.width, quadrado.height);
-		//*
-		escolhido = World.pegar_chao(quadrado.x + Camera.x, quadrado.y+Camera.y, player.getZ());
-		g.drawRect(escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, quadrado.width, quadrado.height);
+		int[] quadradinho_teste = World.calcularPosicao(aPos);
+		g.drawRect(quadradinho_teste[0], quadradinho_teste[1], quadrado.width, quadrado.height);
 		if (Ui.sprite_selecionado.size() > 0 && (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar)) {
 			if (++sprite_selecionado_animation_time >= World.max_tiles_animation_time) {
 				sprite_selecionado_animation_time = 0;
@@ -192,16 +191,11 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 				}
 			}
 			BufferedImage imagem = World.sprites_do_mundo.get(Ui.array.get(sprite_selecionado_index))[Ui.lista.get(sprite_selecionado_index)];
-			int dx, dy;
 			if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) {
-				dx = escolhido.getX()-Camera.x-quadrado.width;
-				dy = escolhido.getY()-Camera.y-quadrado.height;
+				quadradinho_teste[0] -= quadrado.width;
+				quadradinho_teste[1] -= quadrado.height;
 			}
-			else {
-				dx = escolhido.getX()-Camera.x;
-				dy = escolhido.getY()-Camera.y;
-			}
-			g.drawImage(imagem, dx, dy, null);
+			g.drawImage(imagem, quadradinho_teste[0], quadradinho_teste[1], null);
 		}
 		//*/
 		player.render(g);
@@ -303,17 +297,21 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		Tile lEscolhido = World.tiles[aPos];
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			if (!Ui.mostrar || !ui.clicou(e.getX(), e.getY())) {
 				clique_no_mapa = true;
 				if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[0]) && Ui.colocar_parede) {
-					solido = escolhido.getSolid();
-					if (solido == 1) {
-						solido = 0;
-					}else solido = 1;
+					if (lEscolhido == null) solido = 0; 
+					else solido = lEscolhido.getSolid();
+					
+					if (solido == 1) solido = 0;
+					else solido = 1;
+					
 				}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1])) {
 					// 2 = água; 3 = lava; 4 = vip
-					solido = escolhido.getSolid();
+					if (lEscolhido == null) solido = 0;
+					else solido = lEscolhido.getSolid();
 					if (Ui.colocar_parede && !(solido == 2)) solido = 1;
 					else if (Ui.sprite_reajivel && !(solido == 3)) solido = 1;
 					else if (Ui.colocar_escada && !(solido == 4)) solido = 1;
@@ -324,26 +322,23 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 				return;
 			}
 		}else if (e.getButton() == MouseEvent.BUTTON2) {
-			//*
-			int pos = ((quadrado.x >> 6) + (quadrado.y>>6)*World.WIDTH)*World.HIGH+player.getZ();
+			int[] teste = World.calcularPosicao(aPos);
 			System.out.println("mx: "+quadrado.x+" my: "+quadrado.y);
-			System.out.println("cx: "+Camera.x+" cy: "+Camera.y);
-			System.out.println("pos: "+pos);
+//			System.out.println("cx: "+Camera.x+" cy: "+Camera.y);
+			System.out.println("pos: "+aPos);
+			System.out.println("tem tile: "+(lEscolhido != null));
+			System.out.println("tx: "+teste[0]+" ty: "+teste[1] + "\n");
 			return;
-			//*/
 		}else if (e.getButton() == MouseEvent.BUTTON3) {
-			//*
 			if(ui.cliquedireito(e.getX(), e.getY())) return;
 			else if (Ui.colocar_escada && Ui.opcao == Ui.opcoes[0]) {
-				if (escolhido.getZ() < World.HIGH) {
-					escolhido.desvirar_escada();
-				}
+				if (lEscolhido != null && lEscolhido.getZ() < World.HIGH) 
+					lEscolhido.desvirar_escada();
 				return;
-			}else if (Ui.sprite_reajivel) {
-				escolhido.reajir();
+			}else if (lEscolhido != null && Ui.sprite_reajivel) {
+				lEscolhido.reajir();
 				return;
 			}else if (ui.addponto(e.getX()+Camera.x, e.getY()+Camera.y)) return;
-			//*/
 		}
 	}
 
@@ -356,12 +351,14 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		aPos = World.calcular_pos(e.getX() + Camera.x, e.getY()+Camera.y, player.getZ());
 		quadrado.x = e.getX();
 		quadrado.y = e.getY();
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		aPos = World.calcular_pos(e.getX() + Camera.x, e.getY()+Camera.y, player.getZ());
 		quadrado.x = e.getX();
 		quadrado.y = e.getY();
 	}

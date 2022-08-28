@@ -6,9 +6,11 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -32,6 +34,14 @@ public class World {
 	private static File arquivo;
 	public static boolean ready;
 	
+
+	public static int[] calcularPosicao(int prPos) {
+		int[] retorno = {0,0};
+		retorno[0] = (int) ((prPos%(WIDTH*HIGH))/HIGH)*TILE_SIZE -(prPos%HIGH)*TILE_SIZE - Camera.x%Gerador.TS;
+		retorno[1] = (int) (prPos/HEIGHT/HIGH)*TILE_SIZE -(prPos%HIGH)*TILE_SIZE - Camera.y;
+		return retorno;
+	}
+	
 	public World(File file){
 		ready = false;
 		log_ts = log2(Gerador.TS);
@@ -43,28 +53,13 @@ public class World {
 				 arquivo = null;
 				 determinar_tamanho();
 				 tiles = new Tile[WIDTH * HEIGHT * HIGH];
-					for(int xx = 0; xx < WIDTH; xx++)
-						for(int yy = 0; yy < HEIGHT; yy++)
-							for (int zz = 0; zz < HIGH; zz++)
-								tiles[(xx + (yy * WIDTH))*HIGH+zz] = new Tile(xx*Gerador.TS,yy*Gerador.TS, zz);
+//					for(int xx = 0; xx < WIDTH; xx++)
+//						for(int yy = 0; yy < HEIGHT; yy++)
+//							for (int zz = 0; zz < HIGH; zz++)
+//								tiles[(xx + (yy * WIDTH))*HIGH+zz] = new Tile(xx*Gerador.TS,yy*Gerador.TS, zz);
 			 }else {
 				arquivo = file.getParentFile();
-				@SuppressWarnings("resource")
-				BufferedReader reader = new BufferedReader(new FileReader(file));
-				String singleLine = null;
-				singleLine = reader.readLine();
-				String[] sla = singleLine.split(";");
-				WIDTH = Integer.parseInt(sla[0]); HEIGHT = Integer.parseInt(sla[1]); HIGH = Integer.parseInt(sla[2]);
-				tiles = new Tile[WIDTH * HEIGHT * HIGH];
-				for(int xx = 0; xx < WIDTH; xx++)
-					for(int yy = 0; yy < HEIGHT; yy++)
-						for (int zz = 0; zz < HIGH; zz++) {
-							Tile t = (Tile) salvarCarregar.fromJson(reader.readLine(), Tile.class);
-							t.setX(xx*Gerador.TS);
-							t.setY(yy*Gerador.TS);
-							t.setZ(zz);
-							tiles[(xx + (yy * WIDTH))*HIGH+zz] = t;
-						}
+				carregar(file);
 			 }
 			ready = true;
 			
@@ -138,7 +133,7 @@ public class World {
 	}
 	
 	public static Tile pegar_chao(int pos) {
-		if (pos >= tiles.length) {
+		if (pos >= tiles.length || pos < 0) {
 			return null;
 		}
 		return tiles[pos];
@@ -149,7 +144,7 @@ public class World {
 	}
 	
 	public static int calcular_pos(int mx, int my, int mz) {
-		return ((mx >> log_ts) + (my>>log_ts)*World.WIDTH)*World.HIGH+mz;
+		return ((mx>> log_ts) + (my>>log_ts)*World.WIDTH)*World.HIGH+mz;
 	}
 
 	public void tick() {
@@ -175,10 +170,10 @@ public class World {
 		int x4 = (xnext+TILE_SIZE);
 		int y4 = (ynext+TILE_SIZE);
 		
-		return !((pegar_chao(x1, y1, z).getSolid() == 1) ||
-				(pegar_chao(x2, y2, z).getSolid() == 1) ||
-				(pegar_chao(x3, y3, z).getSolid() == 1) ||
-				(pegar_chao(x4, y4, z).getSolid() == 1));
+		return !((pegar_chao(x1, y1, z) == null || pegar_chao(x1, y1, z).getSolid() == 1) ||
+				(pegar_chao(x2, y2, z) == null || pegar_chao(x2, y2, z).getSolid() == 1) ||
+				(pegar_chao(x3, y3, z) == null || pegar_chao(x3, y3, z).getSolid() == 1) ||
+				(pegar_chao(x4, y4, z) == null || pegar_chao(x4, y4, z).getSolid() == 1));
 	}
 	
 	public static Tile[] tiles_ao_redor(int x, int y, int z) {
@@ -216,16 +211,11 @@ public class World {
 		int maxZ = HIGH;
 		for (int i = 0; i < HIGH-Gerador.player.getZ()-1; i++) {
 			t = pegar_chao(((Gerador.quadrado.x >> log_ts) + (i+1) + (i+1)*WIDTH + (Gerador.quadrado.y>>log_ts)*WIDTH)*HIGH+Gerador.player.getZ()+1); // trocar por player.x e player.y
-			if  ( t.existe() ) {
+			if  (t !=null && t.existe() ) {
 				maxZ = t.getZ(); // caso exista uma imagem que não dá para ser vista, ela some
 				break;
 			}
 		}
-		
-		/*
-		 player = x, y, z
-		 x, y, z
-		 */
 		
 		for(int xx = xstart; xx <= xfinal; xx++)
 			for(int yy = ystart; yy <= yfinal; yy++)
@@ -233,7 +223,10 @@ public class World {
 					if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
 					}
-					tiles[(xx + (yy * WIDTH))*HIGH+zz].render(g);
+					
+					Tile lTile = tiles[(xx + (yy * WIDTH))*HIGH+zz];
+					if (lTile != null)
+						lTile.render(g);
 			}
 	}
 	
@@ -256,12 +249,47 @@ public class World {
 			
 		}
 		String salvar = ""+WIDTH+";"+HEIGHT+";"+HIGH+"\n";
-		for(int xx = 0; xx < WIDTH; xx++)
-			for(int yy = 0; yy < HEIGHT; yy++)
-				for (int zz = 0; zz < HIGH; zz++)
-					salvar+=tiles[(xx + (yy * WIDTH))*HIGH+zz].salvar();
+		int lSize = salvar.length();
+		salvar += salvarCarregar.toJSON(tiles);
+		// se tiver falho em salvar da forma acima
+		if (salvar.length() == lSize)
+			for(int xx = 0; xx < WIDTH; xx++)
+				for(int yy = 0; yy < HEIGHT; yy++)
+					for (int zz = 0; zz < HIGH; zz++)
+						salvar+=salvarCarregar.toJSON(tiles[(xx + (yy * WIDTH))*HIGH+zz]);
+		
 		
 		salvarCarregar.salvar_mundo(arquivo, salvar);	
+	}
+	
+	private void carregar(File prfile) throws Exception {
+		@SuppressWarnings("resource")
+		BufferedReader reader = new BufferedReader(new FileReader(prfile));
+		String singleLine = null;
+		singleLine = reader.readLine();
+		String[] sla = singleLine.split(";");
+		ArrayList<String> lLinhas = new ArrayList<>();
+		WIDTH = Integer.parseInt(sla[0]); HEIGHT = Integer.parseInt(sla[1]); HIGH = Integer.parseInt(sla[2]);
+		while((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
+			lLinhas.add(singleLine);
+		}
+		tiles = (Tile[]) salvarCarregar.fromJson(lLinhas.get(0), tiles.getClass());
+		if (tiles == null || tiles.length == 0) {
+			tiles = new Tile[WIDTH * HEIGHT * HIGH];
+			for(int xx = 0; xx < WIDTH; xx++)
+				for(int yy = 0; yy < HEIGHT; yy++)
+					for (int zz = 0; zz < HIGH; zz++) {
+						int lPos = (xx + (yy * WIDTH))*HIGH+zz;
+						String lTileString = lLinhas.get(lPos);
+						if (lTileString == null || lTileString.isEmpty() || lTileString == "null")
+							continue;
+						Tile t = (Tile) salvarCarregar.fromJson(lTileString, Tile.class);
+						t.setX(xx*Gerador.TS);
+						t.setY(yy*Gerador.TS);
+						t.setZ(zz);
+						tiles[lPos] = t;
+					}
+		}
 	}
 	
 	private static void ordenar_valores(Tile pontoA, Tile pontoB) {
@@ -311,9 +339,19 @@ public class World {
 					if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
 					}
-					tiles[(xx + (yy * WIDTH))*HIGH+zz].varios(virar_solido);
+					aplicarVarios((xx + (yy * WIDTH))*HIGH+zz, virar_solido);
 					
 			}
+	}
+	
+	public static Tile pegarAdicionarTileMundo(int prPos) {
+		Tile lRetorno = World.pegar_chao(prPos);
+		if (lRetorno == null) {
+			int[] lPosXY = World.calcularPosicao(prPos);
+			lRetorno = new Tile(lPosXY[0]+Camera.x, lPosXY[1]+Camera.y, Gerador.player.getZ());
+			tiles[prPos] = lRetorno;
+		}
+		return lRetorno;
 	}
 	
 	public static ArrayList<Tile> pegar_construcao(Tile pontoA, Tile pontoB) {
@@ -331,19 +369,24 @@ public class World {
 		return construcao;
 	}
 	
-	public static void colocar_construcao(Tile inicial, Build construcao) {
-		if (construcao == null) return;
-		ArrayList<Tile> tiles_construcao = salvarCarregar.carregar_construcao(construcao);
-		int i = 0, x_ini = inicial.getX()>>log_ts, y_ini = inicial.getY() >> log_ts, z_ini = inicial.getZ();
-		if (x_ini+construcao.getHorizontal() >= WIDTH || y_ini+construcao.getVertical() >= HEIGHT) {
-			JOptionPane.showMessageDialog(null, "A construção não poderá ser feita aqui pois sairá do mapa");
-			return;
-		}
-		for (int xx = 0; xx < construcao.getHorizontal(); xx++) 
-			for (int yy = 0; yy < construcao.getVertical(); yy++)
-				for (int zz = 0; zz < construcao.getHigh(); zz++) {
-					int pos = (x_ini+xx + (y_ini + yy)*World.WIDTH)*World.HIGH+zz+z_ini;
-					if (pos < tiles.length)	tiles[pos].setSprites(tiles_construcao.get(i++).getSprites());
+	public static void colocar_construcao(int prPOS, Build prConstrucao) {
+		if (prConstrucao == null) return;
+		int[] lPosXY = calcularPosicao(prPOS);
+		ArrayList<Tile> tiles_construcao = salvarCarregar.carregar_construcao(prConstrucao);
+		int i = 0;
+//		if (lPosXY[0]+prConstrucao.getHorizontal() >= WIDTH || lPosXY[1]+prConstrucao.getVertical() >= HEIGHT) {
+//			JOptionPane.showMessageDialog(null, "A construção não poderá ser feita aqui pois sairá do mapa");
+//			return;
+//		}
+		for (int xx = 0; xx < prConstrucao.getHorizontal(); xx++) 
+			for (int yy = 0; yy < prConstrucao.getVertical(); yy++)
+				for (int zz = 0; zz < prConstrucao.getHigh(); zz++) {
+					int pos= calcular_pos(xx*Gerador.TS+lPosXY[0], yy*Gerador.TS+lPosXY[1], Gerador.player.getZ()+zz);
+					if (pos < tiles.length && pos >= 0) {
+						if (tiles[pos] == null)
+							tiles[pos] = new Tile(xx*Gerador.TS+lPosXY[0], yy*Gerador.TS+lPosXY[1], Gerador.player.getZ()+zz);
+						tiles[pos].setSprites(tiles_construcao.get(i++).getSprites());
+					}
 				}
 		
 	}
@@ -362,7 +405,7 @@ public class World {
 						if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT || ((aX != xx && bX != xx) && (aY != yy && bY != yy))) {
 							continue;
 						}
-						tiles[(xx + (yy * WIDTH))*HIGH+aZ].varios(virar_solido);
+						aplicarVarios((xx + (yy * WIDTH))*HIGH+aZ, virar_solido);
 				}
 		}else if (aY == bY) {
 			for(int xx = minX; xx <= maxX; xx++)
@@ -370,7 +413,7 @@ public class World {
 						if(xx < 0 || xx >= WIDTH || ((aX != xx && bX != xx) && (aZ != zz && bZ != zz))) {
 							continue;
 						}
-						tiles[(xx + (aY * WIDTH))*HIGH+zz].varios(virar_solido);
+						aplicarVarios((xx + (aY * WIDTH))*HIGH+zz, virar_solido);
 				}
 		}else if (aX == bX) {
 			for(int yy = minY; yy <= maxY; yy++)
@@ -378,7 +421,7 @@ public class World {
 					if(yy < 0 || yy >= HEIGHT || ((aZ != zz && bZ != zz) && (aY != yy && bY != yy))) {
 						continue;
 					}
-					tiles[(aX + (yy * WIDTH))*HIGH+zz].varios(virar_solido);
+					aplicarVarios((aX + (yy * WIDTH))*HIGH+zz, virar_solido);
 				}
 		}else {
 			for(int xx = minX; xx <= maxX; xx++)
@@ -386,9 +429,14 @@ public class World {
 					for(int zz = minZ; zz <= maxZ; zz++){
 						if((xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT)) {
 							continue;
-						}else if (xx == aX || xx == bX || yy == aY || yy == bY || zz == aZ || zz == bZ) tiles[(xx + (yy * WIDTH))*HIGH+zz].varios(virar_solido);
+						}else if (xx == aX || xx == bX || yy == aY || yy == bY || zz == aZ || zz == bZ) aplicarVarios((xx + (yy * WIDTH))*HIGH+zz, virar_solido);
 					}
 		}
+	}
+
+	private static void aplicarVarios(int prPos, int virar_solido) {
+		pegarAdicionarTileMundo(prPos).varios(virar_solido);
+		
 	}
 
 	public static void novo_mundo(File file) {

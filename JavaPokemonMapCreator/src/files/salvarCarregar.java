@@ -85,10 +85,11 @@ public class salvarCarregar {
 			horizontal++; vertical++; high++;
 			File file = new File(pasta, name_file_builds);
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-			writer.write(horizontal+";"+vertical+";"+high+"\n");
+			String lConteudo = horizontal+";"+vertical+";"+high+"\n";
 			for (Tile t : contrucao) {
-				writer.write(toJSON(t));
+				lConteudo += toJSON(t);
 			}
+			writer.write(lConteudo);
 			writer.flush();
 			writer.close();
 			criar_imagem(pasta);
@@ -175,9 +176,12 @@ public class salvarCarregar {
 			if (!file.exists()) file.createNewFile();
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 			
+			String lConteudo = "";
+			
 			for (Tile t : tiles) {
-				writer.write(t.salvar());
+				lConteudo += toJSON(t);
 			}
+			writer.write(lConteudo);
 			writer.flush();
 			writer.close();
 		} catch (IOException e) {

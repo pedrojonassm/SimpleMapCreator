@@ -206,6 +206,12 @@ public class Tile {
 	}
 
 	public void adicionar_sprite_selecionado() {
+		
+		if (Ui.sprite_selecionado.size() == 0) {
+			World.tiles[World.calcular_pos(x, y, z)] = null;
+			return;
+		}
+		
 		ArrayList<int[]> novo = new ArrayList<int[]>();
 		if (Ui.array.size() == 0 && sprites.size() < Ui.tiles_nivel && sprites.size() > 0) {
 			sprites.set(Ui.tiles_nivel, null);
@@ -261,10 +267,6 @@ public class Tile {
 	}
 	public void setZ(int z) {
 		this.z = z;
-	}
-	
-	public String salvar() {
-		return salvarCarregar.toJSON(this);
 	}
 	
 	public boolean existe() {
@@ -347,7 +349,6 @@ public class Tile {
 	}
 
 	public void mar(int solido) {
-		System.out.println("a: "+solido);
 		if (solido == 1) solid = 2;
 		else solid = 0;
 	}
