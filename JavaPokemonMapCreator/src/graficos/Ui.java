@@ -538,6 +538,7 @@ public class Ui {
 			adicionar_livro(nome);
 		}else if (py < pagina.size()) {
 			livro = py;
+			atualizar_caixinha();
 		}
 	}
 	
@@ -641,6 +642,13 @@ public class Ui {
 			if (rodinha > 0) k=1;
 			else k=-1;
 			if (caixinha_dos_sprites.contains(x, y)) {
+				if (Gerador.control) {
+					if (Ui.sprite_selecionado.size() != 0) {
+						if (encontrarProximoSpriteSelecionado())
+							atualizar_caixinha();
+						return true;
+					}
+				}
 				if (opcao.equalsIgnoreCase(opcoes[0])) {
 					pagina.set(livro, pagina.get(livro)+k);
 					if (pagina.get(livro) < 0) {
@@ -682,6 +690,26 @@ public class Ui {
 		return false;
 	}
 	
+	private boolean encontrarProximoSpriteSelecionado() {
+		int lProximo = 0;
+		for (int i = 0; i < max_sprites_por_pagina; i++) {
+			int lPos = pagina.get(0)*max_sprites_por_pagina + i;
+			if (sprite_selecionado.contains(lPos)) {
+				lProximo = i+1;
+			}
+		}
+		
+		if (lProximo >= sprite_selecionado.size())
+			lProximo = 0;
+		
+		int lNovaPagina = sprite_selecionado.get(lProximo)/max_sprites_por_pagina;
+		if (pagina.get(0) == lNovaPagina)
+			return false;
+		
+		pagina.set(0, lNovaPagina);
+		return true;
+	}
+
 	public static void trocar_Nivel(int wheelRotation) {
 		if (wheelRotation > 0) {
 			tiles_nivel++;

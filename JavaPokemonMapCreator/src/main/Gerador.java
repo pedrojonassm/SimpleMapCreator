@@ -105,12 +105,6 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		}
 	}
 	
-	/*TODO BUGS A RESOLVER
-	 * Ajustar colocação de construção
-	 * Ajustar clique direito quando o sprite selecionado for null
-	 * 
-	 */
-	
 	public static void main(String args[]){
 		Gerador gerador = new Gerador();
 		gerador.start();
