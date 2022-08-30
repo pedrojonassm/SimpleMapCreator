@@ -37,7 +37,7 @@ public class World {
 
 	public static int[] calcularPosicao(int prPos) {
 		int[] retorno = {0,0};
-		retorno[0] = (int) ((prPos%(WIDTH*HIGH))/HIGH)*TILE_SIZE -(prPos%HIGH)*TILE_SIZE - Camera.x%Gerador.TS;
+		retorno[0] = (int) ((prPos%(WIDTH*HIGH))/HIGH)*TILE_SIZE -(prPos%HIGH)*TILE_SIZE - Camera.x;
 		retorno[1] = (int) (prPos/HEIGHT/HIGH)*TILE_SIZE -(prPos%HIGH)*TILE_SIZE - Camera.y;
 		return retorno;
 	}
