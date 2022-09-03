@@ -31,7 +31,7 @@ public class Ui {
 	private static ArrayList<String> nome_livros;
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
 	public static int tiles_nivel, max_tiles_nivel, modo_escadas, escadas_direction; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
-	public Tile pontoA, pontoB; // selecione 2 pontos para preenche-lo com as opcoes abaixo
+	public static ArrayList<Tile> aTilesSelecionados;
 	public static String opcao;
 	private static String a_selecionar;
 	private ArrayList<Build> construcoes;
@@ -90,9 +90,7 @@ public class Ui {
 		max_tiles_nivel = 4;
 		max_construcoes_por_pagina = 26;
 		pagina_construcoes = 0;
-		cidades.add(new Cidade(5, "teste1"));
-		cidades.add(new Cidade(6, "teste2"));
-		cidades.add(new Cidade(7, "teste3"));
+		aTilesSelecionados = new ArrayList<>();
 	}
 	
 	public void setNew_speed(int new_speed) {
@@ -174,18 +172,14 @@ public class Ui {
 		
 		g.setColor(new Color(255, 255, 0, 50));
 		int dx, dy;
-		if (pontoA != null) {
-			dx = pontoA.getX() - Camera.x - (pontoA.getZ()-Gerador.player.getZ())*Gerador.quadrado.width;
-			dy = pontoA.getY() - Camera.y - (pontoA.getZ()-Gerador.player.getZ())*Gerador.quadrado.height;
-			g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
-		}
-		if (pontoB != null) {
-			dx = pontoB.getX() - Camera.x - (pontoB.getZ()-Gerador.player.getZ())*Gerador.quadrado.width;
-			dy = pontoB.getY() - Camera.y - (pontoB.getZ()-Gerador.player.getZ())*Gerador.quadrado.height;
-			g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
+		for (Tile iTile : aTilesSelecionados) {
+			dx = iTile.getX() - Camera.x - (iTile.getZ()-Gerador.player.getZ())*Gerador.quadrado.width;
+			dy = iTile.getY() - Camera.y - (iTile.getZ()-Gerador.player.getZ())*Gerador.quadrado.height;
+			if (dx+Gerador.quadrado.width >= 0 && dx < Gerador.WIDTH && dy+Gerador.quadrado.height >= 0 && dy < Gerador.HEIGHT)
+				g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
 		}
 		
-		if (pontoA != null || pontoB != null) {
+		if (aTilesSelecionados.size() > 0) {
 			g.setColor(Color.green);
 			if  (opcao.equalsIgnoreCase(opcoes[0]) || opcao.equalsIgnoreCase(opcoes[1])) {
 				desenhar_opcoes(g);
@@ -498,23 +492,21 @@ public class Ui {
 		}else if(caixa_das_opcoes.contains(x, y)) {
 			opcao = opcoes[(x-caixa_das_opcoes.x)/Gerador.TS];
 			return true;
-		}else if ((pontoA != null || pontoB != null)) {
+		}else if (aTilesSelecionados.size() > 0) {
 			if (substitui.contains(x, y)) {
 				substituir = !substituir;
 				return true;
 			}else if (limpar_selecao.contains(x, y)) {
-				pontoA = pontoB = null;
+				aTilesSelecionados.clear();
 				return true;
-			}else if  (pontoA != null && pontoB != null) {
-				if (preencher_tudo.contains(x, y)) {
-					World.fill(pontoA, pontoB);
-					return true;
-				}else if  (fazer_caixa.contains(x, y)) {
-					World.empty(pontoA, pontoB);
-					return true;
-				}else if (salvar_construcao.contains(x, y)) {
-					salvarCarregar.salvar_construcao(pontoA, pontoB);
-				}
+			}else if (preencher_tudo.contains(x, y)) {
+				World.fill(aTilesSelecionados);
+				return true;
+			}else if  (fazer_caixa.contains(x, y)) {
+				World.empty(aTilesSelecionados);
+				return true;
+			}else if (salvar_construcao.contains(x, y)) {
+				salvarCarregar.salvar_construcao(aTilesSelecionados);
 			}
 		}
 		for (int i = 0; i < escadas.length; i++) {
@@ -542,12 +534,6 @@ public class Ui {
 		}
 	}
 	
-	public void construcao() {
-		if (pontoA != null && pontoB != null && pontoA != pontoB) {
-			salvarCarregar.salvar_construcao(pontoA, pontoB);
-		}
-	}
-
 	private void adicionar_livro(String nome) {
 		pagina.add(0);
 		max_pagina.add(0);
@@ -780,25 +766,35 @@ public class Ui {
 		max_pagina.set(tiles_salvos.size(), (int) (tiles_salvos.get(tiles_salvos.size()-1).size()/max_sprites_por_pagina));
 	}
 
-	public boolean addponto(int x, int y) {
-		Tile t = World.pegarAdicionarTileMundo(World.calcular_pos(x, y, Gerador.player.getZ()));
-		if (t == pontoA) {
-			pontoA = null;
-			return true;
-		}else if (t == pontoB) {
-			pontoB = null;
-			return true;
+	public boolean selecionarTile(int prPos) {
+		Tile t = World.pegarAdicionarTileMundo(prPos);
+		if (aTilesSelecionados.size() == 0)
+			aTilesSelecionados.add(t);
+		else if (!removerTileLista(prPos)) {
+			boolean lAdicionado = false;
+			for (int i = 0; i < aTilesSelecionados.size(); i++) {
+				Tile iTile = aTilesSelecionados.get(i);
+				if (prPos < iTile.getaPos()) {
+					lAdicionado = true;
+					aTilesSelecionados.add(i, t);
+					break;
+				}
+			}
+			if (!lAdicionado)
+				aTilesSelecionados.add(t);
 		}
-		if (pontoA == null) {
-			pontoA = t;
-			return true;
-		}else if (pontoB == null) {
-			pontoB = t;
+		return true;
+	}
+	
+	private boolean removerTileLista(int prPos) {
+		int lPosicaoLista = Tile.tileExisteLista(prPos, aTilesSelecionados);
+		if (lPosicaoLista >= 0 && lPosicaoLista < aTilesSelecionados.size()) {
+			aTilesSelecionados.remove(lPosicaoLista);
 			return true;
 		}
 		return false;
 	}
-	
+
 	public Build pegar_construcao_selecionada() {
 		if (index_construcao_selecionada == -1) {
 			return null;

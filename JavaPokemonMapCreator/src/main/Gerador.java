@@ -45,13 +45,13 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	salvarCarregar memoria;
 	
 	public static Rectangle quadrado;
-	private int aPos;
-	private boolean clique_no_mapa;
+	private int aPos, aPosOld, aCliqueMouse;
+	private boolean clique_no_mapa, aTrocouPosicao;
 	public static boolean control, shift;
 	public static Random random;
 	public static Ui ui;
 	public static int sprite_selecionado_index;
-	private int sprite_selecionado_animation_time, solido;
+	private int sprite_selecionado_animation_time, aEstadoTile;
 	
 	public Gerador(){
 		player = new Player(Gerador.TS*5, Gerador.TS*5, 0);
@@ -81,7 +81,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
 		setPreferredSize(new Dimension(WIDTH,HEIGHT));
-		frame = new JFrame("Gerador de mundo JavaPokemon");
+		frame = new JFrame("Gerador de mundo");
 		frame.add(this);
 		frame.setResizable(false);
 		frame.pack();
@@ -111,49 +111,56 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	}
 	
 	public void tick(){
-		if (clique_no_mapa) {
+		if (clique_no_mapa && aTrocouPosicao) {
+			aTrocouPosicao = false;
 			if (!control) {
 				clique_no_mapa = false;
 			}
-			if (Ui.opcao == Ui.opcoes[0]) {
-				if (shift) {
-					if (World.tiles[aPos] != null)
-						World.tiles[aPos].pegarsprites();
-					clique_no_mapa = false;
-				}
-				else {
-					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
-					if (Ui.colocar_parede) {
-						lEscolhido.setSolid(solido);
-						if (Ui.sprite_selecionado.size() > 0) {
-							 lEscolhido.adicionar_sprite_selecionado();
-						}
+			if (aCliqueMouse == 1) {
+				if (Ui.opcao == Ui.opcoes[0]) {
+					if (shift) {
+						if (World.tiles[aPos] != null)
+							World.tiles[aPos].pegarsprites();
+						clique_no_mapa = false;
 					}
-					else if (Ui.colocar_escada) {
-						if (lEscolhido.getZ() < World.HIGH-1) {
-							World.pegar_chao(lEscolhido.getX(), lEscolhido.getY(), lEscolhido.getZ()+1).virar_escada();
+					else {
+						Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
+						if (Ui.colocar_parede) {
+							lEscolhido.setSolid(aEstadoTile);
+							if (Ui.sprite_selecionado.size() > 0) {
+								 lEscolhido.adicionar_sprite_selecionado();
+							}
 						}
-						 
-						if (Ui.modo_escadas < 2 && Ui.sprite_selecionado.size() > 0) {
+						else if (Ui.colocar_escada) {
+							if (lEscolhido.getZ() < World.HIGH-1) {
+								World.pegar_chao(lEscolhido.getX(), lEscolhido.getY(), lEscolhido.getZ()+1).virar_escada();
+							}
+							 
+							if (Ui.modo_escadas < 2 && Ui.sprite_selecionado.size() > 0) {
+								lEscolhido.adicionar_sprite_selecionado();
+							}
+						}else if(Ui.sprite_reajivel){
+							lEscolhido.adicionar_sprite_reajivel();
+						}else {
 							lEscolhido.adicionar_sprite_selecionado();
+								
 						}
-					}else if(Ui.sprite_reajivel){
-						lEscolhido.adicionar_sprite_reajivel();
-					}else {
-						lEscolhido.adicionar_sprite_selecionado();
-							
 					}
+				}else if (Ui.opcao == Ui.opcoes[1]) {
+					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
+					if (Ui.colocar_parede) lEscolhido.mar(aEstadoTile);
+					else if (Ui.sprite_reajivel) lEscolhido.lava(aEstadoTile);
+					else if (Ui.colocar_escada) lEscolhido.vip(aEstadoTile);
+					else lEscolhido.setSpeed_modifier(Gerador.ui.getNew_speed());
+				}else if (Ui.opcao == Ui.opcoes[2]) {
+					World.colocar_construcao(aPos, ui.pegar_construcao_selecionada());
+				}else if (Ui.opcao == Ui.opcoes[3]) {
+					
 				}
-			}else if (Ui.opcao == Ui.opcoes[1]) {
-				Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
-				if (Ui.colocar_parede) lEscolhido.mar(solido);
-				else if (Ui.sprite_reajivel) lEscolhido.lava(solido);
-				else if (Ui.colocar_escada) lEscolhido.vip(solido);
-				else lEscolhido.setSpeed_modifier(Gerador.ui.getNew_speed());
-			}else if (Ui.opcao == Ui.opcoes[2]) {
-				World.colocar_construcao(aPos, ui.pegar_construcao_selecionada());
-			}else if (Ui.opcao == Ui.opcoes[3]) {
-				
+			}else if (aCliqueMouse == 3) {
+				boolean lAdicionar = (Tile.tileExisteLista(aPos, Ui.aTilesSelecionados) >= 0);
+				if ((lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1))
+					ui.selecionarTile(aPos);
 			}
 		}
 		player.tick();
@@ -256,8 +263,6 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			ui.setNew_speed(Integer.parseInt(e.getKeyChar()+""));
 		}
 		
-		if (e.getKeyChar() == 't')
-			System.out.println("a");
 	}
 
 	@Override
@@ -268,6 +273,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		if (e.getKeyCode() == KeyEvent.VK_DOWN) player.down = false;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = false;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT) shift = false;
+		if (e.getKeyCode() == KeyEvent.VK_DELETE) World.deletarSelecionados();
 	}
 
 	@Override
@@ -295,22 +301,23 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			if (!Ui.mostrar || !ui.clicou(e.getX(), e.getY())) {
 				clique_no_mapa = true;
+				aCliqueMouse = 1;
 				if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[0]) && Ui.colocar_parede) {
-					if (lEscolhido == null) solido = 0; 
-					else solido = lEscolhido.getSolid();
+					if (lEscolhido == null) aEstadoTile = 0; 
+					else aEstadoTile = lEscolhido.getSolid();
 					
-					if (solido == 1) solido = 0;
-					else solido = 1;
+					if (aEstadoTile == 1) aEstadoTile = 0;
+					else aEstadoTile = 1;
 					
 				}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1])) {
 					// 2 = água; 3 = lava; 4 = vip
-					if (lEscolhido == null) solido = 0;
-					else solido = lEscolhido.getSolid();
-					if (Ui.colocar_parede && !(solido == 2)) solido = 1;
-					else if (Ui.sprite_reajivel && !(solido == 3)) solido = 1;
-					else if (Ui.colocar_escada && !(solido == 4)) solido = 1;
+					if (lEscolhido == null) aEstadoTile = 0;
+					else aEstadoTile = lEscolhido.getSolid();
+					if (Ui.colocar_parede && !(aEstadoTile == 2)) aEstadoTile = 1;
+					else if (Ui.sprite_reajivel && !(aEstadoTile == 3)) aEstadoTile = 1;
+					else if (Ui.colocar_escada && !(aEstadoTile == 4)) aEstadoTile = 1;
 					else {
-						solido = 0;
+						aEstadoTile = 0;
 					}
 				}
 				return;
@@ -318,7 +325,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		}else if (e.getButton() == MouseEvent.BUTTON2) {
 			int[] teste = World.calcularPosicao(aPos);
 			System.out.println("mx: "+quadrado.x+" my: "+quadrado.y);
-//			System.out.println("cx: "+Camera.x+" cy: "+Camera.y);
+			System.out.println("cx: "+Camera.x+" cy: "+Camera.y);
 			System.out.println("pos: "+aPos);
 			System.out.println("tem tile: "+(lEscolhido != null));
 			System.out.println("tx: "+teste[0]+" ty: "+teste[1] + "\n");
@@ -332,20 +339,26 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			}else if (lEscolhido != null && Ui.sprite_reajivel) {
 				lEscolhido.reajir();
 				return;
-			}else if (ui.addponto(e.getX()+Camera.x, e.getY()+Camera.y)) return;
+			}else {
+				aEstadoTile = Tile.tileExisteLista(aPos, Ui.aTilesSelecionados);
+				clique_no_mapa = true;
+				aCliqueMouse = 3;
+			}
 		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
-		if (arg0.getButton() == MouseEvent.BUTTON1) {
-			clique_no_mapa = false;
-		}
+		clique_no_mapa = false;
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		aPos = World.calcular_pos(e.getX() + Camera.x, e.getY()+Camera.y, player.getZ());
+		if (aPosOld != aPos) {
+			aPosOld = aPos;
+			aTrocouPosicao = true;
+		}
 		quadrado.x = e.getX();
 		quadrado.y = e.getY();
 	}
@@ -353,6 +366,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		aPos = World.calcular_pos(e.getX() + Camera.x, e.getY()+Camera.y, player.getZ());
+		if (aPosOld != aPos) {
+			aPosOld = aPos;
+			aTrocouPosicao = true;
+		}
 		quadrado.x = e.getX();
 		quadrado.y = e.getY();
 	}

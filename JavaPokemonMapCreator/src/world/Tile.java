@@ -10,16 +10,13 @@ import javax.swing.JOptionPane;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import files.salvarCarregar;
 import graficos.Ui;
 import main.Gerador;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Tile {
 	private ArrayList<ArrayList<int[]>> sprites;
-	private int x, y, z, speed_modifier, evento, solid, // solid: 0 = chao normal; 1 = parede; 2 = água; 3 = lava; 4 = vip
+	private int x, y, z, aPos, speed_modifier, evento, solid, // solid: 0 = chao normal; 1 = parede; 2 = água; 3 = lava; 4 = vip
 	stairs_type, stairs_direction; // stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito, 3 = buraco sempre aberto, 4 = Buraco fechado (usar picareta ou cavar para abrí-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
 	private boolean aberto_ou_fechado; // aberto_ou_fechado: usado para paredes; usado em conjunto para ver se esta aberto ou fechado
 	private int[] sprite_fechado, sprite_aberto; // sprites de reações
@@ -39,6 +36,7 @@ public class Tile {
 		for (int i = 0; i < Ui.max_tiles_nivel; i++) {
 			sprites.add(new ArrayList<int[]>());
 		}
+		aPos = World.calcular_pos(x, y, z);
 	}
 	
 	public int getEvento() {
@@ -119,6 +117,14 @@ public class Tile {
 		return z;
 	}
 	
+	public int getaPos() {
+		return aPos;
+	}
+
+	public void setaPos(int aPos) {
+		this.aPos = aPos;
+	}
+
 	public ArrayList<BufferedImage> obterSprite_atual() {
 		ArrayList<BufferedImage> lDesenhoAtual = new ArrayList<BufferedImage>();
 		for (ArrayList<int[]> imagens : sprites) {
@@ -208,7 +214,7 @@ public class Tile {
 	public void adicionar_sprite_selecionado() {
 		
 		if (Ui.sprite_selecionado.size() == 0) {
-			World.tiles[World.calcular_pos(x, y, z)] = null;
+			sprites.get(Ui.tiles_nivel).clear();
 			return;
 		}
 		
@@ -362,6 +368,16 @@ public class Tile {
 	public void vip(int solido) {
 		if (solido == 1) solid = 4;
 		else solid = 0;
+	}
+	
+	public static int tileExisteLista(int prPos, ArrayList<Tile> prTilesList) {
+		for (int i = 0; i < prTilesList.size(); i++) {
+			Tile iTile = prTilesList.get(i);
+			if (prPos == iTile.getaPos()) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 }

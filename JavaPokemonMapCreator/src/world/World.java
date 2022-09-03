@@ -6,11 +6,9 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.stream.Stream;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -28,7 +26,6 @@ public class World {
 	public static int maxDistance = (Gerador.WIDTH/Gerador.TS + 10)/2, posX, posY;
 	public static ArrayList<BufferedImage[]> sprites_do_mundo; // chaos64, chaos128, paredes64, paredes128, itens64, itens128, escadas64, escadas128
 	public static int log_ts;
-	private static int minX, minY, minZ, maxX, maxY, maxZ;
 	
 	public static int tiles_index, tiles_animation_time, max_tiles_animation_time;
 	private static File arquivo;
@@ -292,56 +289,19 @@ public class World {
 		}
 	}
 	
-	private static void ordenar_valores(Tile pontoA, Tile pontoB) {
-		// coloca os valores minimos e máximos
-		if (pontoA.getX() < pontoB.getX()) {
-			minX = pontoA.getX() >> log_ts;
-			maxX = pontoB.getX() >> log_ts; 
-		}else {
-			minX = pontoB.getX() >> log_ts;
-			maxX = pontoA.getX() >> log_ts;
-		}
-		if (pontoA.getY() < pontoB.getY()) {
-			minY = pontoA.getY() >> log_ts;
-			maxY = pontoB.getY() >> log_ts;
-		}else {
-			minY = pontoB.getY() >> log_ts;
-			maxY = pontoA.getY() >> log_ts;
-		}
-		if (pontoA.getZ() < pontoB.getZ()) {
-			minZ = pontoA.getZ();
-			maxZ = pontoB.getZ();
-		}else {
-			minZ = pontoB.getZ();
-			maxZ = pontoA.getZ();
-		}
-	}
-	
-	public static void fill(Tile pontoA, Tile pontoB) {
-		ordenar_valores(pontoA, pontoB);
-		
-		int virar_solido = 0;
-		if (pontoA.getSolid() == pontoB.getSolid()) {
-			if (Ui.colocar_parede || (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1]) && (Ui.colocar_escada || Ui.sprite_reajivel))) {
-				virar_solido = pontoA.getSolid();
-				if (virar_solido > 1) {
-					virar_solido = 0;
-				}else {
-					virar_solido = 1;
-				}
+	public static void fill(ArrayList<Tile> prTilesSelecionados) {
+		int lVirarSolido = 0;
+		if (Ui.colocar_parede || (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1]) && (Ui.colocar_escada || Ui.sprite_reajivel))) {
+			lVirarSolido = prTilesSelecionados.get(0).getSolid();
+			if (lVirarSolido > 1) {
+				lVirarSolido = 0;
+			}else {
+				lVirarSolido = 1;
 			}
 		}
 		
-		// colocar sprites
-		for(int xx = minX; xx <= maxX; xx++)
-			for(int yy = minY; yy <= maxY; yy++)
-				for (int zz = minZ; zz <= maxZ; zz++){
-					if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
-						continue;
-					}
-					aplicarVarios((xx + (yy * WIDTH))*HIGH+zz, virar_solido);
-					
-			}
+		for (Tile iTile : prTilesSelecionados)
+			iTile.varios(lVirarSolido);
 	}
 	
 	public static Tile pegarAdicionarTileMundo(int prPos) {
@@ -354,89 +314,59 @@ public class World {
 		return lRetorno;
 	}
 	
-	public static ArrayList<Tile> pegar_construcao(Tile pontoA, Tile pontoB) {
-		ordenar_valores(pontoA, pontoB);
-		ArrayList<Tile> construcao = new ArrayList<Tile>();
-		
-		for(int xx = minX; xx <= maxX; xx++)
-			for(int yy = minY; yy <= maxY; yy++)
-				for (int zz = minZ; zz <= maxZ; zz++){
-					if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
-						continue;
-					}		
-					construcao.add(tiles[(xx + (yy * WIDTH))*HIGH+zz]);
-			}
-		return construcao;
-	}
-	
 	public static void colocar_construcao(int prPOS, Build prConstrucao) {
 		if (prConstrucao == null) return;
 		int[] lPosXY = calcularPosicao(prPOS);
-		ArrayList<Tile> tiles_construcao = salvarCarregar.carregar_construcao(prConstrucao);
-		int i = 0;
-//		if (lPosXY[0]+prConstrucao.getHorizontal() >= WIDTH || lPosXY[1]+prConstrucao.getVertical() >= HEIGHT) {
-//			JOptionPane.showMessageDialog(null, "A construção não poderá ser feita aqui pois sairá do mapa");
-//			return;
-//		}
-		for (int xx = 0; xx < prConstrucao.getHorizontal(); xx++) 
-			for (int yy = 0; yy < prConstrucao.getVertical(); yy++)
-				for (int zz = 0; zz < prConstrucao.getHigh(); zz++) {
-					int pos= calcular_pos(xx*Gerador.TS+lPosXY[0], yy*Gerador.TS+lPosXY[1], Gerador.player.getZ()+zz);
-					if (pos < tiles.length && pos >= 0) {
-						if (tiles[pos] == null)
-							tiles[pos] = new Tile(xx*Gerador.TS+lPosXY[0], yy*Gerador.TS+lPosXY[1], Gerador.player.getZ()+zz);
-						tiles[pos].setSprites(tiles_construcao.get(i++).getSprites());
-					}
-				}
-		
+		Tile[] tiles_construcao = salvarCarregar.carregar_construcao(prConstrucao);
+		if ((lPosXY[0] >> log_ts)+prConstrucao.getHorizontal() >= WIDTH || (lPosXY[1] >> log_ts)+prConstrucao.getVertical() >= HEIGHT) {
+			JOptionPane.showMessageDialog(null, "A construção não poderá ser feita aqui pois sairá do mapa");
+			return;
+		}
+		int lPos = tiles_construcao[0].getaPos();
+		for (Tile iTile : tiles_construcao) {
+			int iPos = prPOS+iTile.getaPos()-lPos;
+			iTile.setaPos(iPos);
+			
+			iTile.setX(pegarAdicionarTileMundo(iPos).getX());
+			iTile.setY(World.tiles[iPos].getY());
+			iTile.setZ(World.tiles[iPos].getZ());
+			World.tiles[iPos] = iTile;
+		}
 	}
 	
-	public static void empty(Tile pontoA, Tile pontoB) {
-		ordenar_valores(pontoA, pontoB);
-		int aX = pontoA.getX() >> log_ts, aY = pontoA.getY() >> log_ts, aZ = pontoA.getZ(), bX = pontoB.getX() >> log_ts, bY = pontoB.getY() >> log_ts, bZ = pontoB.getZ();
-		
-		int virar_solido = 0;
-		if (Ui.colocar_parede == true && pontoA.getSolid() == pontoB.getSolid()) {
-			virar_solido = pontoA.getSolid();
-		}
-		if (aZ == bZ) {
-			for(int xx = minX; xx <= maxX; xx++)
-				for(int yy = minY; yy <= maxY; yy++){
-						if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT || ((aX != xx && bX != xx) && (aY != yy && bY != yy))) {
-							continue;
-						}
-						aplicarVarios((xx + (yy * WIDTH))*HIGH+aZ, virar_solido);
-				}
-		}else if (aY == bY) {
-			for(int xx = minX; xx <= maxX; xx++)
-				for(int zz = minZ; zz <= maxZ; zz++){
-						if(xx < 0 || xx >= WIDTH || ((aX != xx && bX != xx) && (aZ != zz && bZ != zz))) {
-							continue;
-						}
-						aplicarVarios((xx + (aY * WIDTH))*HIGH+zz, virar_solido);
-				}
-		}else if (aX == bX) {
-			for(int yy = minY; yy <= maxY; yy++)
-				for(int zz = minZ; zz <= maxZ; zz++){
-					if(yy < 0 || yy >= HEIGHT || ((aZ != zz && bZ != zz) && (aY != yy && bY != yy))) {
-						continue;
-					}
-					aplicarVarios((aX + (yy * WIDTH))*HIGH+zz, virar_solido);
-				}
-		}else {
-			for(int xx = minX; xx <= maxX; xx++)
-				for(int yy = minY; yy <= maxY; yy++)
-					for(int zz = minZ; zz <= maxZ; zz++){
-						if((xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT)) {
-							continue;
-						}else if (xx == aX || xx == bX || yy == aY || yy == bY || zz == aZ || zz == bZ) aplicarVarios((xx + (yy * WIDTH))*HIGH+zz, virar_solido);
-					}
-		}
+	public static void deletarSelecionados() {
+		for (Tile iTile : Ui.aTilesSelecionados)
+			World.tiles[iTile.getaPos()] = null;
+		Ui.aTilesSelecionados.clear();
 	}
-
-	private static void aplicarVarios(int prPos, int virar_solido) {
-		pegarAdicionarTileMundo(prPos).varios(virar_solido);
-		
+	
+	public static void empty(ArrayList<Tile> prTilesSelecionados) {
+		ArrayList<Tile> lPonta = new ArrayList<>();
+		ArrayList<Integer> lPosicoes = new ArrayList<>();
+		for (Tile iTile : prTilesSelecionados) { 
+			lPosicoes.add(iTile.getaPos());
+		}
+		for (int i = 0; i < prTilesSelecionados.size(); i++) {
+			int iPos = lPosicoes.get(i);
+			if (!lPosicoes.contains(iPos-HIGH) ||
+					!lPosicoes.contains(iPos+HIGH) ||
+					!lPosicoes.contains(iPos-WIDTH*HIGH) ||
+					!lPosicoes.contains(iPos+WIDTH*HIGH))
+				lPonta.add(prTilesSelecionados.get(i));
+		}
+		if (lPonta.size() == 0)
+			return;
+		int lVirarSolido = 0;
+		if (Ui.colocar_parede || (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1]) && (Ui.colocar_escada || Ui.sprite_reajivel))) {
+			lVirarSolido = prTilesSelecionados.get(0).getSolid();
+			if (lVirarSolido > 1) {
+				lVirarSolido = 0;
+			}else {
+				lVirarSolido = 1;
+			}
+		}
+		for (Tile iTile : lPonta)
+			iTile.varios(lVirarSolido);
 	}
 
 	public static void novo_mundo(File file) {
@@ -449,4 +379,5 @@ public class World {
 		Gerador.fd.setVisible(true);
 		novo_mundo(Gerador.fd.getFiles()[0]);
 	}
+
 }

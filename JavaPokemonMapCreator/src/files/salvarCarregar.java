@@ -9,13 +9,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -59,7 +57,9 @@ public class salvarCarregar {
 	    return retorno;
 	}
 	
-	public static void salvar_construcao(Tile pontoA, Tile pontoB) {
+	public static void salvar_construcao(ArrayList<Tile> prTilesSelecionados) {
+		if (prTilesSelecionados == null || prTilesSelecionados.size() == 0)
+			return;
 		try {
 			String nome = null;
 			File pasta = null;
@@ -76,19 +76,23 @@ public class salvarCarregar {
 					}
 				}
 			} while (nome == null || pasta == null);
-			ArrayList<Tile> contrucao = World.pegar_construcao(pontoA, pontoB);
+			int minX = prTilesSelecionados.get(0).getX(), maxX = prTilesSelecionados.get(0).getX(), minY = prTilesSelecionados.get(0).getY(), maxY = prTilesSelecionados.get(0).getY(), minZ = prTilesSelecionados.get(0).getZ(), maxZ = prTilesSelecionados.get(0).getZ();
+			String lConteudo = toJSON(prTilesSelecionados);
+			for (Tile iTile : prTilesSelecionados) {
+				if (iTile.getX() < minX) minX = iTile.getX();
+				if (iTile.getY() < minY) minY = iTile.getY();
+				if (iTile.getZ() < minZ) minZ = iTile.getZ();
+				if (iTile.getX() > maxX) maxX = iTile.getX();
+				if (iTile.getY() > maxY) maxY = iTile.getY();
+				if (iTile.getZ() > maxZ) maxZ = iTile.getZ();
+			}
+			int horizontal = (maxX >> World.log_ts) - (minX >> World.log_ts), vertical = (maxY >> World.log_ts) - (minY>> World.log_ts), high = maxZ - minZ;
 			
-			int horizontal = (pontoA.getX() >> World.log_ts) - (pontoB.getX() >> World.log_ts), vertical = (pontoA.getY() >> World.log_ts) - (pontoB.getY() >> World.log_ts), high = pontoA.getZ() - pontoB.getZ();
-			if (horizontal < 0) horizontal *= -1; if (vertical < 0) vertical *= -1; if (high < 0) high *= -1; // salvar o tamanho da construção
-			
-			// 9 - 7 = 2, entretanto são as posições 7, 8 e 9, logo o correto seria 3. Logo, se o resoltado for maior que 0, o resultado sempre deve ser somado +1
+			// 9 - 7 = 2, entretanto são as posições 7, 8 e 9, logo o correto seria 3. Logo, se o resultado for maior que 0, o resultado sempre deve ser somado +1
 			horizontal++; vertical++; high++;
 			File file = new File(pasta, name_file_builds);
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-			String lConteudo = horizontal+";"+vertical+";"+high+"\n";
-			for (Tile t : contrucao) {
-				lConteudo += toJSON(t);
-			}
+			lConteudo = horizontal+";"+vertical+";"+high+"\n" + lConteudo;
 			writer.write(lConteudo);
 			writer.flush();
 			writer.close();
@@ -109,19 +113,18 @@ public class salvarCarregar {
 			singleLine = reader.readLine();
 			String[] sla = singleLine.split(";");
 			int WIDTH = Integer.parseInt(sla[0]), HEIGHT = Integer.parseInt(sla[1]), HIGH = Integer.parseInt(sla[2]);
-			tiles = new Tile[WIDTH * HEIGHT * HIGH];
-			for(int xx = 0; xx < WIDTH; xx++)
-				for(int yy = 0; yy < HEIGHT; yy++)
-					for (int zz = 0; zz < HIGH; zz++) {
-						Tile t = (Tile) fromJson(reader.readLine(), Tile.class);
-						t.setX((xx+HIGH)*Gerador.TS);
-						t.setY((yy+HIGH)*Gerador.TS);
-						t.setZ(zz);
-						tiles[(xx + (yy * WIDTH))*HIGH+zz] = t;
-					}
+			ArrayList<String> lLinhas = new ArrayList<>();
+			while((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
+				lLinhas.add(singleLine);
+			}
+			tiles = (Tile[]) salvarCarregar.fromJson(lLinhas.get(0), World.tiles.getClass());
+			int pX = tiles[0].getX(), pY = tiles[0].getY(), pZ = tiles[0].getZ();
 			BufferedImage image = new BufferedImage((WIDTH+HIGH)*Gerador.TS,(HEIGHT+HIGH)*Gerador.TS,BufferedImage.TYPE_INT_RGB);
 			Graphics g = image.getGraphics();
 			for (Tile t : tiles) {
+				t.setX(t.getX()-pX);
+				t.setY(t.getY()-pY);
+				t.setZ(t.getZ()-pZ);
 				t.render(g);
 			}
 			ImageIO.write(image, "png", new File(pasta, name_foto_builds));
@@ -227,19 +230,19 @@ public class salvarCarregar {
 		return null;
 	}
 	
-	public static ArrayList<Tile> carregar_construcao(Build construcao) {
+	
+	public static Tile[] carregar_construcao(Build construcao) {
 		if (construcao == null || construcao.getFile() == null) return null;
-		ArrayList<Tile> retorno = new ArrayList<Tile>();
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(new File(construcao.getFile(), name_file_builds)));
 			reader.readLine(); // pula a linha das dimensões
 			String singleLine;
 			while((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
-				retorno.add( (Tile) fromJson(singleLine, Tile.class));
+				return (Tile[]) salvarCarregar.fromJson(singleLine, World.tiles.getClass());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return retorno;
+		return null;
 	}
 }
