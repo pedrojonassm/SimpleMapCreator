@@ -80,9 +80,7 @@ public class Player {
 	
 	private void colidindo_com_escada() {
 		Tile t = World.pegar_chao(x+Gerador.TS/2, y+Gerador.TS/2, z+1);
-		if (t == null)
-			return;
-		if (t.getStairs_type() != 0 && t.pode_subir_com_colisao()) {
+		if (t!=null && t.getStairs_type() != 0 && t.pode_subir_com_colisao()) {
 			// subir
 			z++;
 			switch (t.getStairs_direction()) {
@@ -99,12 +97,12 @@ public class Player {
 				y=t.getY()-Gerador.quadrado.height;
 				break;
 			}
-			sqm_alvo = World.pegar_chao(x, y, z);
+			sqm_alvo = World.pegarAdicionarTileMundo(World.calcular_pos(x, y, z));
 			x = sqm_alvo.getX(); y = sqm_alvo.getY();
 			return;
 		}
 		t = World.pegar_chao(x+Gerador.TS/2, y+Gerador.TS/2, z);
-		if (t.getStairs_type() != 0 && t.pode_descer_com_colisao()) {
+		if (t!=null && t.getStairs_type() != 0 && t.pode_descer_com_colisao()) {
 			// descer
 			z--;
 			switch (t.getStairs_direction()) {
@@ -159,23 +157,19 @@ public class Player {
 	}
 
 	public void camada(int acao) {
-		int fz;
+		int fz = z;
 		if (acao > 0) {
-			fz = z+1;
-			if (fz >= World.HIGH) {
+			if (++fz >= World.HIGH) {
 				fz = 0;
 			}
-			if (World.isFree(x, y, fz)) {
-				z = fz;
-			}
 		}else if (acao < 0) {
-			fz = z-1;
-			if (fz < 0) {
+			if (--fz < 0) {
 				fz = World.HIGH-1;
 			}
-			if (World.isFree(x, y, fz)) {
-				z = fz;
-			}
+		}
+		Tile lTile = World.pegar_chao(x, y, fz);
+		if (lTile == null || lTile.getSolid() != 1) {
+			z = fz;
 		}
 		
 	}

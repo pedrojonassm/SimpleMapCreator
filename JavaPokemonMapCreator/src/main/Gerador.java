@@ -133,7 +133,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 						}
 						else if (Ui.colocar_escada) {
 							if (lEscolhido.getZ() < World.HIGH-1) {
-								World.pegar_chao(lEscolhido.getX(), lEscolhido.getY(), lEscolhido.getZ()+1).virar_escada();
+								
+								World.pegarAdicionarTileMundo(World.calcular_pos(lEscolhido.getX(), lEscolhido.getY(), lEscolhido.getZ()+1)).virar_escada();
 							}
 							 
 							if (Ui.modo_escadas < 2 && Ui.sprite_selecionado.size() > 0) {
@@ -181,8 +182,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		world.render(g);
 		
 		g.setColor(Color.red);
-		
-		int[] quadradinho_teste = World.calcularPosicao(aPos);
+		int[] quadradinho_teste = World.calcularPosicaoSemAltura(aPos);
 		g.drawRect(quadradinho_teste[0], quadradinho_teste[1], quadrado.width, quadrado.height);
 		if (Ui.sprite_selecionado.size() > 0 && (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar)) {
 			if (++sprite_selecionado_animation_time >= World.max_tiles_animation_time) {
@@ -323,7 +323,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 				return;
 			}
 		}else if (e.getButton() == MouseEvent.BUTTON2) {
-			int[] teste = World.calcularPosicao(aPos);
+			int[] teste = World.calcularPosicaoSemAltura(aPos);
 			System.out.println("mx: "+quadrado.x+" my: "+quadrado.y);
 			System.out.println("cx: "+Camera.x+" cy: "+Camera.y);
 			System.out.println("pos: "+aPos);

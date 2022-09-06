@@ -22,7 +22,6 @@ public class World {
 
 	public static Tile[] tiles;
 	public static int WIDTH,HEIGHT,HIGH;
-	public static final int TILE_SIZE = Gerador.TS;
 	public static int maxDistance = (Gerador.WIDTH/Gerador.TS + 10)/2, posX, posY;
 	public static ArrayList<BufferedImage[]> sprites_do_mundo; // chaos64, chaos128, paredes64, paredes128, itens64, itens128, escadas64, escadas128
 	public static int log_ts;
@@ -32,10 +31,18 @@ public class World {
 	public static boolean ready;
 	
 
-	public static int[] calcularPosicao(int prPos) {
+	public static int[] calcularPosicaoSemAltura(int prPos) {
 		int[] retorno = {0,0};
-		retorno[0] = (int) ((prPos%(WIDTH*HIGH))/HIGH)*TILE_SIZE -(prPos%HIGH)*TILE_SIZE - Camera.x;
-		retorno[1] = (int) (prPos/HEIGHT/HIGH)*TILE_SIZE -(prPos%HIGH)*TILE_SIZE - Camera.y;
+		retorno[0] = (int) ((prPos%(WIDTH*HIGH))/HIGH)*Gerador.TS - Camera.x;
+		retorno[1] = (int) (prPos/HEIGHT/HIGH)*Gerador.TS - Camera.y;
+		return retorno;
+	}
+	
+	public static int[] calcularPosicaoComAltura(int prPos) {
+		int[] retorno = calcularPosicaoSemAltura(prPos);
+		int lSubtract = (prPos%HIGH)*Gerador.TS;
+		retorno[0] -= lSubtract;
+		retorno[1] -= lSubtract;
 		return retorno;
 	}
 	
@@ -50,10 +57,6 @@ public class World {
 				 arquivo = null;
 				 determinar_tamanho();
 				 tiles = new Tile[WIDTH * HEIGHT * HIGH];
-//					for(int xx = 0; xx < WIDTH; xx++)
-//						for(int yy = 0; yy < HEIGHT; yy++)
-//							for (int zz = 0; zz < HIGH; zz++)
-//								tiles[(xx + (yy * WIDTH))*HIGH+zz] = new Tile(xx*Gerador.TS,yy*Gerador.TS, zz);
 			 }else {
 				arquivo = file.getParentFile();
 				carregar(file);
@@ -158,14 +161,14 @@ public class World {
 		int x1 = xnext;
 		int y1 = ynext;
 		
-		int x2 = (xnext+TILE_SIZE);
+		int x2 = (xnext+Gerador.TS);
 		int y2 = ynext;
 		
 		int x3 = xnext;
-		int y3 = (ynext+TILE_SIZE);
+		int y3 = (ynext+Gerador.TS);
 		
-		int x4 = (xnext+TILE_SIZE);
-		int y4 = (ynext+TILE_SIZE);
+		int x4 = (xnext+Gerador.TS);
+		int y4 = (ynext+Gerador.TS);
 		
 		return !((pegar_chao(x1, y1, z) == null || pegar_chao(x1, y1, z).getSolid() == 1) ||
 				(pegar_chao(x2, y2, z) == null || pegar_chao(x2, y2, z).getSolid() == 1) ||
@@ -177,8 +180,8 @@ public class World {
 		Tile[] retorno = new Tile[8];
 		
 		int[]
-				xs = {x-TILE_SIZE, x, x+TILE_SIZE, x-TILE_SIZE, x+TILE_SIZE, x-TILE_SIZE, x, x+TILE_SIZE},
-				ys = {y-TILE_SIZE, y-TILE_SIZE, y-TILE_SIZE, y, y, y+TILE_SIZE, y+TILE_SIZE, y+TILE_SIZE};
+				xs = {x-Gerador.TS, x, x+Gerador.TS, x-Gerador.TS, x+Gerador.TS, x-Gerador.TS, x, x+Gerador.TS},
+				ys = {y-Gerador.TS, y-Gerador.TS, y-Gerador.TS, y, y, y+Gerador.TS, y+Gerador.TS, y+Gerador.TS};
 		for (int i = 0; i < 8; i++) {
 			retorno[i] = pegar_chao(xs[i], ys[i], z);
 		}
@@ -307,7 +310,7 @@ public class World {
 	public static Tile pegarAdicionarTileMundo(int prPos) {
 		Tile lRetorno = World.pegar_chao(prPos);
 		if (lRetorno == null) {
-			int[] lPosXY = World.calcularPosicao(prPos);
+			int[] lPosXY = World.calcularPosicaoSemAltura(prPos);
 			lRetorno = new Tile(lPosXY[0]+Camera.x, lPosXY[1]+Camera.y, Gerador.player.getZ());
 			tiles[prPos] = lRetorno;
 		}
@@ -316,7 +319,7 @@ public class World {
 	
 	public static void colocar_construcao(int prPOS, Build prConstrucao) {
 		if (prConstrucao == null) return;
-		int[] lPosXY = calcularPosicao(prPOS);
+		int[] lPosXY = calcularPosicaoSemAltura(prPOS);
 		Tile[] tiles_construcao = salvarCarregar.carregar_construcao(prConstrucao);
 		if ((lPosXY[0] >> log_ts)+prConstrucao.getHorizontal() >= WIDTH || (lPosXY[1] >> log_ts)+prConstrucao.getVertical() >= HEIGHT) {
 			JOptionPane.showMessageDialog(null, "A construção não poderá ser feita aqui pois sairá do mapa");
