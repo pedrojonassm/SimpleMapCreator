@@ -25,7 +25,7 @@ public class Ui {
 	public static BufferedImage[] setas, sprite_opcoes;
 	public static boolean mostrar, colocar_parede, sprite_reajivel, colocar_escada, substituir;
 	public static Rectangle caixinha_dos_sprites, futuro_local_altura,
-	preencher_tudo, fazer_caixa, limpar_selecao, salvar_construcao, substitui, // preencher coloca em todos os tiles, sem excessão, já a caixa deixa a parte de "dentro" vazia
+	preencher_tudo, fazer_caixa, limpar_selecao, salvar_construcao, substitui,
 	colocar_escadas, direcao_escadas, caixa_das_opcoes, caixa_sprite_reajivel;
 	private Rectangle[] escadas;
 	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível", salva_construcao = "salvar construção";
