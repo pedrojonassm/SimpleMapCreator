@@ -4,11 +4,12 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import main.Gerador;
+import main.interfaces.tickRender;
 import world.Camera;
 import world.Tile;
 import world.World;
 
-public class Player {
+public class Player implements tickRender{
 	private int x, y, z, tile_speed;
 	private int horizontal, vertical, speed;
 	public boolean left, right, up, down, can_surf, can_walk_on_lava, vip;

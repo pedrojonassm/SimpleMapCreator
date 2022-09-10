@@ -18,6 +18,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import graficos.Ui;
+import graficos.telas.TelaConstrucoes;
+import graficos.telas.TelaSprites;
 import main.Gerador;
 import world.Build;
 import world.Tile;
@@ -97,7 +99,7 @@ public class salvarCarregar {
 			writer.flush();
 			writer.close();
 			criar_imagem(pasta);
-			Gerador.ui.adicionar_construcao(new Build(horizontal, vertical, high, pasta));
+			TelaConstrucoes.instance.adicionar_construcao(new Build(horizontal, vertical, high, pasta));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -145,7 +147,7 @@ public class salvarCarregar {
 				String[] size = reader.readLine().split(";");
 				construcoes.add(new Build(Integer.parseInt(size[0]), Integer.parseInt(size[1]), Integer.parseInt(size[2]), pasta));
 			}
-			Gerador.ui.adicionar_construcoes_salvas(construcoes);
+			TelaConstrucoes.instance.adicionar_construcoes_salvas(construcoes);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -164,7 +166,7 @@ public class salvarCarregar {
 				}
 				caminho = caminho.split("/")[caminho.split("/").length-1];
 				caminho = caminho.substring(0, caminho.length()-end_file_book.length());
-				Gerador.ui.adicionar_livro_salvo(caminho, tiles);
+				TelaSprites.instance.adicionar_livro_salvo(caminho, tiles);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -172,8 +174,8 @@ public class salvarCarregar {
 	}
 	
 	public static void salvar_livro(int index) {
-		ArrayList<Tile> tiles = Ui.pegar_livro(index);
-		String nome = Ui.pegar_nome_livro(index+1);
+		ArrayList<Tile> tiles = TelaSprites.pegar_livro(index);
+		String nome = TelaSprites.pegar_nome_livro(index+1);
 		File file = new File(arquivo_books, nome+end_file_book);
 		try {
 			if (!file.exists()) file.createNewFile();

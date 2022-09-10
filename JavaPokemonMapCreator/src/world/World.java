@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import files.salvarCarregar;
 import graficos.Spritesheet;
 import graficos.Ui;
+import graficos.telas.TelaSprites;
 import main.Gerador;
 
 public class World {
@@ -129,7 +130,7 @@ public class World {
 			sprites_do_mundo.add(sprites[i].get_x_sprites(total_de_sprites[i]));
 			max_pagina += total_de_sprites[i];
 		}
-		Gerador.ui.max_pagina_por_total_de_sprites(max_pagina);
+		TelaSprites.instance.max_pagina_por_total_de_sprites(max_pagina);
 	}
 	
 	public static Tile pegar_chao(int pos) {
@@ -294,7 +295,7 @@ public class World {
 	
 	public static void fill(ArrayList<Tile> prTilesSelecionados) {
 		int lVirarSolido = 0;
-		if (Ui.colocar_parede || (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1]) && (Ui.colocar_escada || Ui.sprite_reajivel))) {
+		if (Ui.colocar_parede || (Ui.opcao == 1 && (Ui.colocar_escada || Ui.sprite_reajivel))) {
 			lVirarSolido = prTilesSelecionados.get(0).getSolid();
 			if (lVirarSolido > 1) {
 				lVirarSolido = 0;
@@ -360,7 +361,7 @@ public class World {
 		if (lPonta.size() == 0)
 			return;
 		int lVirarSolido = 0;
-		if (Ui.colocar_parede || (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1]) && (Ui.colocar_escada || Ui.sprite_reajivel))) {
+		if (Ui.colocar_parede || (Ui.opcao == 1 && (Ui.colocar_escada || Ui.sprite_reajivel))) {
 			lVirarSolido = prTilesSelecionados.get(0).getSolid();
 			if (lVirarSolido > 1) {
 				lVirarSolido = 0;

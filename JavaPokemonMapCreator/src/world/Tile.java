@@ -11,6 +11,8 @@ import javax.swing.JOptionPane;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import graficos.Ui;
+import graficos.telas.TelaConfiguracao;
+import graficos.telas.TelaSprites;
 import main.Gerador;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -33,7 +35,7 @@ public class Tile {
 		this.z = z;
 		sprite_fechado = sprite_aberto = null;
 		sprites = new ArrayList<ArrayList<int[]>>();
-		for (int i = 0; i < Ui.max_tiles_nivel; i++) {
+		for (int i = 0; i < TelaSprites.max_tiles_nivel; i++) {
 			sprites.add(new ArrayList<int[]>());
 		}
 		aPos = World.calcular_pos(x, y, z);
@@ -178,7 +180,7 @@ public class Tile {
 			g.setColor(new Color(cor[0], cor[1], cor[2], 50));
 			g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
 		}
-		if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1]) && z == Gerador.player.getZ()) {
+		if (Ui.opcao == 1 && z == Gerador.player.getZ()) {
 			if (solid == 2) {
 				g.setColor(new Color(0, 255, 255, 50));
 				g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
@@ -213,39 +215,39 @@ public class Tile {
 
 	public void adicionar_sprite_selecionado() {
 		
-		if (Ui.sprite_selecionado.size() == 0) {
-			sprites.get(Ui.tiles_nivel).clear();
+		if (TelaSprites.sprite_selecionado.size() == 0) {
+			sprites.get(TelaSprites.tiles_nivel).clear();
 			return;
 		}
 		
 		ArrayList<int[]> novo = new ArrayList<int[]>();
-		if (Ui.array.size() == 0 && sprites.size() < Ui.tiles_nivel && sprites.size() > 0) {
-			sprites.set(Ui.tiles_nivel, null);
+		if (TelaSprites.array.size() == 0 && sprites.size() < TelaSprites.tiles_nivel && sprites.size() > 0) {
+			sprites.set(TelaSprites.tiles_nivel, null);
 			return;
 		}
-		for (int i = 0; i < Ui.sprite_selecionado.size(); i++) {
-			int[] a = {Ui.array.get(i), Ui.lista.get(i)};
+		for (int i = 0; i < TelaSprites.sprite_selecionado.size(); i++) {
+			int[] a = {TelaSprites.array.get(i), TelaSprites.lista.get(i)};
 			novo.add(a);
 		}
-		if (sprites.size() > Ui.tiles_nivel || (sprites.size() > Ui.tiles_nivel && sprites.get(Ui.tiles_nivel) == null))	sprites.set(Ui.tiles_nivel, novo);
+		if (sprites.size() > TelaSprites.tiles_nivel || (sprites.size() > TelaSprites.tiles_nivel && sprites.get(TelaSprites.tiles_nivel) == null))	sprites.set(TelaSprites.tiles_nivel, novo);
 		else sprites.add(novo);
 	}
 	
 	public boolean adicionar_sprite_reajivel() {
-		if (sprite_fechado != null && Ui.sprite_selecionado.size() == 0) {
+		if (sprite_fechado != null && TelaSprites.sprite_selecionado.size() == 0) {
 			sprite_aberto = sprite_fechado = null;
 			return true;
 		}
-		if (Ui.sprite_selecionado.size() != 2)	{
+		if (TelaSprites.sprite_selecionado.size() != 2)	{
 			JOptionPane.showMessageDialog(null, "Necessário ter 2 esprites selecionados, o primeiro representa o fechado, enquanto o segundo aberto");
 			return false;
 		}
 		sprite_fechado = new int[2];
-		sprite_fechado[0] = Ui.array.get(0);
-		sprite_fechado[1] = Ui.lista.get(0);
+		sprite_fechado[0] = TelaSprites.array.get(0);
+		sprite_fechado[1] = TelaSprites.lista.get(0);
 		sprite_aberto = new int[2];
-		sprite_aberto[0] = Ui.array.get(1);
-		sprite_aberto[1] = Ui.lista.get(1);
+		sprite_aberto[0] = TelaSprites.array.get(1);
+		sprite_aberto[1] = TelaSprites.lista.get(1);
 		aberto_ou_fechado = true;
 		return true;
 	}
@@ -253,7 +255,7 @@ public class Tile {
 	public void pegarsprites() {
 		ArrayList<int[]> sprite;
 		if (!Ui.sprite_reajivel) {
-			sprite = (sprites.size() > Ui.tiles_nivel) ? sprites.get(Ui.tiles_nivel) : null;
+			sprite = (sprites.size() > TelaSprites.tiles_nivel) ? sprites.get(TelaSprites.tiles_nivel) : null;
 		}else {
 			sprite = new ArrayList<int[]>();
 			sprite.add(sprite_fechado);
@@ -262,7 +264,7 @@ public class Tile {
 		if (sprite == null || sprite.size() == 0) {
 			return;
 		}
-		Ui.pegar_tile_ja_colocado(sprite);
+		TelaSprites.pegar_tile_ja_colocado(sprite);
 	}
 	
 	public void setX(int x) {
@@ -329,19 +331,19 @@ public class Tile {
 
 	public void varios(int virar_solido) {
 		// Ação realizada no World.fill ou World.empty
-		if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[0])) {
+		if (Ui.opcao == 0) {
 			// Colocar sprites
 			if (Ui.substituir || !tem_sprites()) adicionar_sprite_selecionado();
 			if (Ui.colocar_escada) virar_escada();
 			else setSolid(virar_solido);
-		}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1])) {
+		}else if (Ui.opcao == 1) {
 			if (Ui.colocar_parede) mar(virar_solido);
 			else if (Ui.sprite_reajivel) lava(virar_solido);
 			else if (Ui.colocar_escada) vip(virar_solido);
-			else setSpeed_modifier(Gerador.ui.getNew_speed());
-		}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[2])) {
+			else setSpeed_modifier(TelaConfiguracao.instance.getNew_speed());
+		}else if (Ui.opcao == 2) {
 			
-		}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[3])) {
+		}else if (Ui.opcao == 3) {
 			// criar casa
 		}
 	}

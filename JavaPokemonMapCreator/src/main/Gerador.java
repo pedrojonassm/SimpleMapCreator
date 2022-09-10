@@ -22,6 +22,9 @@ import javax.swing.JFrame;
 import entities.Player;
 import files.salvarCarregar;
 import graficos.*;
+import graficos.telas.TelaConfiguracao;
+import graficos.telas.TelaConstrucoes;
+import graficos.telas.TelaSprites;
 import world.Camera;
 import world.World;
 import world.Tile;
@@ -58,11 +61,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		memoria = new salvarCarregar();
 		quadrado = new Rectangle(Gerador.TS, Gerador.TS);
 		ui = new Ui();
-		control = shift = clique_no_mapa = false;
-		random = new Random();
 		world = new World(null);
 		World.carregar_sprites();
-		ui.atualizar_caixinha();
+		control = shift = clique_no_mapa = false;
+		random = new Random();
 		memoria.carregar_livros();
 		memoria.carregar_construcoes();
 		initFrame();
@@ -117,7 +119,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 				clique_no_mapa = false;
 			}
 			if (aCliqueMouse == 1) {
-				if (Ui.opcao == Ui.opcoes[0]) {
+				if (Ui.opcao == 0) {
 					if (shift) {
 						if (World.tiles[aPos] != null)
 							World.tiles[aPos].pegarsprites();
@@ -127,7 +129,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 						Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
 						if (Ui.colocar_parede) {
 							lEscolhido.setSolid(aEstadoTile);
-							if (Ui.sprite_selecionado.size() > 0) {
+							if (TelaSprites.sprite_selecionado.size() > 0) {
 								 lEscolhido.adicionar_sprite_selecionado();
 							}
 						}
@@ -137,7 +139,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 								World.pegarAdicionarTileMundo(World.calcular_pos(lEscolhido.getX(), lEscolhido.getY(), lEscolhido.getZ()+1)).virar_escada();
 							}
 							 
-							if (Ui.modo_escadas < 2 && Ui.sprite_selecionado.size() > 0) {
+							if (Ui.modo_escadas < 2 && TelaSprites.sprite_selecionado.size() > 0) {
 								lEscolhido.adicionar_sprite_selecionado();
 							}
 						}else if(Ui.sprite_reajivel){
@@ -147,15 +149,15 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 								
 						}
 					}
-				}else if (Ui.opcao == Ui.opcoes[1]) {
+				}else if (Ui.opcao == 1) {
 					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
 					if (Ui.colocar_parede) lEscolhido.mar(aEstadoTile);
 					else if (Ui.sprite_reajivel) lEscolhido.lava(aEstadoTile);
 					else if (Ui.colocar_escada) lEscolhido.vip(aEstadoTile);
-					else lEscolhido.setSpeed_modifier(Gerador.ui.getNew_speed());
-				}else if (Ui.opcao == Ui.opcoes[2]) {
-					World.colocar_construcao(aPos, ui.pegar_construcao_selecionada());
-				}else if (Ui.opcao == Ui.opcoes[3]) {
+					else lEscolhido.setSpeed_modifier(TelaConfiguracao.instance.getNew_speed());
+				}else if (Ui.opcao == 2) {
+					World.colocar_construcao(aPos, TelaConstrucoes.instance.pegar_construcao_selecionada());
+				}else if (Ui.opcao == 3) {
 					
 				}
 			}else if (aCliqueMouse == 3) {
@@ -184,16 +186,16 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		g.setColor(Color.red);
 		int[] quadradinho_teste = World.calcularPosicaoSemAltura(aPos);
 		g.drawRect(quadradinho_teste[0], quadradinho_teste[1], quadrado.width, quadrado.height);
-		if (Ui.sprite_selecionado.size() > 0 && (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar)) {
+		if (TelaSprites.sprite_selecionado.size() > 0 && (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar)) {
 			if (++sprite_selecionado_animation_time >= World.max_tiles_animation_time) {
 				sprite_selecionado_animation_time = 0;
-				if (++sprite_selecionado_index >= Ui.sprite_selecionado.size()) {
+				if (++sprite_selecionado_index >= TelaSprites.sprite_selecionado.size()) {
 					sprite_selecionado_index = 0;
 				}
 			}
-			BufferedImage imagem = World.sprites_do_mundo.get(Ui.array.get(sprite_selecionado_index))[Ui.lista.get(sprite_selecionado_index)];
+			BufferedImage imagem = World.sprites_do_mundo.get(TelaSprites.array.get(sprite_selecionado_index))[TelaSprites.lista.get(sprite_selecionado_index)];
 			if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) {
-				quadradinho_teste[0] -= quadrado.width;
+				quadradinho_teste[0] -= quadrado.width; // TODO Ajustar para imagenbs em qualquer tamanho
 				quadradinho_teste[1] -= quadrado.height;
 			}
 			g.drawImage(imagem, quadradinho_teste[0], quadradinho_teste[1], null);
@@ -250,17 +252,15 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			else if (e.getKeyCode() == KeyEvent.VK_N) World.novo_mundo(null);
 			else if (e.getKeyCode() == KeyEvent.VK_O) World.carregar_mundo();
 		}
-		if (e.getKeyChar() == '+') {
-			ui.selecionar_livro();
-		}else if (e.getKeyChar() == '-') {
-			int k = ui.getNew_speed()*-1;
+		if (e.getKeyChar() == '-') {
+			int k = TelaConfiguracao.instance.getNew_speed()*-1;
 			if (player.getSpeed() + k <= 0) {
 				k = (player.getSpeed()-1)*-1;
 			}
-			ui.setNew_speed(k);
+			TelaConfiguracao.instance.setNew_speed(k);
 		}
 		if (e.getKeyCode() < 58 && e.getKeyCode() > 47) {
-			ui.setNew_speed(Integer.parseInt(e.getKeyChar()+""));
+			TelaConfiguracao.instance.setNew_speed(Integer.parseInt(e.getKeyChar()+""));
 		}
 		
 	}
@@ -302,14 +302,14 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			if (!Ui.mostrar || !ui.clicou(e.getX(), e.getY())) {
 				clique_no_mapa = true;
 				aCliqueMouse = 1;
-				if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[0]) && Ui.colocar_parede) {
+				if (Ui.opcao == 0 && Ui.colocar_parede) {
 					if (lEscolhido == null) aEstadoTile = 0; 
 					else aEstadoTile = lEscolhido.getSolid();
 					
 					if (aEstadoTile == 1) aEstadoTile = 0;
 					else aEstadoTile = 1;
 					
-				}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1])) {
+				}else if (Ui.opcao == 1) {
 					// 2 = água; 3 = lava; 4 = vip
 					if (lEscolhido == null) aEstadoTile = 0;
 					else aEstadoTile = lEscolhido.getSolid();
@@ -332,7 +332,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			return;
 		}else if (e.getButton() == MouseEvent.BUTTON3) {
 			if(ui.cliquedireito(e.getX(), e.getY())) return;
-			else if (Ui.colocar_escada && Ui.opcao == Ui.opcoes[0]) {
+			else if (Ui.colocar_escada && Ui.opcao == 0) {
 				if (lEscolhido != null && lEscolhido.getZ() < World.HIGH) 
 					lEscolhido.desvirar_escada();
 				return;
@@ -378,8 +378,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if (ui.trocar_pagina(e.getX(), e.getY(), e.getWheelRotation())) return;
 		else {
-			if (!control) Ui.trocar_Nivel(e.getWheelRotation());
-			else {
+			if (control) {
 				player.camada(e.getWheelRotation());
 			}
 		}
