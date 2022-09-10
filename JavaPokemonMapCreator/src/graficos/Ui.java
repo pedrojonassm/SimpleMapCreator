@@ -15,9 +15,7 @@ import graficos.telas.TelaConfiguracao;
 import graficos.telas.TelaConstrucoes;
 import graficos.telas.TelaSprites;
 import main.Gerador;
-import world.Build;
 import world.Camera;
-import world.Cidade;
 import world.Tile;
 import world.World;
 
