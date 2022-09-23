@@ -117,6 +117,8 @@ public class Ui {
 		g.setColor(new Color(255, 255, 0, 50));
 		int dx, dy;
 		for (Tile iTile : aTilesSelecionados) {
+			if (iTile == null)
+				continue;
 			dx = iTile.getX() - Camera.x - (iTile.getZ()-Gerador.player.getZ())*Gerador.quadrado.width;
 			dy = iTile.getY() - Camera.y - (iTile.getZ()-Gerador.player.getZ())*Gerador.quadrado.height;
 			if (dx+Gerador.quadrado.width >= 0 && dx < Gerador.WIDTH && dy+Gerador.quadrado.height >= 0 && dy < Gerador.HEIGHT)
@@ -224,7 +226,7 @@ public class Ui {
 	
 	public boolean trocar_pagina(int x, int y, int prRodinha) {
 		if (mostrar) {
-			telas.get(opcao).trocar_pagina(x, y, prRodinha);
+			return telas.get(opcao).trocar_pagina(x, y, prRodinha);
 		}
 		return false;
 	}

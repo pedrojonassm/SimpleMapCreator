@@ -317,51 +317,49 @@ public class TelaSprites implements Tela {
 
 	@Override
 	public boolean trocar_pagina(int x, int y, int prRodinha) {
-		if (Ui.mostrar) {
-			int k = 0;
-			if (prRodinha > 0) k=1;
-			else k=-1;
-			if (Ui.caixinha_dos_sprites.contains(x, y)) {
-				if (Gerador.control) {
-					if (sprite_selecionado.size() != 0) {
-						if (encontrarProximoSpriteSelecionado())
-							atualizar_caixinha();
-						return true;
-					}
-				}
-				pagina.set(livro, pagina.get(livro)+k);
-				if (pagina.get(livro) < 0) {
-					pagina.set(livro, max_pagina.get(livro));
-				}else if (pagina.get(livro) > max_pagina.get(livro)) {
-					pagina.set(livro, 0);
-				}
-				atualizar_caixinha();
-				return true;
-			}else if (caixinha_dos_livros.contains(x, y)) {
-				pagina_livros += k;
-				if (pagina_livros < 0) {
-					pagina_livros = max_pagina_livros;
-				}else if  (pagina_livros > max_pagina_livros) {
-					pagina_livros = 0;
-				}
-				return true;
-			}else {
-				if (!Gerador.control) {
-					trocar_Nivel(prRodinha);
+		int k = 0;
+		if (prRodinha > 0) k=1;
+		else k=-1;
+		if (Ui.caixinha_dos_sprites.contains(x, y)) {
+			if (Gerador.control) {
+				if (sprite_selecionado.size() != 0) {
+					if (encontrarProximoSpriteSelecionado())
+						atualizar_caixinha();
 					return true;
 				}
 			}
-			/* TODO: vai para Configurações
-			else if (direcao_escadas.contains(x, y)) {
-				escadas_direction += k;
-				if (escadas_direction < 0) {
-					escadas_direction = setas.length-1;
-				}else if (escadas_direction >= setas.length) {
-					escadas_direction = 0;
-				}
+			pagina.set(livro, pagina.get(livro)+k);
+			if (pagina.get(livro) < 0) {
+				pagina.set(livro, max_pagina.get(livro));
+			}else if (pagina.get(livro) > max_pagina.get(livro)) {
+				pagina.set(livro, 0);
+			}
+			atualizar_caixinha();
+			return true;
+		}else if (caixinha_dos_livros.contains(x, y)) {
+			pagina_livros += k;
+			if (pagina_livros < 0) {
+				pagina_livros = max_pagina_livros;
+			}else if  (pagina_livros > max_pagina_livros) {
+				pagina_livros = 0;
+			}
+			return true;
+		}else {
+			if (!Gerador.control) {
+				trocar_Nivel(prRodinha);
 				return true;
-			} */
+			}
 		}
+		/* TODO: vai para Configurações
+		else if (direcao_escadas.contains(x, y)) {
+			escadas_direction += k;
+			if (escadas_direction < 0) {
+				escadas_direction = setas.length-1;
+			}else if (escadas_direction >= setas.length) {
+				escadas_direction = 0;
+			}
+			return true;
+		} */
 		return false;
 	}
 	
