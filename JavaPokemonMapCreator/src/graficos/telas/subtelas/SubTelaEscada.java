@@ -64,8 +64,8 @@ public class SubTelaEscada implements Tela {
 			if (modo_escadas == 0)
 				z++;
 			Tile lTile = World.pegarAdicionarTileMundo(x + Camera.x, y+Camera.y, z);
-			lTile.virar_escada();
-			// World.pegarAdicionarTileMundo(World.calcular_pos(x + Camera.x, y+Camera.y, Gerador.player.getZ()+1));
+			if (lTile != null)
+				lTile.virar_escada();
 			return true;
 		}
 		return false;

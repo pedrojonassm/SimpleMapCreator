@@ -128,29 +128,32 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 					}
 					else {
 						Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
-						if (Ui.colocar_parede) {
-							lEscolhido.setSolid(aEstadoTile);
-							if (TelaSprites.sprite_selecionado.size() > 0) {
-								 lEscolhido.adicionar_sprite_selecionado();
+						if (lEscolhido != null) {
+							if (Ui.colocar_parede) {
+								lEscolhido.setSolid(aEstadoTile);
+								if (TelaSprites.sprite_selecionado.size() > 0) {
+									 lEscolhido.adicionar_sprite_selecionado();
+								}
 							}
-						}
-						else if (TelaConfiguracao.instance.getOpcao() == 0 && Ui.opcao == 1) {
-							if (lEscolhido.getZ() < World.HIGH-1) 
-								World.pegarAdicionarTileMundo(World.calcular_pos(lEscolhido.getX(), lEscolhido.getY(), lEscolhido.getZ()+1)).virar_escada();
-							
-						}
-						else if(Ui.sprite_reajivel){
-							lEscolhido.adicionar_sprite_reajivel();
-						}else {
-							lEscolhido.adicionar_sprite_selecionado();
+							else if (TelaConfiguracao.instance.getOpcao() == 0 && Ui.opcao == 1) {
+								if (lEscolhido.getZ() < World.HIGH-1) 
+									World.pegarAdicionarTileMundo(World.calcular_pos(lEscolhido.getX(), lEscolhido.getY(), lEscolhido.getZ()+1)).virar_escada();
 								
+							}
+							else if(Ui.sprite_reajivel){
+								lEscolhido.adicionar_sprite_reajivel();
+							}else {
+								lEscolhido.adicionar_sprite_selecionado();
+							}
 						}
 					}
 				}else if (Ui.opcao == 1) {
 					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
-					if (Ui.colocar_parede) lEscolhido.mar(aEstadoTile);
-					else if (Ui.sprite_reajivel) lEscolhido.lava(aEstadoTile);
-					else lEscolhido.setSpeed_modifier(TelaConfiguracao.instance.getNew_speed());
+					if (lEscolhido != null) {
+						if (Ui.colocar_parede) lEscolhido.mar(aEstadoTile);
+						else if (Ui.sprite_reajivel) lEscolhido.lava(aEstadoTile);
+						else lEscolhido.setSpeed_modifier(TelaConfiguracao.instance.getNew_speed());
+					}
 				}else if (Ui.opcao == 2) {
 					World.colocar_construcao(aPos, TelaConstrucoes.instance.pegar_construcao_selecionada());
 				}else if (Ui.opcao == 3) {

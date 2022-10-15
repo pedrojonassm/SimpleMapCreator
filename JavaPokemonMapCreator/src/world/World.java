@@ -311,7 +311,7 @@ public class World {
 	
 	public static Tile pegarAdicionarTileMundo(int prPos) {
 		Tile lRetorno = World.pegar_chao(prPos);
-		if (lRetorno == null) {
+		if (lRetorno == null && prPos >= 0 && prPos < tiles.length) {
 			int[] lPosXY = World.calcularPosicaoSemAltura(prPos);
 			lRetorno = new Tile(lPosXY[0]+Camera.x, lPosXY[1]+Camera.y, Gerador.player.getZ());
 			tiles[prPos] = lRetorno;
@@ -321,7 +321,7 @@ public class World {
 	public static Tile pegarAdicionarTileMundo(int x, int y, int z) {
 		int lPos = World.calcular_pos(x, y, z);
 		Tile lRetorno = World.pegar_chao(lPos);
-		if (lRetorno == null) {
+		if (lRetorno == null && lPos >= 0 && lPos < tiles.length) {
 			int[] lPosXY = World.calcularPosicaoSemAltura(lPos);
 			lRetorno = new Tile(lPosXY[0]+Camera.x, lPosXY[1]+Camera.y, z);
 			tiles[lPos] = lRetorno;
