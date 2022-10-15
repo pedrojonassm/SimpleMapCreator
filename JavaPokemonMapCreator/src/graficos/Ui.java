@@ -26,7 +26,7 @@ public class Ui {
 	preencher_tudo, fazer_caixa, limpar_selecao, salvar_construcao, substitui,
 	colocar_escadas, direcao_escadas, caixa_das_opcoes, caixa_sprite_reajivel;
 	private Rectangle[] escadas;
-	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível", salva_construcao = "salvar construção";
+	private static final String altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível", salva_construcao = "salvar construção";
 	public static final String[] opcoes = {"colocar sprites", "configurar", "colocar construções", "criar casas/cidades"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
 	public static int opcao;
 	public static ArrayList<Tela> telas;
@@ -116,14 +116,15 @@ public class Ui {
 		
 		g.setColor(new Color(255, 255, 0, 50));
 		int dx, dy;
-		for (Tile iTile : aTilesSelecionados) {
-			if (iTile == null)
-				continue;
-			dx = iTile.getX() - Camera.x - (iTile.getZ()-Gerador.player.getZ())*Gerador.quadrado.width;
-			dy = iTile.getY() - Camera.y - (iTile.getZ()-Gerador.player.getZ())*Gerador.quadrado.height;
-			if (dx+Gerador.quadrado.width >= 0 && dx < Gerador.WIDTH && dy+Gerador.quadrado.height >= 0 && dy < Gerador.HEIGHT)
-				g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
-		}
+		if (opcao <= 1)
+			for (Tile iTile : aTilesSelecionados) {
+				if (iTile == null)
+					continue;
+				dx = iTile.getX() - Camera.x - (iTile.getZ()-Gerador.player.getZ())*Gerador.quadrado.width;
+				dy = iTile.getY() - Camera.y - (iTile.getZ()-Gerador.player.getZ())*Gerador.quadrado.height;
+				if (dx+Gerador.quadrado.width >= 0 && dx < Gerador.WIDTH && dy+Gerador.quadrado.height >= 0 && dy < Gerador.HEIGHT)
+					g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
+			}
 		
 		if (aTilesSelecionados.size() > 0) {
 			g.setColor(Color.green);

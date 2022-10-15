@@ -162,7 +162,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 				}
 			}else if (aCliqueMouse == 3) {
 				boolean lAdicionar = (Tile.tileExisteLista(aPos, Ui.aTilesSelecionados) >= 0);
-				if ((lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1))
+				if ( (Ui.opcao <= 1) && (lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1))
 					ui.selecionarTile(aPos);
 			}
 		}
