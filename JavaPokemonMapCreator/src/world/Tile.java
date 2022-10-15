@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import graficos.Ui;
 import graficos.telas.TelaConfiguracao;
 import graficos.telas.TelaSprites;
+import graficos.telas.subtelas.SubTelaEscada;
 import main.Gerador;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -174,7 +175,7 @@ public class Tile {
 		if (Ui.colocar_parede && solid == 1) {
 			g.setColor(new Color(255, 0, 0, 50));
 			g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
-		}else if (Ui.colocar_escada && stairs_type != 0) {
+		}else if (TelaConfiguracao.instance.getOpcao() == 0 && Ui.opcao == 1 && stairs_type != 0) {
 			int[] cor = {255, 255, 255};
 			if (stairs_type != 4) cor[stairs_type-1] = 0;
 			g.setColor(new Color(cor[0], cor[1], cor[2], 50));
@@ -192,7 +193,7 @@ public class Tile {
 				g.drawRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
 			}
 				
-			if (!(Ui.colocar_escada || Ui.sprite_reajivel || Ui.colocar_parede)) {
+			if (!(Ui.sprite_reajivel || Ui.colocar_parede)) {
 				Font f = g.getFont();
 				g.setFont(new Font(f.getName(), f.getStyle(), 20));
 				g.setColor(Color.white);
@@ -287,15 +288,13 @@ public class Tile {
 	}
 
 	public void virar_escada() {
-		if (solid != 1) {
-			if (Ui.modo_escadas == 3) {
-				if (!adicionar_sprite_reajivel()) return;
-			}else if (Ui.modo_escadas == 2) {
-				adicionar_sprite_selecionado(); // escada de clique direito
-			}
-			stairs_type = Ui.modo_escadas+1;
-			stairs_direction = Ui.escadas_direction;
+		if (SubTelaEscada.instance.modo_escadas == 3) {
+			if (!adicionar_sprite_reajivel()) return;
+		}else if (SubTelaEscada.instance.modo_escadas == 2) {
+			adicionar_sprite_selecionado(); // escada de clique direito
 		}
+		stairs_type = SubTelaEscada.instance.modo_escadas+1;
+		stairs_direction = SubTelaEscada.instance.escadas_direction;
 	}
 
 	public void desvirar_escada() {
@@ -334,12 +333,11 @@ public class Tile {
 		if (Ui.opcao == 0) {
 			// Colocar sprites
 			if (Ui.substituir || !tem_sprites()) adicionar_sprite_selecionado();
-			if (Ui.colocar_escada) virar_escada();
 			else setSolid(virar_solido);
 		}else if (Ui.opcao == 1) {
 			if (Ui.colocar_parede) mar(virar_solido);
 			else if (Ui.sprite_reajivel) lava(virar_solido);
-			else if (Ui.colocar_escada) vip(virar_solido);
+			else if (TelaConfiguracao.instance.getOpcao() == 0) vip(virar_solido);
 			else setSpeed_modifier(TelaConfiguracao.instance.getNew_speed());
 		}else if (Ui.opcao == 2) {
 			

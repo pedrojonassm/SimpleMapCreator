@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import files.salvarCarregar;
 import graficos.Spritesheet;
 import graficos.Ui;
+import graficos.telas.TelaConfiguracao;
 import graficos.telas.TelaSprites;
 import main.Gerador;
 
@@ -295,7 +296,7 @@ public class World {
 	
 	public static void fill(ArrayList<Tile> prTilesSelecionados) {
 		int lVirarSolido = 0;
-		if (Ui.colocar_parede || (Ui.opcao == 1 && (Ui.colocar_escada || Ui.sprite_reajivel))) {
+		if (Ui.colocar_parede || (Ui.opcao == 1 && TelaConfiguracao.instance.getOpcao() == 0)) {
 			lVirarSolido = prTilesSelecionados.get(0).getSolid();
 			if (lVirarSolido > 1) {
 				lVirarSolido = 0;
@@ -314,6 +315,16 @@ public class World {
 			int[] lPosXY = World.calcularPosicaoSemAltura(prPos);
 			lRetorno = new Tile(lPosXY[0]+Camera.x, lPosXY[1]+Camera.y, Gerador.player.getZ());
 			tiles[prPos] = lRetorno;
+		}
+		return lRetorno;
+	}
+	public static Tile pegarAdicionarTileMundo(int x, int y, int z) {
+		int lPos = World.calcular_pos(x, y, z);
+		Tile lRetorno = World.pegar_chao(lPos);
+		if (lRetorno == null) {
+			int[] lPosXY = World.calcularPosicaoSemAltura(lPos);
+			lRetorno = new Tile(lPosXY[0]+Camera.x, lPosXY[1]+Camera.y, z);
+			tiles[lPos] = lRetorno;
 		}
 		return lRetorno;
 	}
@@ -339,8 +350,9 @@ public class World {
 	}
 	
 	public static void deletarSelecionados() {
-		for (Tile iTile : Ui.aTilesSelecionados)
+		for (Tile iTile : Ui.aTilesSelecionados) {
 			World.tiles[iTile.getaPos()] = null;
+		}
 		Ui.aTilesSelecionados.clear();
 	}
 	
@@ -361,7 +373,7 @@ public class World {
 		if (lPonta.size() == 0)
 			return;
 		int lVirarSolido = 0;
-		if (Ui.colocar_parede || (Ui.opcao == 1 && (Ui.colocar_escada || Ui.sprite_reajivel))) {
+		if (Ui.colocar_parede || (TelaConfiguracao.instance.getOpcao() == 0 && Ui.opcao == 1)) {
 			lVirarSolido = prTilesSelecionados.get(0).getSolid();
 			if (lVirarSolido > 1) {
 				lVirarSolido = 0;

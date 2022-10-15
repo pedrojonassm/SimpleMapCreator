@@ -11,13 +11,11 @@ public class TelaConstrucoes implements Tela {
 	
 	private ArrayList<Build> construcoes;
 	private int index_construcao_selecionada = -1;
-	private static int max_construcoes_por_pagina, pagina_construcoes;
+	private static int pagina_construcoes;
 	public static TelaConstrucoes instance;
 	
 	public TelaConstrucoes() {
 		instance = this;
-		
-		max_construcoes_por_pagina = 26;
 		pagina_construcoes = 0;
 	}
 
@@ -29,17 +27,17 @@ public class TelaConstrucoes implements Tela {
 	@Override
 	public void render(Graphics prGraphics) {
 		prGraphics.drawRect(Ui.caixinha_dos_sprites.x+50, Ui.caixinha_dos_sprites.y+10, Ui.caixinha_dos_sprites.width-100, 150);
-		for (int i = pagina_construcoes*max_construcoes_por_pagina; i < max_construcoes_por_pagina*(pagina_construcoes+1) && i < construcoes.size(); i++) {
-			//System.out.println(max_construcoes_por_pagina*(pagina_construcoes+1));
+		for (int i = pagina_construcoes*Ui.maxItensPagina; i < Ui.maxItensPagina*(pagina_construcoes+1) && i < construcoes.size(); i++) {
+			//System.out.println(Ui.maxItensPagina*(pagina_construcoes+1));
 			if (index_construcao_selecionada == i) {
 				prGraphics.setColor(Color.blue);
 				prGraphics.drawImage(construcoes.get(i).getImage(), Ui.caixinha_dos_sprites.x+50, Ui.caixinha_dos_sprites.y+10, Ui.caixinha_dos_sprites.width-100+1, 150+1, null);
 			}else {
 				prGraphics.setColor(Color.red);
 			}
-			prGraphics.drawRect(Ui.caixinha_dos_sprites.x, Ui.caixinha_dos_sprites.y+Ui.caixinha_dos_sprites.height/4+(i%max_construcoes_por_pagina)*20, Ui.caixinha_dos_sprites.width, 20);
+			prGraphics.drawRect(Ui.caixinha_dos_sprites.x, Ui.caixinha_dos_sprites.y+Ui.caixinha_dos_sprites.height/4+(i%Ui.maxItensPagina)*20, Ui.caixinha_dos_sprites.width, 20);
 			prGraphics.setColor(Color.white);
-			prGraphics.drawString(construcoes.get(i).getFile().getName(), Ui.caixinha_dos_sprites.x+20, Ui.caixinha_dos_sprites.y+15+Ui.caixinha_dos_sprites.height/4+(i%max_construcoes_por_pagina)*20);
+			prGraphics.drawString(construcoes.get(i).getFile().getName(), Ui.caixinha_dos_sprites.x+20, Ui.caixinha_dos_sprites.y+15+Ui.caixinha_dos_sprites.height/4+(i%Ui.maxItensPagina)*20);
 		}
 	}
 	

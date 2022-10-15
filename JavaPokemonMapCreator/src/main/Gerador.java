@@ -57,6 +57,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	private int sprite_selecionado_animation_time, aEstadoTile;
 	
 	public Gerador(){
+
 		player = new Player(Gerador.TS*5, Gerador.TS*5, 0);
 		memoria = new salvarCarregar();
 		quadrado = new Rectangle(Gerador.TS, Gerador.TS);
@@ -133,16 +134,12 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 								 lEscolhido.adicionar_sprite_selecionado();
 							}
 						}
-						else if (Ui.colocar_escada) {
-							if (lEscolhido.getZ() < World.HIGH-1) {
-								
+						else if (TelaConfiguracao.instance.getOpcao() == 0 && Ui.opcao == 1) {
+							if (lEscolhido.getZ() < World.HIGH-1) 
 								World.pegarAdicionarTileMundo(World.calcular_pos(lEscolhido.getX(), lEscolhido.getY(), lEscolhido.getZ()+1)).virar_escada();
-							}
-							 
-							if (Ui.modo_escadas < 2 && TelaSprites.sprite_selecionado.size() > 0) {
-								lEscolhido.adicionar_sprite_selecionado();
-							}
-						}else if(Ui.sprite_reajivel){
+							
+						}
+						else if(Ui.sprite_reajivel){
 							lEscolhido.adicionar_sprite_reajivel();
 						}else {
 							lEscolhido.adicionar_sprite_selecionado();
@@ -153,7 +150,6 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
 					if (Ui.colocar_parede) lEscolhido.mar(aEstadoTile);
 					else if (Ui.sprite_reajivel) lEscolhido.lava(aEstadoTile);
-					else if (Ui.colocar_escada) lEscolhido.vip(aEstadoTile);
 					else lEscolhido.setSpeed_modifier(TelaConfiguracao.instance.getNew_speed());
 				}else if (Ui.opcao == 2) {
 					World.colocar_construcao(aPos, TelaConstrucoes.instance.pegar_construcao_selecionada());
@@ -301,6 +297,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			if (!Ui.mostrar || !ui.clicou(e.getX(), e.getY())) {
 				clique_no_mapa = true;
+				aTrocouPosicao = true;
 				aCliqueMouse = 1;
 				if (Ui.opcao == 0 && Ui.colocar_parede) {
 					if (lEscolhido == null) aEstadoTile = 0; 
@@ -309,16 +306,6 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 					if (aEstadoTile == 1) aEstadoTile = 0;
 					else aEstadoTile = 1;
 					
-				}else if (Ui.opcao == 1) {
-					// 2 = água; 3 = lava; 4 = vip
-					if (lEscolhido == null) aEstadoTile = 0;
-					else aEstadoTile = lEscolhido.getSolid();
-					if (Ui.colocar_parede && !(aEstadoTile == 2)) aEstadoTile = 1;
-					else if (Ui.sprite_reajivel && !(aEstadoTile == 3)) aEstadoTile = 1;
-					else if (Ui.colocar_escada && !(aEstadoTile == 4)) aEstadoTile = 1;
-					else {
-						aEstadoTile = 0;
-					}
 				}
 				return;
 			}
@@ -332,11 +319,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			return;
 		}else if (e.getButton() == MouseEvent.BUTTON3) {
 			if(ui.cliquedireito(e.getX(), e.getY())) return;
-			else if (Ui.colocar_escada && Ui.opcao == 0) {
-				if (lEscolhido != null && lEscolhido.getZ() < World.HIGH) 
-					lEscolhido.desvirar_escada();
-				return;
-			}else if (lEscolhido != null && Ui.sprite_reajivel) {
+			else if (lEscolhido != null && Ui.sprite_reajivel) {
 				lEscolhido.reajir();
 				return;
 			}else {

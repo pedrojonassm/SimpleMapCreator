@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
+import graficos.Spritesheet;
 import graficos.Ui;
 import main.Gerador;
 import world.Cidade;

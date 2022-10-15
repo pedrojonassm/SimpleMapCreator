@@ -20,38 +20,30 @@ import world.Tile;
 import world.World;
 
 public class Ui {
-	public static BufferedImage[] setas, sprite_opcoes;
-	public static boolean mostrar, colocar_parede, sprite_reajivel, colocar_escada, substituir;
+	public static boolean mostrar, colocar_parede, sprite_reajivel, substituir;
 	public static Rectangle caixinha_dos_sprites, futuro_local_altura,
 	preencher_tudo, fazer_caixa, limpar_selecao, salvar_construcao, substitui,
-	colocar_escadas, direcao_escadas, caixa_das_opcoes, caixa_sprite_reajivel;
-	private Rectangle[] escadas;
+	caixa_das_opcoes, caixa_sprite_reajivel;
 	private static final String altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível", salva_construcao = "salvar construção";
-	public static final String[] opcoes = {"colocar sprites", "configurar", "colocar construções", "criar casas/cidades"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
-	public static int opcao;
+	public static final String[] opcoes = {"colocar sprites", "configurar", "colocar construções", "criar casas/cidades"};
+	public static int opcao, maxItensPagina;
 	public static ArrayList<Tela> telas;
-	public static int modo_escadas, escadas_direction; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	public static ArrayList<Tile> aTilesSelecionados;
 	private static String a_selecionar;
+	public static BufferedImage[] setas, sprite_opcoes;
 	
 	public Ui() {
 		telas = new ArrayList<>();
 		carregar_sprites();
 		opcao = 0;
-		modo_escadas = 0;
+		maxItensPagina = 26;
 		mostrar = substituir = true;
-		colocar_parede = sprite_reajivel = colocar_escada = false;
+		colocar_parede = sprite_reajivel = false;
 		futuro_local_altura = new Rectangle(Gerador.WIDTH-100, 20, 10, 10);
 		caixa_sprite_reajivel = new Rectangle(futuro_local_altura.x, futuro_local_altura.y+futuro_local_altura.height*2, 10, 10);
-		colocar_escadas = new Rectangle(caixa_sprite_reajivel.x, caixa_sprite_reajivel.y+caixa_sprite_reajivel.height*2, 10, 10);
 		caixa_das_opcoes = new Rectangle(Gerador.WIDTH/2 - (opcoes.length)/2*Gerador.TS, -Gerador.TS, Gerador.TS*opcoes.length, Gerador.TS);
-		escadas = new Rectangle[4];
-		escadas[0] = new Rectangle(colocar_escadas.x, colocar_escadas.y+colocar_escadas.height*2, 10, 10);
-		escadas[1] = new Rectangle(escadas[0].x, escadas[0].y+escadas[0].height*2, 10, 10);
-		escadas[2] = new Rectangle(escadas[1].x, escadas[1].y+escadas[1].height*2, 10, 10);
-		escadas[3] = new Rectangle(escadas[2].x, escadas[2].y+escadas[2].height*2, 10, 10);
+		
 		caixinha_dos_sprites = new Rectangle(0, 8, Gerador.quadrado.width*5, Gerador.quadrado.width*11);
-		direcao_escadas = new Rectangle(colocar_escadas.x+colocar_escadas.width*2, colocar_escadas.y-colocar_escadas.height,32, 32);
 		preencher_tudo = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2, 90, 20);
 		substitui = new Rectangle(preencher_tudo.x+preencher_tudo.width/3, preencher_tudo.y-60, 10, 10);
 		fazer_caixa = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2+preencher_tudo.height, preencher_tudo.width, preencher_tudo.height);
@@ -70,7 +62,6 @@ public class Ui {
 		for (int i = 0; i < setas.length; i++) {
 			setas[i] = spr.getAsset(i);
 		}
-		escadas_direction = 0;
 		
 		spr = new Spritesheet("/opcoes.png", 64);
 		sprite_opcoes = new BufferedImage[spr.getQuadradosX()*spr.getQuadradosY()];
@@ -168,20 +159,6 @@ public class Ui {
 	}
 
 	public boolean clicou(int x, int y) {
-		//*
-		if (futuro_local_altura.contains(x, y)) {
-			colocar_escada = sprite_reajivel = false;
-			colocar_parede = !colocar_parede;
-			return true;
-		}else if(caixa_sprite_reajivel.contains(x, y)){
-			sprite_reajivel = !sprite_reajivel;
-			colocar_escada = colocar_parede = false;
-			return true;
-		}else  if (colocar_escadas.contains(x, y)) {
-			colocar_escada = !colocar_escada;
-			colocar_parede = sprite_reajivel = false;
-			return true;
-		}
 		//*/
 		if (telas.get(opcao).clicou(x, y)) {
 			return true;
@@ -208,13 +185,6 @@ public class Ui {
 			}
 		}
 		
-		for (int i = 0; i < escadas.length; i++) {
-			if (escadas[i].contains(x, y)) {
-				modo_escadas = i;
-				return true;
-			}
-		}
-			
 		return false;
 	}
 

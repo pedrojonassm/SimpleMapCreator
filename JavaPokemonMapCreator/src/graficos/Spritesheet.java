@@ -20,6 +20,7 @@ public class Spritesheet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 	}
 	
 	public BufferedImage getAsset(int x, int y){
