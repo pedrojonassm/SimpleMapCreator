@@ -189,9 +189,12 @@ public class Ui {
 	}
 
 	public boolean cliquedireito(int x, int y) {
-		if (mostrar && caixinha_dos_sprites.contains(x, y)) {
-			return telas.get(opcao).cliquedireito(x, y);
+		if (mostrar) {
+			if (telas.get(opcao).cliquedireito(x, y))
+				return true;
+			return caixinha_dos_sprites.contains(x, y);
 		}
+		
 		return false;
 	}
 	

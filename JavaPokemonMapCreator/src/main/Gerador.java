@@ -328,6 +328,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			}else {
 				aEstadoTile = Tile.tileExisteLista(aPos, Ui.aTilesSelecionados);
 				clique_no_mapa = true;
+				aTrocouPosicao = true;
 				aCliqueMouse = 3;
 			}
 		}

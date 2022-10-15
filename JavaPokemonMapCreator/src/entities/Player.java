@@ -79,49 +79,45 @@ public class Player implements tickRender{
 		return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 	}
 	
-	private void colidindo_com_escada() {
-		Tile t = World.pegar_chao(x+Gerador.TS/2, y+Gerador.TS/2, z+1);
-		if (t!=null && t.getStairs_type() != 0 && t.pode_subir_com_colisao()) {
-			// subir
+	public void utilizarEscada(Tile prEscada) {
+		if (prEscada == null)
+			return;
+		if (prEscada.getZ() < z)
+			z--;
+		else if (prEscada.getZ() == z)
 			z++;
-			switch (t.getStairs_direction()) {
-			case 0:
-				x=t.getX()+Gerador.quadrado.width;
-				break;
-			case 1:
-				y=t.getY()+Gerador.quadrado.height;
-				break;
-			case 2:
-				x=t.getX()-Gerador.quadrado.width;
-				break;
-			case 3:
-				y=t.getY()-Gerador.quadrado.height;
-				break;
-			}
-			sqm_alvo = World.pegarAdicionarTileMundo(World.calcular_pos(x, y, z));
-			x = sqm_alvo.getX(); y = sqm_alvo.getY();
+		
+		switch (prEscada.getStairs_direction()) {
+		case 0:
+			x=prEscada.getX()+Gerador.quadrado.width;
+			y=prEscada.getY();
+			break;
+		case 1:
+			y=prEscada.getY()+Gerador.quadrado.height;
+			x=prEscada.getX();
+			break;
+		case 2:
+			x=prEscada.getX()-Gerador.quadrado.width;
+			y=prEscada.getY();
+			break;
+		case 3:
+			y=prEscada.getY()-Gerador.quadrado.height;
+			x=prEscada.getX();
+			break;
+		}
+		sqm_alvo = World.pegarAdicionarTileMundo(World.calcular_pos(x, y, z));
+		x = sqm_alvo.getX(); y = sqm_alvo.getY();
+	}
+	
+	private void colidindo_com_escada() {
+		Tile t = World.pegar_chao(x+Gerador.TS/2, y+Gerador.TS/2, z);
+		if (t!=null && t.getStairs_type() != 0 && t.pode_subir_com_colisao()) {
+			utilizarEscada(t);
 			return;
 		}
-		t = World.pegar_chao(x+Gerador.TS/2, y+Gerador.TS/2, z);
+		t = World.pegar_chao(x+Gerador.TS/2, y+Gerador.TS/2, z-1);
 		if (t!=null && t.getStairs_type() != 0 && t.pode_descer_com_colisao()) {
-			// descer
-			z--;
-			switch (t.getStairs_direction()) {
-			case 0:
-				x=t.getX()-Gerador.quadrado.width;
-				break;
-			case 1:
-				y=t.getY()-Gerador.quadrado.height;
-				break;
-			case 2:
-				x=t.getX()+Gerador.quadrado.width;
-				break;
-			case 3:
-				y=t.getY()+Gerador.quadrado.height;
-				break;
-			}
-			sqm_alvo = World.pegar_chao(x, y, z);
-			x = sqm_alvo.getX(); y = sqm_alvo.getY();
+			utilizarEscada(t);
 			return;
 		}
 		

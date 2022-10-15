@@ -60,12 +60,14 @@ public class SubTelaEscada implements Tela {
 		if (direcao_escadas.contains(x, y)) 
 			return true;
 		if (modo_escadas >= 0 && modo_escadas < opcoes.length) {
-			int z = Gerador.player.getZ();
-			if (modo_escadas == 0)
-				z++;
-			Tile lTile = World.pegarAdicionarTileMundo(x + Camera.x, y+Camera.y, z);
-			if (lTile != null)
-				lTile.virar_escada();
+			Tile lTile = World.pegarAdicionarTileMundo(x + Camera.x, y+Camera.y, Gerador.player.getZ());
+			if (lTile != null) {
+				if (lTile.getStairs_type() == 0)
+					lTile.virar_escada();
+				else
+					lTile.desvirar_escada();
+			}
+			
 			return true;
 		}
 		return false;
@@ -74,6 +76,11 @@ public class SubTelaEscada implements Tela {
 	@Override
 	public boolean cliquedireito(int x, int y) {
 		// TODO verificar se é uma escada e se for fazê-lo deixar de ser uma escada
+		Tile lTile = World.pegarAdicionarTileMundo(x + Camera.x, y+Camera.y, Gerador.player.getZ());
+		if (lTile != null && lTile.getStairs_type() > 0) {
+			Gerador.player.utilizarEscada(lTile);
+			return true;
+		}
 		return false;
 	}
 
@@ -85,7 +92,6 @@ public class SubTelaEscada implements Tela {
 				escadas_direction = Ui.setas.length-1;
 			else if (escadas_direction >= Ui.setas.length)
 				escadas_direction = 0;
-			System.out.println(escadas_direction);
 			return true;
 		}
 		return false;
