@@ -1,4 +1,4 @@
-package graficos.telas;
+package graficos.telas.sprites;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 
 import files.salvarCarregar;
 import graficos.Ui;
+import graficos.telas.Tela;
 import main.Gerador;
 import main.interfaces.tickRender;
 import world.Tile;
@@ -350,16 +351,6 @@ public class TelaSprites implements Tela {
 				return true;
 			}
 		}
-		/* TODO: vai para Configurações
-		else if (direcao_escadas.contains(x, y)) {
-			escadas_direction += k;
-			if (escadas_direction < 0) {
-				escadas_direction = setas.length-1;
-			}else if (escadas_direction >= setas.length) {
-				escadas_direction = 0;
-			}
-			return true;
-		} */
 		return false;
 	}
 	

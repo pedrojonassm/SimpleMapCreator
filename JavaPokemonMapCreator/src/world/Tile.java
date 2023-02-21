@@ -5,15 +5,17 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import graficos.Ui;
-import graficos.telas.TelaConfiguracao;
-import graficos.telas.TelaSprites;
-import graficos.telas.subtelas.SubTelaEscada;
+import graficos.telas.configuracao.TelaConfiguracao;
+import graficos.telas.configuracao.subtelas.SubTelaEscada;
+import graficos.telas.configuracao.subtelas.SubTelaVelocidade;
+import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -24,6 +26,7 @@ public class Tile {
 	private boolean aberto_ou_fechado; // aberto_ou_fechado: usado para paredes; usado em conjunto para ver se esta aberto ou fechado
 	private int[] sprite_fechado, sprite_aberto; // sprites de reações
 	private String house_door;
+	private HashMap<String, Object> aPropriedades;
 	
 	public Tile(@JsonProperty("x") int x, @JsonProperty("y") int y, @JsonProperty("z") int z){
 		house_door = ""; // ao criar a casa essa variável recebe o nome da casa, isso serve para que ela possa ser comprada
@@ -287,6 +290,18 @@ public class Tile {
 		return false;
 	}
 
+	public void addPropriedades(HashMap<String, Object> prPropriedades) {
+		aPropriedades.putAll(prPropriedades);
+	}
+
+	public void addPropriedade(String prKey, Object prValor) {
+		aPropriedades.put(prKey, prValor);
+	}
+	
+	public void removePropriedade(String prKey) {
+		aPropriedades.remove(prKey);
+	}
+
 	public void virar_escada() {
 		if (SubTelaEscada.instance.modo_escadas == 3) {
 			if (!adicionar_sprite_reajivel()) return;
@@ -338,7 +353,7 @@ public class Tile {
 			if (Ui.colocar_parede) mar(virar_solido);
 			else if (Ui.sprite_reajivel) lava(virar_solido);
 			else if (TelaConfiguracao.instance.getOpcao() == 0) vip(virar_solido);
-			else setSpeed_modifier(TelaConfiguracao.instance.getNew_speed());
+			else setSpeed_modifier(SubTelaVelocidade.instance.getNew_speed());
 		}else if (Ui.opcao == 2) {
 			
 		}else if (Ui.opcao == 3) {

@@ -16,8 +16,8 @@ import javax.swing.JTextField;
 import files.salvarCarregar;
 import graficos.Spritesheet;
 import graficos.Ui;
-import graficos.telas.TelaConfiguracao;
-import graficos.telas.TelaSprites;
+import graficos.telas.configuracao.TelaConfiguracao;
+import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
 
 public class World {

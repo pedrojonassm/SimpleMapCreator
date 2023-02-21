@@ -1,10 +1,11 @@
-package graficos.telas;
+package graficos.telas.construcao;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
 import graficos.Ui;
+import graficos.telas.Tela;
 import world.Build;
 
 public class TelaConstrucoes implements Tela {

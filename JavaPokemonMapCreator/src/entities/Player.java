@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import main.Gerador;
+import main.Uteis;
 import main.interfaces.tickRender;
 import world.Camera;
 import world.Tile;
@@ -12,7 +13,7 @@ import world.World;
 public class Player implements tickRender{
 	private int x, y, z, tile_speed;
 	private int horizontal, vertical, speed;
-	public boolean left, right, up, down, can_surf, can_walk_on_lava, vip;
+	public boolean left, right, up, down, can_surf, can_walk_on_lava, vip, aBloqueadoMovimentacao;
 	Tile sqm_alvo = null;
 	
 	public Player(int x, int y, int z) {
@@ -20,7 +21,7 @@ public class Player implements tickRender{
 		this.y = y;
 		this.horizontal = z;
 		tile_speed = 0;
-		left = right = up = down = can_surf = can_walk_on_lava = vip = false;
+		left = right = up = down = can_surf = can_walk_on_lava = aBloqueadoMovimentacao = vip = false;
 		
 		speed = 4;
 		horizontal = vertical = 0;
@@ -32,12 +33,14 @@ public class Player implements tickRender{
 	
 	public void tick() {
 		
-		if (sqm_alvo != null && distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed+tile_speed) {
+		if (sqm_alvo != null && Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= Uteis.modulo(speed+tile_speed)) {
 			x = sqm_alvo.getX();
 			y = sqm_alvo.getY();
 			int k = sqm_alvo.getSpeed_modifier();
-			if (k > 0) tile_speed = k*3;
+			if (k > 0) tile_speed = k;
 			else tile_speed = k;
+			if (tile_speed == speed)
+				tile_speed--;
 			sqm_alvo = null;
 		}else if (sqm_alvo == null) {
 			boolean mover = false;
@@ -59,11 +62,26 @@ public class Player implements tickRender{
 			}else {
 				vertical = 0;
 			}
-			if (mover) {
+			if (mover && !aBloqueadoMovimentacao) {
+				boolean lInverteuVelocidade = false;
+				if ( speed+tile_speed < 0 ) {
+					lInverteuVelocidade = true;
+					horizontal *= -1;
+					vertical *= -1;
+				}
+				
 				sqm_alvo = World.pegar_chao(World.calcular_pos(x+Gerador.TS*horizontal, y+Gerador.TS*vertical, z));
 				
-				if (sqm_alvo != null && (sqm_alvo.getSolid() == 1 || (sqm_alvo.getSolid() == 2 && !can_surf) || (sqm_alvo.getSolid() == 3 && !can_walk_on_lava) || (sqm_alvo.getSolid() == 4 && !vip))) {
-					sqm_alvo = null;
+				if (sqm_alvo != null) {
+					if (sqm_alvo.getSolid() == 1 || (sqm_alvo.getSolid() == 2 && !can_surf) || (sqm_alvo.getSolid() == 3 && !can_walk_on_lava) || (sqm_alvo.getSolid() == 4 && !vip)) 
+						sqm_alvo = null;
+					
+					if (Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed*3+Uteis.modulo(tile_speed)*2)
+						aBloqueadoMovimentacao = true;
+				}
+				if (lInverteuVelocidade) {
+					horizontal *= -1;
+					vertical *= -1;
 				}
 			}
 		}else {
@@ -73,10 +91,6 @@ public class Player implements tickRender{
 		
 		colidindo_com_escada();
 		updateCamera();
-	}
-	
-	public static double distancia(int x1, int x2, int y1, int y2) {
-		return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 	}
 	
 	public void utilizarEscada(Tile prEscada) {
@@ -145,12 +159,17 @@ public class Player implements tickRender{
 	public void updateCamera() {
 		Camera.x = Camera.clamp(x - Gerador.WIDTH/2, 0, World.WIDTH*Gerador.TS - Gerador.WIDTH);
 		Camera.y = Camera.clamp(y - Gerador.HEIGHT/2, 0, World.HEIGHT*Gerador.TS - Gerador.HEIGHT);
+		
 	}
 	
 	public void render(Graphics g) {
 		g.setColor(Color.WHITE);
 		g.fillRect(x - Camera.x, y - Camera.y, Gerador.quadrado.width, Gerador.quadrado.height);
 		
+		if (sqm_alvo != null) {
+			g.setColor(new Color(175,75, 50, 50));
+			g.fillRect(sqm_alvo.getX() - Camera.x-(sqm_alvo.getZ()-Gerador.player.getZ())*Gerador.quadrado.width, sqm_alvo.getY() - Camera.y-(sqm_alvo.getZ()-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
+		}
 	}
 
 	public void camada(int acao) {

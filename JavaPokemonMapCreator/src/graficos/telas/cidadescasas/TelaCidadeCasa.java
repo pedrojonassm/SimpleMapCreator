@@ -1,4 +1,4 @@
-package graficos.telas;
+package graficos.telas.cidadescasas;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import graficos.Spritesheet;
 import graficos.Ui;
+import graficos.telas.Tela;
 import main.Gerador;
 import world.Cidade;
 

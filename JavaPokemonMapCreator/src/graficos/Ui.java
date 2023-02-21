@@ -10,10 +10,10 @@ import javax.swing.JOptionPane;
 
 import files.salvarCarregar;
 import graficos.telas.Tela;
-import graficos.telas.TelaCidadeCasa;
-import graficos.telas.TelaConfiguracao;
-import graficos.telas.TelaConstrucoes;
-import graficos.telas.TelaSprites;
+import graficos.telas.cidadescasas.TelaCidadeCasa;
+import graficos.telas.configuracao.TelaConfiguracao;
+import graficos.telas.construcao.TelaConstrucoes;
+import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
 import world.Camera;
 import world.Tile;

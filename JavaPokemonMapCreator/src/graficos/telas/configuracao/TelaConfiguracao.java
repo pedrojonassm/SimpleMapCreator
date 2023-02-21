@@ -1,4 +1,4 @@
-package graficos.telas;
+package graficos.telas.configuracao;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -6,12 +6,12 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import graficos.Ui;
-import graficos.telas.subtelas.SubTelaEscada;
+import graficos.telas.Tela;
+import graficos.telas.configuracao.subtelas.SubTelaEscada;
+import graficos.telas.configuracao.subtelas.SubTelaVelocidade;
 import main.Gerador;
 
 public class TelaConfiguracao implements Tela {
-	
-	private int new_speed;
 	
 	private String[] opcoesName = {"Setar escadas", "Setar velocidade", "Setar/Adicionar propriedades"};
 	private Rectangle[] opcoes;
@@ -31,10 +31,10 @@ public class TelaConfiguracao implements Tela {
 		colocar_escadas = new Rectangle(Ui.futuro_local_altura.x, Ui.futuro_local_altura.y+Ui.futuro_local_altura.height*2, 10, 10);
 		subTelas = new ArrayList<>();
 		subTelas.add(new SubTelaEscada());
+		subTelas.add(new SubTelaVelocidade());
 		// Propriedades (paredes, lava, água, vip, etc.); ao exportar devera gerar um enum com base no tile.solido
 		// Escadas (direcao também)
 		// velocidade
-		new_speed = 0;
 	}
 
 	@Override
@@ -57,14 +57,6 @@ public class TelaConfiguracao implements Tela {
 			subTelas.get(opcao).render(prGraphics);
 		}
 		
-		int w1;
-		String s = "";
-		s = "speed: "+new_speed;
-		w1 = prGraphics.getFontMetrics().stringWidth(s);
-		prGraphics.drawString(s, Ui.caixinha_dos_sprites.x+Ui.caixinha_dos_sprites.width/2-w1/2, Ui.caixinha_dos_sprites.y+40);
-		s = "pressione \"-\" para torná-la negativo";
-		w1 = prGraphics.getFontMetrics().stringWidth(s);
-		prGraphics.drawString(s, Ui.caixinha_dos_sprites.x+Ui.caixinha_dos_sprites.width/2-w1/2, Ui.caixinha_dos_sprites.y+60);
 	}
 
 	@Override
@@ -99,13 +91,6 @@ public class TelaConfiguracao implements Tela {
 			return subTelas.get(opcao).trocar_pagina(x, y, prRodinha);
 		}
 		return false;
-	}
-	
-	public void setNew_speed(int new_speed) {
-		this.new_speed = new_speed;
-	}
-	public int getNew_speed() {
-		return new_speed;
 	}
 	
 	public int getOpcao() {

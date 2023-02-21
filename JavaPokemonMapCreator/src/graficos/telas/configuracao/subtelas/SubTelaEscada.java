@@ -1,4 +1,4 @@
-package graficos.telas.subtelas;
+package graficos.telas.configuracao.subtelas;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -75,7 +75,6 @@ public class SubTelaEscada implements Tela {
 
 	@Override
 	public boolean cliquedireito(int x, int y) {
-		// TODO verificar se é uma escada e se for fazê-lo deixar de ser uma escada
 		Tile lTile = World.pegarAdicionarTileMundo(x + Camera.x, y+Camera.y, Gerador.player.getZ());
 		if (lTile != null && lTile.getStairs_type() > 0) {
 			Gerador.player.utilizarEscada(lTile);

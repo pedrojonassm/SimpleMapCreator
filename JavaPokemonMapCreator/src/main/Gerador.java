@@ -22,9 +22,10 @@ import javax.swing.JFrame;
 import entities.Player;
 import files.salvarCarregar;
 import graficos.*;
-import graficos.telas.TelaConfiguracao;
-import graficos.telas.TelaConstrucoes;
-import graficos.telas.TelaSprites;
+import graficos.telas.configuracao.TelaConfiguracao;
+import graficos.telas.configuracao.subtelas.SubTelaVelocidade;
+import graficos.telas.construcao.TelaConstrucoes;
+import graficos.telas.sprites.TelaSprites;
 import world.Camera;
 import world.World;
 import world.Tile;
@@ -152,7 +153,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 					if (lEscolhido != null) {
 						if (Ui.colocar_parede) lEscolhido.mar(aEstadoTile);
 						else if (Ui.sprite_reajivel) lEscolhido.lava(aEstadoTile);
-						else lEscolhido.setSpeed_modifier(TelaConfiguracao.instance.getNew_speed());
+						else lEscolhido.setSpeed_modifier(SubTelaVelocidade.instance.getNew_speed());
 					}
 				}else if (Ui.opcao == 2) {
 					World.colocar_construcao(aPos, TelaConstrucoes.instance.pegar_construcao_selecionada());
@@ -194,8 +195,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			}
 			BufferedImage imagem = World.sprites_do_mundo.get(TelaSprites.array.get(sprite_selecionado_index))[TelaSprites.lista.get(sprite_selecionado_index)];
 			if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) {
-				quadradinho_teste[0] -= quadrado.width; // TODO Ajustar para imagenbs em qualquer tamanho
-				quadradinho_teste[1] -= quadrado.height;
+				quadradinho_teste[0] -= quadrado.width * ((imagem.getWidth()/quadrado.width)-1); // TODO Ajustar para imagenbs em qualquer tamanho
+				quadradinho_teste[1] -= quadrado.height * ((imagem.getWidth()/quadrado.height)-1); // TODO testar
 			}
 			g.drawImage(imagem, quadradinho_teste[0], quadradinho_teste[1], null);
 		}
@@ -239,10 +240,26 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) player.right = true;
-		else if (e.getKeyCode() == KeyEvent.VK_LEFT) player.left = true;
-		if (e.getKeyCode() == KeyEvent.VK_UP) player.up = true;
-		else if (e.getKeyCode() == KeyEvent.VK_DOWN) player.down = true;
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			if (!player.right)
+				player.aBloqueadoMovimentacao = false;
+			player.right = true;
+		}
+		else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+			if (!player.left)
+				player.aBloqueadoMovimentacao = false;
+			player.left = true;
+		}
+		if (e.getKeyCode() == KeyEvent.VK_UP) {
+			if (!player.up)
+				player.aBloqueadoMovimentacao = false;
+			player.up = true;
+		}
+		else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+			if (!player.down)
+				player.aBloqueadoMovimentacao = false;
+			player.down = true;
+		}
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = true;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT) shift = true;
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) Ui.mostrar = !Ui.mostrar;
@@ -252,14 +269,14 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			else if (e.getKeyCode() == KeyEvent.VK_O) World.carregar_mundo();
 		}
 		if (e.getKeyChar() == '-') {
-			int k = TelaConfiguracao.instance.getNew_speed()*-1;
+			int k = SubTelaVelocidade.instance.getNew_speed()*-1;
 			if (player.getSpeed() + k <= 0) {
 				k = (player.getSpeed()-1)*-1;
 			}
-			TelaConfiguracao.instance.setNew_speed(k);
+			SubTelaVelocidade.instance.setNew_speed(k);
 		}
 		if (e.getKeyCode() < 58 && e.getKeyCode() > 47) {
-			TelaConfiguracao.instance.setNew_speed(Integer.parseInt(e.getKeyChar()+""));
+			SubTelaVelocidade.instance.setNew_speed(Integer.parseInt(e.getKeyChar()+""));
 		}
 		
 	}

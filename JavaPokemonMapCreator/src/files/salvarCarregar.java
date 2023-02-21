@@ -18,8 +18,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import graficos.Ui;
-import graficos.telas.TelaConstrucoes;
-import graficos.telas.TelaSprites;
+import graficos.telas.construcao.TelaConstrucoes;
+import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
 import world.Build;
 import world.Tile;
