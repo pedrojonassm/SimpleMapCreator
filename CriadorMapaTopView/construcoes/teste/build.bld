@@ -1,0 +1,2 @@
+4;3;1
+[{"x":448,"y":256,"z":0,"sprites":[[[0,0]],[],[],[]],"aPos":609,"speed_modifier":0,"evento":0,"solid":0,"stairs_type":0,"stairs_direction":0,"aberto_ou_fechado":true,"sprite_fechado":null,"sprite_aberto":null,"house_door":""},{"x":640,"y":384,"z":0,"sprites":[[[0,0]],[],[],[]],"aPos":910,"speed_modifier":0,"evento":0,"solid":0,"stairs_type":0,"stairs_direction":0,"aberto_ou_fechado":true,"sprite_fechado":null,"sprite_aberto":null,"house_door":""}]
