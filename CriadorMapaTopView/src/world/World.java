@@ -96,10 +96,12 @@ public class World {
 		};
 
 		int option = JOptionPane.showConfirmDialog(null, message, "Tamanho do mundo", JOptionPane.OK_CANCEL_OPTION);
-		if (option == JOptionPane.OK_OPTION && !width.getText().isBlank() && !height.getText().isBlank() && !high.getText().isBlank()) {
-		    WIDTH = Integer.parseInt(width.getText());
-		    HEIGHT = Integer.parseInt(height.getText());
-		    HIGH = Integer.parseInt(high.getText());
+		if (option == JOptionPane.OK_OPTION) {
+			if (!width.getText().isBlank() && !height.getText().isBlank() && !high.getText().isBlank()) {
+			    WIDTH = Integer.parseInt(width.getText());
+			    HEIGHT = Integer.parseInt(height.getText());
+			    HIGH = Integer.parseInt(high.getText());
+			}
 		    
 		    if (WIDTH <= 20 || HEIGHT <= 20 || HIGH <= 0) {
 		    	JOptionPane.showMessageDialog(null, "alguns dados não foram inseridos ou foram inseridos incorretamente;\n Inserindo valores padrão");
