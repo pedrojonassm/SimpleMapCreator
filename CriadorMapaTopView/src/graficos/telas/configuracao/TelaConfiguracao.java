@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import graficos.Ui;
 import graficos.telas.Tela;
 import graficos.telas.configuracao.subtelas.SubTelaEscada;
+import graficos.telas.configuracao.subtelas.SubTelaPropriedade;
 import graficos.telas.configuracao.subtelas.SubTelaVelocidade;
 import main.Gerador;
 
@@ -16,7 +17,7 @@ public class TelaConfiguracao implements Tela {
 	private String[] opcoesName = {"Setar escadas", "Setar velocidade", "Setar/Adicionar propriedades"};
 	private Rectangle[] opcoes;
 	private int opcao;
-	private Rectangle voltar, colocar_escadas;
+	private Rectangle voltar;
 	private ArrayList<Tela> subTelas;	
 	public static TelaConfiguracao instance;
 	
@@ -28,13 +29,10 @@ public class TelaConfiguracao implements Tela {
 			opcoes[i] = new Rectangle(Ui.caixinha_dos_sprites.x, Ui.caixinha_dos_sprites.y+Ui.caixinha_dos_sprites.height/4+(i%Ui.maxItensPagina)*20, Ui.caixinha_dos_sprites.width, 20);
 		}
 		voltar = new Rectangle(Ui.caixinha_dos_sprites.width-Gerador.TS*4/6, Ui.caixinha_dos_sprites.y + Gerador.TS/4, Gerador.TS/2, Gerador.TS/2);
-		colocar_escadas = new Rectangle(Ui.futuro_local_altura.x, Ui.futuro_local_altura.y+Ui.futuro_local_altura.height*2, 10, 10);
 		subTelas = new ArrayList<>();
 		subTelas.add(new SubTelaEscada());
 		subTelas.add(new SubTelaVelocidade());
-		// Propriedades (paredes, lava, água, vip, etc.); ao exportar devera gerar um enum com base no tile.solido
-		// Escadas (direcao também)
-		// velocidade
+		subTelas.add(new SubTelaPropriedade());
 	}
 
 	@Override
