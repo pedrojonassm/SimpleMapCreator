@@ -30,7 +30,7 @@ public class World {
 	
 	public static int tiles_index, tiles_animation_time, max_tiles_animation_time;
 	private static File arquivo;
-	public static boolean ready;
+	public static boolean ready, ok;
 	
 
 	public static int[] calcularPosicaoSemAltura(int prPos) {
@@ -105,9 +105,9 @@ public class World {
 		    	JOptionPane.showMessageDialog(null, "alguns dados não foram inseridos ou foram inseridos incorretamente;\n Inserindo valores padrão");
 		    	valores_padrao();
 		    }
-		    
+		    ok = true;
 		} else {
-			valores_padrao();
+			ok = false;
 		}
 	}
 	

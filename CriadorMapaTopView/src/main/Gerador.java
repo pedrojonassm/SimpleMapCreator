@@ -64,18 +64,20 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		quadrado = new Rectangle(Gerador.TS, Gerador.TS);
 		ui = new Ui();
 		world = new World(null);
-		World.carregar_sprites();
-		control = shift = clique_no_mapa = false;
-		random = new Random();
-		memoria.carregar_livros();
-		memoria.carregar_construcoes();
-		initFrame();
-		fd = new FileDialog(Gerador.frame, "Choose a file", FileDialog.LOAD);
-		fd.setDirectory("C:\\");
-		fd.setFile("*.world"); 
-		
-		image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
-		sprite_selecionado_index = sprite_selecionado_animation_time = 0;
+		if (world.ok) {
+			World.carregar_sprites();
+			control = shift = clique_no_mapa = false;
+			random = new Random();
+			memoria.carregar_livros();
+			memoria.carregar_construcoes();
+			initFrame();
+			fd = new FileDialog(Gerador.frame, "Choose a file", FileDialog.LOAD);
+			fd.setDirectory("C:\\");
+			fd.setFile("*.world"); 
+			
+			image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
+			sprite_selecionado_index = sprite_selecionado_animation_time = 0;
+		}
 		
 	}
 	
@@ -111,7 +113,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	
 	public static void main(String args[]){
 		Gerador gerador = new Gerador();
-		gerador.start();
+		if (world.ok)
+			gerador.start();
 	}
 	
 	public void tick(){
