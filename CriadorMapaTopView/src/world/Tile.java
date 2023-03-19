@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,7 +18,6 @@ import graficos.telas.configuracao.subtelas.SubTelaEscada;
 import graficos.telas.configuracao.subtelas.SubTelaVelocidade;
 import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Tile {
 	private ArrayList<ArrayList<int[]>> sprites;
@@ -291,14 +291,26 @@ public class Tile {
 	}
 
 	public void addPropriedades(HashMap<String, Object> prPropriedades) {
+		if (aPropriedades == null)
+			aPropriedades = new HashMap<>();
 		aPropriedades.putAll(prPropriedades);
 	}
 
 	public void addPropriedade(String prKey, Object prValor) {
+		if (aPropriedades == null)
+			aPropriedades = new HashMap<>();
 		aPropriedades.put(prKey, prValor);
 	}
 	
+	public Object getPropriedade(String prKey) {
+		if (aPropriedades == null)
+			return null;
+		return aPropriedades.get(prKey);
+	}
+	
 	public void removePropriedade(String prKey) {
+		if (aPropriedades == null)
+			return;
 		aPropriedades.remove(prKey);
 	}
 
@@ -385,6 +397,14 @@ public class Tile {
 		else solid = 0;
 	}
 	
+	public HashMap<String, Object> getaPropriedades() {
+		return aPropriedades;
+	}
+
+	public void setaPropriedades(HashMap<String, Object> aPropriedades) {
+		this.aPropriedades = aPropriedades;
+	}
+
 	public static int tileExisteLista(int prPos, ArrayList<Tile> prTilesList) {
 		for (int i = 0; i < prTilesList.size(); i++) {
 			Tile iTile = prTilesList.get(i);

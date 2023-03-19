@@ -387,6 +387,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		else {
 			if (control) {
 				player.camada(e.getWheelRotation());
+				aPos = World.calcular_pos(e.getX() + Camera.x, e.getY()+Camera.y, player.getZ());
 			}
 		}
 	}
