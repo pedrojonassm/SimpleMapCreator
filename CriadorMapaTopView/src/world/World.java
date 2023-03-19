@@ -339,10 +339,18 @@ public class World {
 			JOptionPane.showMessageDialog(null, "A construção não poderá ser feita aqui pois sairá do mapa");
 			return;
 		}
-		int lPos = tiles_construcao[0].getaPos();
+		Tile lTileInicial = pegarAdicionarTileMundo(prPOS);
 		for (Tile iTile : tiles_construcao) {
-			int iPos = prPOS+iTile.getaPos()-lPos;
+			if (iTile.getPropriedade("CRIADORMAPATOPVIEW_POSICAO_RELATIVA") == null)
+				continue;
+			
+			@SuppressWarnings("unchecked")
+			ArrayList<Integer> posicaoRelativa = (ArrayList<Integer>) iTile.getPropriedade("CRIADORMAPATOPVIEW_POSICAO_RELATIVA");
+			
+			int iPos = World.calcular_pos(lTileInicial.getX()+(posicaoRelativa.get(0) << World.log_ts), lTileInicial.getY() + (posicaoRelativa.get(1) << World.log_ts), lTileInicial.getZ() + posicaoRelativa.get(2));
 			iTile.setaPos(iPos);
+			
+			iTile.removePropriedade("CRIADORMAPATOPVIEW_POSICAO_RELATIVA");
 			
 			iTile.setX(pegarAdicionarTileMundo(iPos).getX());
 			iTile.setY(World.tiles[iPos].getY());

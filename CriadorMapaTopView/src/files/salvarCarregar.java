@@ -79,7 +79,7 @@ public class salvarCarregar {
 				}
 			} while (nome == null || pasta == null);
 			int minX = prTilesSelecionados.get(0).getX(), maxX = prTilesSelecionados.get(0).getX(), minY = prTilesSelecionados.get(0).getY(), maxY = prTilesSelecionados.get(0).getY(), minZ = prTilesSelecionados.get(0).getZ(), maxZ = prTilesSelecionados.get(0).getZ();
-			String lConteudo = toJSON(prTilesSelecionados);
+			ArrayList<Tile> lTilesSelecionados = new ArrayList<>();
 			for (Tile iTile : prTilesSelecionados) {
 				if (iTile.getX() < minX) minX = iTile.getX();
 				if (iTile.getY() < minY) minY = iTile.getY();
@@ -87,7 +87,17 @@ public class salvarCarregar {
 				if (iTile.getX() > maxX) maxX = iTile.getX();
 				if (iTile.getY() > maxY) maxY = iTile.getY();
 				if (iTile.getZ() > maxZ) maxZ = iTile.getZ();
+				lTilesSelecionados.add((Tile) fromJson(toJSON(iTile), iTile.getClass()));
 			}
+			int[] posicaoRelativa = new int[3];
+			for (Tile iTile : lTilesSelecionados) {
+				posicaoRelativa[0] = (iTile.getX() >> World.log_ts) - (minX >> World.log_ts);
+				posicaoRelativa[1] = (iTile.getY() >> World.log_ts) - (minY >> World.log_ts);
+				posicaoRelativa[2] = iTile.getZ() - minZ;
+				System.out.println(posicaoRelativa[0]+" , "+posicaoRelativa[1]+" , "+posicaoRelativa[2]);
+				iTile.addPropriedade("CRIADORMAPATOPVIEW_POSICAO_RELATIVA", posicaoRelativa.clone());
+			}
+			String lConteudo = toJSON(lTilesSelecionados);
 			int horizontal = (maxX >> World.log_ts) - (minX >> World.log_ts), vertical = (maxY >> World.log_ts) - (minY>> World.log_ts), high = maxZ - minZ;
 			
 			// 9 - 7 = 2, entretanto são as posições 7, 8 e 9, logo o correto seria 3. Logo, se o resultado for maior que 0, o resultado sempre deve ser somado +1
