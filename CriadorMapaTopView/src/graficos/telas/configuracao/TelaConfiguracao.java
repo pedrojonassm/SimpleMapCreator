@@ -13,22 +13,25 @@ import graficos.telas.configuracao.subtelas.SubTelaVelocidade;
 import main.Gerador;
 
 public class TelaConfiguracao implements Tela {
-	
-	private String[] opcoesName = {"Setar escadas", "Setar velocidade", "Setar/Adicionar propriedades"};
+
+	private String[] opcoesName = { "Setar escadas", "Setar velocidade", "Setar/Adicionar propriedades" };
 	private Rectangle[] opcoes;
 	private int opcao;
 	private Rectangle voltar;
-	private ArrayList<Tela> subTelas;	
+	private ArrayList<Tela> subTelas;
 	public static TelaConfiguracao instance;
-	
+
 	public TelaConfiguracao() {
 		instance = this;
 		opcao = -1;
 		opcoes = new Rectangle[opcoesName.length];
 		for (int i = 0; i < opcoesName.length; i++) {
-			opcoes[i] = new Rectangle(Ui.caixinha_dos_sprites.x, Ui.caixinha_dos_sprites.y+Ui.caixinha_dos_sprites.height/4+(i%Ui.maxItensPagina)*20, Ui.caixinha_dos_sprites.width, 20);
+			opcoes[i] = new Rectangle(Ui.caixinha_dos_sprites.x,
+					Ui.caixinha_dos_sprites.y + Ui.caixinha_dos_sprites.height / 4 + (i % Ui.maxItensPagina) * 20,
+					Ui.caixinha_dos_sprites.width, 20);
 		}
-		voltar = new Rectangle(Ui.caixinha_dos_sprites.width-Gerador.TS*4/6, Ui.caixinha_dos_sprites.y + Gerador.TS/4, Gerador.TS/2, Gerador.TS/2);
+		voltar = new Rectangle(Ui.caixinha_dos_sprites.width - Gerador.TS * 4 / 6,
+				Ui.caixinha_dos_sprites.y + Gerador.TS / 4, Gerador.TS / 2, Gerador.TS / 2);
 		subTelas = new ArrayList<>();
 		subTelas.add(new SubTelaEscada());
 		subTelas.add(new SubTelaVelocidade());
@@ -37,7 +40,7 @@ public class TelaConfiguracao implements Tela {
 
 	@Override
 	public void tick() {
-		
+
 	}
 
 	@Override
@@ -48,13 +51,14 @@ public class TelaConfiguracao implements Tela {
 				prGraphics.setColor(Color.green);
 				prGraphics.drawRect(opcoes[i].x, opcoes[i].y, opcoes[i].width, opcoes[i].height);
 				prGraphics.setColor(Color.white);
-				prGraphics.drawString(opcoesName[i], Ui.caixinha_dos_sprites.x+20, Ui.caixinha_dos_sprites.y+15+Ui.caixinha_dos_sprites.height/4+(i%Ui.maxItensPagina)*20);
+				prGraphics.drawString(opcoesName[i], Ui.caixinha_dos_sprites.x + 20, Ui.caixinha_dos_sprites.y + 15
+						+ Ui.caixinha_dos_sprites.height / 4 + (i % Ui.maxItensPagina) * 20);
 			}
-		}else {
-			prGraphics.drawImage(Ui.setas[2], voltar.x, voltar.y, voltar.width, voltar.height, null);
+		} else {
 			subTelas.get(opcao).render(prGraphics);
+			prGraphics.drawImage(Ui.setas[2], voltar.x, voltar.y, voltar.width, voltar.height, null);
 		}
-		
+
 	}
 
 	@Override
@@ -66,11 +70,11 @@ public class TelaConfiguracao implements Tela {
 					return true;
 				}
 			}
-		}else if (voltar.contains(x, y)) {
+		} else if (voltar.contains(x, y)) {
 			opcao = -1;
 			return true;
-		}else {
-			return subTelas.get(opcao).clicou(x, y); 
+		} else {
+			return subTelas.get(opcao).clicou(x, y);
 		}
 		return false;
 	}
@@ -90,7 +94,7 @@ public class TelaConfiguracao implements Tela {
 		}
 		return false;
 	}
-	
+
 	public int getOpcao() {
 		return opcao;
 	}

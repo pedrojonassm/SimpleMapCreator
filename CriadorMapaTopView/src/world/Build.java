@@ -12,6 +12,7 @@ public class Build {
 	int horizontal, vertical, high;
 	File pasta;
 	BufferedImage image;
+
 	public Build(int h, int v, int hi, File f) {
 		horizontal = h;
 		vertical = v;
@@ -24,20 +25,23 @@ public class Build {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public BufferedImage getImage() {
 		return image;
 	}
-	
+
 	public File getFile() {
 		return pasta;
 	}
+
 	public int getHorizontal() {
 		return horizontal;
 	}
+
 	public int getVertical() {
 		return vertical;
 	}
+
 	public int getHigh() {
 		return high;
 	}
