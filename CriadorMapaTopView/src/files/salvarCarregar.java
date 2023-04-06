@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import graficos.ConjuntoSprites;
 import graficos.telas.construcao.TelaConstrucoes;
 import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
@@ -186,13 +187,13 @@ public class salvarCarregar {
 			for (String caminho : arquivos) {
 				reader = new BufferedReader(new FileReader(new File(caminho)));
 				String singleLine = null;
-				ArrayList<Tile> tiles = new ArrayList<Tile>();
+				ArrayList<ConjuntoSprites> lCoConjuntoSprites = new ArrayList<ConjuntoSprites>();
 				while ((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
-					tiles.add((Tile) fromJson(singleLine, Tile.class));
+					lCoConjuntoSprites.add((ConjuntoSprites) fromJson(singleLine, ConjuntoSprites.class));
 				}
 				caminho = caminho.split("/")[caminho.split("/").length - 1];
 				caminho = caminho.substring(0, caminho.length() - end_file_book.length());
-				TelaSprites.instance.adicionar_livro_salvo(caminho, tiles);
+				TelaSprites.instance.adicionar_livro_salvo(caminho, lCoConjuntoSprites);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -200,7 +201,7 @@ public class salvarCarregar {
 	}
 
 	public static void salvar_livro(int index) {
-		ArrayList<Tile> tiles = TelaSprites.pegar_livro(index);
+		ArrayList<ConjuntoSprites> lConjunto = TelaSprites.pegar_livro(index);
 		String nome = TelaSprites.pegar_nome_livro(index + 1);
 		File file = new File(arquivo_books, nome + end_file_book);
 		try {
@@ -210,7 +211,7 @@ public class salvarCarregar {
 
 			String lConteudo = "";
 
-			for (Tile t : tiles) {
+			for (ConjuntoSprites t : lConjunto) {
 				lConteudo += toJSON(t);
 			}
 			writer.write(lConteudo);

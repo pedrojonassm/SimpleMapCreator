@@ -9,8 +9,8 @@ import graficos.telas.Tela;
 import main.Gerador;
 
 public class SubTelaPropriedade implements Tela {
-	// Propriedades (paredes, lava, água, vip, etc.); ao exportar devera gerar um
-	// enum com base no tile.solido
+	// Propriedades Com base na proprieddade Escolhhidda, sssera mostrado noss
+	// tiless casso tiverem
 
 	private Rectangle adicionarNovaPropriedade;
 
