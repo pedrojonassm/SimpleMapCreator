@@ -6,50 +6,43 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import javax.swing.JOptionPane;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import graficos.ConjuntoSprites;
 import graficos.Ui;
 import graficos.telas.configuracao.TelaConfiguracao;
 import graficos.telas.configuracao.subtelas.SubTelaEscada;
-import graficos.telas.configuracao.subtelas.SubTelaVelocidade;
 import graficos.telas.sprites.TelaSprites;
+import graficos.telas.sprites.subtelas.SubTelaMultiplosSprites;
 import main.Gerador;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Tile {
-	private ArrayList<ArrayList<int[]>> sprites;
-	private int x, y, z, aPos, speed_modifier, evento, solid, // solid: 0 = chao normal; 1 = parede; 2 = água; 3 = lava;
-																// 4 = vip
-			stairs_type, stairs_direction; // stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique
-											// direito, 3 = buraco sempre aberto, 4 = Buraco fechado (usar picareta ou
-											// cavar para abrí-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 =
-											// cima
-	private boolean aberto_ou_fechado; // aberto_ou_fechado: usado para paredes; usado em conjunto para ver se esta
-										// aberto ou fechado
-	private int[] sprite_fechado, sprite_aberto; // sprites de reações
+	List<ConjuntoSprites> aCoConjuntoSprites;
+	private int x, y, z, aPos, speed_modifier, evento, solid, stairs_type, stairs_direction, posicao_Conjunto;
+	// stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito, 3
+	// = buraco sempre aberto, 4 = Buraco fechado (usar picareta ou
+	// cavar para abrí-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
+	// solid: 0 = chao normal; 1 = parede; 2 = água; 3 = lava; 4 = vip
+
 	private String house_door;
 	private HashMap<String, Object> aPropriedades;
 
 	public Tile(@JsonProperty("x") int x, @JsonProperty("y") int y, @JsonProperty("z") int z) {
-		house_door = ""; // ao criar a casa essa variável recebe o nome da casa, isso serve para que ela
-							// possa ser comprada
-		evento = solid = 0; // quando o player interage com um tile, ocorre um evento, o evento é um int
-							// enviado para o servidor junto com o tile para ocorrer algo
-		aberto_ou_fechado = true;
+		house_door = "";
+		// ao criar a casa essa variável recebe o nome da casa, isso serve para que ela
+		// possa ser comprada
+		posicao_Conjunto = evento = solid = 0;
+		// quando o player interage com um tile, ocorre um evento, o evento é um int
+		// enviado para o servidor junto com o tile para ocorrer algo
 		stairs_type = 0;
 		stairs_direction = 0;
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		sprite_fechado = sprite_aberto = null;
-		sprites = new ArrayList<ArrayList<int[]>>();
-		for (int i = 0; i < TelaSprites.max_tiles_nivel; i++) {
-			sprites.add(new ArrayList<int[]>());
-		}
+		aCoConjuntoSprites = new ArrayList<>();
+		aCoConjuntoSprites.add(new ConjuntoSprites());
 		aPos = World.calcular_pos(x, y, z);
 	}
 
@@ -59,30 +52,6 @@ public class Tile {
 
 	public void setEvento(int evento) {
 		this.evento = evento;
-	}
-
-	public boolean isAberto_ou_fechado() {
-		return aberto_ou_fechado;
-	}
-
-	public void setAberto_ou_fechado(boolean aberto_ou_fechado) {
-		this.aberto_ou_fechado = aberto_ou_fechado;
-	}
-
-	public int[] getSprite_fechado() {
-		return sprite_fechado;
-	}
-
-	public void setSprite_fechado(int[] sprite_fechado) {
-		this.sprite_fechado = sprite_fechado;
-	}
-
-	public int[] getSprite_aberto() {
-		return sprite_aberto;
-	}
-
-	public void setSprite_aberto(int[] sprite_aberto) {
-		this.sprite_aberto = sprite_aberto;
 	}
 
 	public String getHouse_door() {
@@ -144,51 +113,30 @@ public class Tile {
 	}
 
 	public ArrayList<BufferedImage> obterSprite_atual() {
-		ArrayList<BufferedImage> lDesenhoAtual = new ArrayList<BufferedImage>();
-		for (ArrayList<int[]> imagens : sprites) {
-			if (imagens != null && imagens.size() > 0) {
-				int[] sprite = imagens.get(World.tiles_index % imagens.size());
-				lDesenhoAtual.add(World.sprites_do_mundo.get(sprite[0])[sprite[1]]);
-			}
-		}
-		if (sprite_aberto != null) {
-			lDesenhoAtual.add((aberto_ou_fechado) ? World.sprites_do_mundo.get(sprite_fechado[0])[sprite_fechado[1]]
-					: World.sprites_do_mundo.get(sprite_aberto[0])[sprite_aberto[1]]);
-		}
-		return lDesenhoAtual;
+		return aCoConjuntoSprites.get(posicao_Conjunto).obterSprite_atual();
 	}
 
 	public void render(Graphics g) {
-		for (ArrayList<int[]> imagens : sprites) {
-			if (imagens != null && imagens.size() > 0) {
-				int[] sprite = imagens.get(World.tiles_index % imagens.size());
-				int dx, dy;
-				BufferedImage image = World.sprites_do_mundo.get(sprite[0])[sprite[1]];
-				if (image.getWidth() > Gerador.quadrado.width || image.getHeight() > Gerador.quadrado.height) {
-					dx = x - Camera.x - Gerador.quadrado.width;
-					dy = y - Camera.y - Gerador.quadrado.height;
-				} else {
-					dx = x - Camera.x;
-					dy = y - Camera.y;
+		if (posicao_Conjunto < aCoConjuntoSprites.size() && aCoConjuntoSprites.get(posicao_Conjunto) != null)
+			for (ArrayList<int[]> imagens : aCoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
+				if (imagens != null && imagens.size() > 0) {
+					int[] sprite = imagens.get(World.tiles_index % imagens.size());
+					int dx, dy;
+					BufferedImage image = World.sprites_do_mundo.get(sprite[0])[sprite[1]];
+					if (image.getWidth() > Gerador.quadrado.width || image.getHeight() > Gerador.quadrado.height) {
+						dx = x - Camera.x - Gerador.quadrado.width;
+						dy = y - Camera.y - Gerador.quadrado.height;
+					} else {
+						dx = x - Camera.x;
+						dy = y - Camera.y;
+					}
+					dx -= (z - Gerador.player.getZ()) * Gerador.quadrado.width;
+					dy -= (z - Gerador.player.getZ()) * Gerador.quadrado.height;
+					g.drawImage(image, dx, dy, null);
 				}
-				dx -= (z - Gerador.player.getZ()) * Gerador.quadrado.width;
-				dy -= (z - Gerador.player.getZ()) * Gerador.quadrado.height;
-				g.drawImage(image, dx, dy, null);
 			}
-		}
-		if (sprite_aberto != null) {
-			BufferedImage image;
-			int dx = x - Camera.x - (z - Gerador.player.getZ()) * Gerador.quadrado.width,
-					dy = y - Camera.y - (z - Gerador.player.getZ()) * Gerador.quadrado.height;
-			if (aberto_ou_fechado) {
-				image = World.sprites_do_mundo.get(sprite_fechado[0])[sprite_fechado[1]];
-			} else {
-				image = World.sprites_do_mundo.get(sprite_aberto[0])[sprite_aberto[1]];
-			}
-			g.drawImage(image, dx, dy, null);
-		}
 
-		if (Ui.colocar_parede && solid == 1) {
+		if (/* Ui.colocar_parede && */ solid == 1) {
 			g.setColor(new Color(255, 0, 0, 50));
 			g.fillRect(x - Camera.x - (z - Gerador.player.getZ()) * Gerador.quadrado.width,
 					y - Camera.y - (z - Gerador.player.getZ()) * Gerador.quadrado.height, Gerador.TS, Gerador.TS);
@@ -215,13 +163,15 @@ public class Tile {
 						y - Camera.y - (z - Gerador.player.getZ()) * Gerador.quadrado.height, Gerador.TS, Gerador.TS);
 			}
 
-			if (!(Ui.sprite_reajivel || Ui.colocar_parede)) {
-				Font f = g.getFont();
-				g.setFont(new Font(f.getName(), f.getStyle(), 20));
-				g.setColor(Color.white);
-				g.drawString("" + speed_modifier, x + Gerador.TS / 2 - 2 - Camera.x, y + Gerador.TS / 2 + 7 - Camera.y);
-				g.setFont(f);
-			}
+		}
+
+		// TODO Remover isto quando tiver as propriedades
+		if (!(TelaSprites.instance.getMultiplosSprites()) && Ui.opcao == 1) {
+			Font f = g.getFont();
+			g.setFont(new Font(f.getName(), f.getStyle(), 20));
+			g.setColor(Color.white);
+			g.drawString("" + speed_modifier, x + Gerador.TS / 2 - 2 - Camera.x, y + Gerador.TS / 2 + 7 - Camera.y);
+			g.setFont(f);
 		}
 	}
 
@@ -239,61 +189,22 @@ public class Tile {
 	}
 
 	public void adicionar_sprite_selecionado() {
-
-		if (TelaSprites.sprite_selecionado.size() == 0) {
-			sprites.get(TelaSprites.tiles_nivel).clear();
-			return;
-		}
-
-		ArrayList<int[]> novo = new ArrayList<int[]>();
-		if (TelaSprites.array.size() == 0 && sprites.size() < TelaSprites.tiles_nivel && sprites.size() > 0) {
-			sprites.set(TelaSprites.tiles_nivel, null);
-			return;
-		}
-		for (int i = 0; i < TelaSprites.sprite_selecionado.size(); i++) {
-			int[] a = { TelaSprites.array.get(i), TelaSprites.lista.get(i) };
-			novo.add(a);
-		}
-		if (sprites.size() > TelaSprites.tiles_nivel
-				|| (sprites.size() > TelaSprites.tiles_nivel && sprites.get(TelaSprites.tiles_nivel) == null))
-			sprites.set(TelaSprites.tiles_nivel, novo);
-		else
-			sprites.add(novo);
+		aCoConjuntoSprites.get(posicao_Conjunto).adicionar_sprite_selecionado();
 	}
 
-	public boolean adicionar_sprite_reajivel() {
-		if (sprite_fechado != null && TelaSprites.sprite_selecionado.size() == 0) {
-			sprite_aberto = sprite_fechado = null;
-			return true;
+	@SuppressWarnings("unchecked")
+	public void adicionarMultiplosSprites() {
+		if (SubTelaMultiplosSprites.instance.getConjuntoSprites() != null) {
+			aCoConjuntoSprites = (List<ConjuntoSprites>) SubTelaMultiplosSprites.instance.getConjuntoSprites().clone();
 		}
-		if (TelaSprites.sprite_selecionado.size() != 2) {
-			JOptionPane.showMessageDialog(null,
-					"Necessário ter 2 esprites selecionados, o primeiro representa o fechado, enquanto o segundo aberto");
-			return false;
-		}
-		sprite_fechado = new int[2];
-		sprite_fechado[0] = TelaSprites.array.get(0);
-		sprite_fechado[1] = TelaSprites.lista.get(0);
-		sprite_aberto = new int[2];
-		sprite_aberto[0] = TelaSprites.array.get(1);
-		sprite_aberto[1] = TelaSprites.lista.get(1);
-		aberto_ou_fechado = true;
-		return true;
+
 	}
 
 	public void pegarsprites() {
-		ArrayList<int[]> sprite;
-		if (!Ui.sprite_reajivel) {
-			sprite = (sprites.size() > TelaSprites.tiles_nivel) ? sprites.get(TelaSprites.tiles_nivel) : null;
-		} else {
-			sprite = new ArrayList<int[]>();
-			sprite.add(sprite_fechado);
-			sprite.add(sprite_aberto);
-		}
-		if (sprite == null || sprite.size() == 0) {
-			return;
-		}
-		TelaSprites.pegar_tile_ja_colocado(sprite);
+		if (TelaSprites.instance.getMultiplosSprites())
+			SubTelaMultiplosSprites.instance.addSpritesConjunto(aCoConjuntoSprites);
+		else
+			aCoConjuntoSprites.get(posicao_Conjunto).pegarsprites();
 	}
 
 	public void setX(int x) {
@@ -309,7 +220,7 @@ public class Tile {
 	}
 
 	public boolean existe() {
-		for (ArrayList<int[]> spr : sprites) {
+		for (ArrayList<int[]> spr : aCoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
 			if (spr.size() > 0) {
 				return true;
 			}
@@ -342,12 +253,6 @@ public class Tile {
 	}
 
 	public void virar_escada() {
-		if (SubTelaEscada.instance.modo_escadas == 3) {
-			if (!adicionar_sprite_reajivel())
-				return;
-		} else if (SubTelaEscada.instance.modo_escadas == 2) {
-			adicionar_sprite_selecionado(); // escada de clique direito
-		}
 		stairs_type = SubTelaEscada.instance.modo_escadas + 1;
 		stairs_direction = SubTelaEscada.instance.escadas_direction;
 	}
@@ -357,7 +262,7 @@ public class Tile {
 	}
 
 	public boolean tem_sprites() {
-		for (ArrayList<int[]> spr : sprites) {
+		for (ArrayList<int[]> spr : aCoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
 			if (spr.size() > 0) {
 				return true;
 			}
@@ -366,7 +271,8 @@ public class Tile {
 	}
 
 	public boolean pode_descer_com_colisao() {
-		if (stairs_type == 1 || stairs_type == 2 || stairs_type == 3 || (stairs_type == 4 && !aberto_ou_fechado)) {
+		if (stairs_type == 1 || stairs_type == 2
+				|| stairs_type == 3 /* || (stairs_type == 4 && !aberto_ou_fechado) */) {
 			return true;
 		}
 		return false;
@@ -379,8 +285,14 @@ public class Tile {
 		return false;
 	}
 
-	public void reajir() {
-		aberto_ou_fechado = !aberto_ou_fechado;
+	public boolean trocar_pagina(int x, int y, int prRodinha) {
+		posicao_Conjunto += prRodinha;
+		if (posicao_Conjunto >= aCoConjuntoSprites.size())
+			posicao_Conjunto = 0;
+		else if (posicao_Conjunto < 0)
+			posicao_Conjunto = aCoConjuntoSprites.size() - 1;
+
+		return true;
 	}
 
 	public void varios(int virar_solido) {
@@ -391,28 +303,15 @@ public class Tile {
 				adicionar_sprite_selecionado();
 			else
 				setSolid(virar_solido);
-		} else if (Ui.opcao == 1) {
-			if (Ui.colocar_parede)
-				mar(virar_solido);
-			else if (Ui.sprite_reajivel)
-				lava(virar_solido);
-			else if (TelaConfiguracao.instance.getOpcao() == 0)
-				vip(virar_solido);
-			else
-				setSpeed_modifier(SubTelaVelocidade.instance.getNew_speed());
-		} else if (Ui.opcao == 2) {
-
-		} else if (Ui.opcao == 3) {
-			// criar casa
 		}
 	}
 
 	public void setSprites(ArrayList<ArrayList<int[]>> sprites) {
-		this.sprites = sprites;
+		this.aCoConjuntoSprites.get(posicao_Conjunto).setSprites(sprites);
 	}
 
 	public ArrayList<ArrayList<int[]>> getSprites() {
-		return sprites;
+		return aCoConjuntoSprites.get(posicao_Conjunto).getSprites();
 	}
 
 	public void mar(int solido) {

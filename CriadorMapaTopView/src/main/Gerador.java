@@ -133,37 +133,36 @@ public class Gerador extends Canvas
 					} else {
 						Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
 						if (lEscolhido != null) {
-							if (Ui.colocar_parede) {
-								lEscolhido.setSolid(aEstadoTile);
-								if (TelaSprites.sprite_selecionado.size() > 0) {
-									lEscolhido.adicionar_sprite_selecionado();
-								}
-							} else if (TelaConfiguracao.instance.getOpcao() == 0 && Ui.opcao == 1) {
+							/*
+							 * if (Ui.colocar_parede) { lEscolhido.setSolid(aEstadoTile); if
+							 * (TelaSprites.sprite_selecionado.size() > 0) {
+							 * lEscolhido.adicionar_sprite_selecionado(); } } else
+							 */
+
+							if (TelaConfiguracao.instance.getOpcao() == 0 && Ui.opcao == 1) {
 								if (lEscolhido.getZ() < World.HIGH - 1)
 									World.pegarAdicionarTileMundo(World.calcular_pos(lEscolhido.getX(),
 											lEscolhido.getY(), lEscolhido.getZ() + 1)).virar_escada();
 
-							} else if (Ui.sprite_reajivel) {
-								lEscolhido.adicionar_sprite_reajivel();
+							} else if (TelaSprites.instance.getMultiplosSprites()) {
+								lEscolhido.adicionarMultiplosSprites();
 							} else {
 								lEscolhido.adicionar_sprite_selecionado();
 							}
 						}
 					}
 				} else if (Ui.opcao == 1) {
-					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
-					if (lEscolhido != null) {
-						if (Ui.colocar_parede)
-							lEscolhido.mar(aEstadoTile);
-						else if (Ui.sprite_reajivel)
-							lEscolhido.lava(aEstadoTile);
-						else
+					if (TelaConfiguracao.instance.getOpcao() == 1) {
+						Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
+
+						if (lEscolhido != null) {
 							lEscolhido.setSpeed_modifier(SubTelaVelocidade.instance.getNew_speed());
+						}
 					}
 				} else if (Ui.opcao == 2) {
 					World.colocar_construcao(aPos, TelaConstrucoes.instance.pegar_construcao_selecionada());
 				} else if (Ui.opcao == 3) {
-
+					// Cidades e casas
 				}
 			} else if (aCliqueMouse == 3) {
 				boolean lAdicionar = (Tile.tileExisteLista(aPos, Ui.aTilesSelecionados) >= 0);
@@ -340,18 +339,6 @@ public class Gerador extends Canvas
 				clique_no_mapa = true;
 				aTrocouPosicao = true;
 				aCliqueMouse = 1;
-				if (Ui.opcao == 0 && Ui.colocar_parede) {
-					if (lEscolhido == null)
-						aEstadoTile = 0;
-					else
-						aEstadoTile = lEscolhido.getSolid();
-
-					if (aEstadoTile == 1)
-						aEstadoTile = 0;
-					else
-						aEstadoTile = 1;
-
-				}
 				return;
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON2) {
@@ -365,10 +352,7 @@ public class Gerador extends Canvas
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			if (ui.cliquedireito(e.getX(), e.getY()))
 				return;
-			else if (lEscolhido != null && Ui.sprite_reajivel) {
-				lEscolhido.reajir();
-				return;
-			} else {
+			else {
 				aEstadoTile = Tile.tileExisteLista(aPos, Ui.aTilesSelecionados);
 				clique_no_mapa = true;
 				aTrocouPosicao = true;
@@ -412,6 +396,9 @@ public class Gerador extends Canvas
 			if (control) {
 				player.camada(e.getWheelRotation());
 				aPos = World.calcular_pos(e.getX() + Camera.x, e.getY() + Camera.y, player.getZ());
+			} else if (shift && TelaSprites.instance.getMultiplosSprites()) {
+				Tile lEscolhido = World.tiles[aPos];
+				lEscolhido.trocar_pagina(e.getX(), e.getY(), e.getWheelRotation());
 			}
 		}
 	}

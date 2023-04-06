@@ -9,11 +9,12 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 import files.salvarCarregar;
+import graficos.ConjuntoSprites;
 import graficos.Ui;
 import graficos.telas.Tela;
+import graficos.telas.sprites.subtelas.SubTelaMultiplosSprites;
 import graficos.telas.sprites.subtelas.SubTelaPreSets;
 import main.Gerador;
-import world.Tile;
 import world.World;
 
 public class TelaSprites implements Tela {
@@ -22,17 +23,19 @@ public class TelaSprites implements Tela {
 	private Rectangle caixinha_dos_livros;
 	private static ArrayList<String> nome_livros;
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego,
-			index_tile_pego, salvar_nesse_livro;
+			index_tile_pego, salvar_nesse_livro, aTela;
 	public static int tiles_nivel, max_tiles_nivel;
-	private static ArrayList<ArrayList<Tile>> tiles_salvos;
+	private static ArrayList<ArrayList<ConjuntoSprites>> conjuntos_salvos;
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens
 																		// estáticas World.sprites.get(array)[lista]
-
 	private ArrayList<Tela> subTelas;
+
+	private Rectangle trocarSubTela;
 
 	public static TelaSprites instance;
 
 	public TelaSprites() {
+		aTela = 0;
 		instance = this;
 		livro = 0;
 		pagina_livros = 0;
@@ -51,18 +54,27 @@ public class TelaSprites implements Tela {
 		comecar_por.add(0);
 		atual.add(0);
 		sprites.add(0);
-		tiles_salvos = new ArrayList<ArrayList<Tile>>();
+		conjuntos_salvos = new ArrayList<ArrayList<ConjuntoSprites>>();
 		sprite_selecionado = new ArrayList<Integer>();
 		array = new ArrayList<Integer>();
 		lista = new ArrayList<Integer>();
-
-		caixinha_dos_livros = new Rectangle(Ui.caixinha_dos_sprites.x + Ui.caixinha_dos_sprites.width,
-				Ui.caixinha_dos_sprites.y, Gerador.quadrado.width / 3, Ui.caixinha_dos_sprites.height);
-		max_sprites_por_pagina = (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width)
-				* (Ui.caixinha_dos_sprites.height / Gerador.quadrado.width);
-		max_livros_por_pagina = caixinha_dos_livros.height / caixinha_dos_livros.width;
 		subTelas = new ArrayList<>();
 		subTelas.add(new SubTelaPreSets());
+		subTelas.add(new SubTelaMultiplosSprites());
+		caixinha_dos_livros = new Rectangle(Gerador.quadrado.width / 3, Ui.caixinha_dos_sprites.height);
+		max_sprites_por_pagina = (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width)
+				* (Ui.caixinha_dos_sprites.height / Gerador.quadrado.width);
+		trocarSubTela = new Rectangle(subTelas.size() * (Gerador.quadrado.height / 3), Gerador.quadrado.height / 3);
+		posicionarRetangulos();
+		max_livros_por_pagina = caixinha_dos_livros.height / caixinha_dos_livros.width;
+
+	}
+
+	private void posicionarRetangulos() {
+		caixinha_dos_livros.x = Ui.caixinha_dos_sprites.x + Ui.caixinha_dos_sprites.width;
+		caixinha_dos_livros.y = Ui.caixinha_dos_sprites.y;
+		trocarSubTela.x = Gerador.WIDTH - Gerador.TS * 2 - (subTelas.size() * 20) / 2;
+		trocarSubTela.y = Gerador.HEIGHT / (Gerador.quadrado.width / 4);
 	}
 
 	@Override
@@ -73,11 +85,14 @@ public class TelaSprites implements Tela {
 		} else if (Ui.caixinha_dos_sprites.contains(x, y)) {
 			pegar_ou_retirar_sprite_selecionado(x, y);
 			return true;
+		} else if (trocarSubTela.contains(x, y)) {
+			aTela++;
+			if (aTela >= subTelas.size())
+				aTela = 0;
+			return true;
 		} else {
-			for (Tela i : subTelas) {
-				if (i.clicou(x, y))
-					return true;
-			}
+			if (subTelas.get(aTela).clicou(x, y))
+				return true;
 		}
 		return false;
 	}
@@ -105,10 +120,15 @@ public class TelaSprites implements Tela {
 		prGraphics.drawString(tile_nivel + (tiles_nivel + 1),
 				Ui.futuro_local_altura.x - w1 + Ui.futuro_local_altura.width,
 				Gerador.HEIGHT - Ui.futuro_local_altura.y);
+		w1 = prGraphics.getFontMetrics().stringWidth("Trocar");
+		prGraphics.drawRect(trocarSubTela.x, trocarSubTela.y, trocarSubTela.width, trocarSubTela.height);
+		prGraphics.setColor(Color.red);
+		prGraphics.fillRect(trocarSubTela.x + (trocarSubTela.width / subTelas.size()) * aTela, trocarSubTela.y,
+				trocarSubTela.width / subTelas.size(), trocarSubTela.height);
+		prGraphics.setColor(Color.white);
+		prGraphics.drawString("Trocar", trocarSubTela.x + trocarSubTela.width / 2 - w1 / 2, trocarSubTela.y + 15);
 
-		for (Tela i : subTelas) {
-			i.render(prGraphics);
-		}
+		subTelas.get(aTela).render(prGraphics);
 	}
 
 	public void max_pagina_por_total_de_sprites(int total_sprites) {
@@ -117,8 +137,8 @@ public class TelaSprites implements Tela {
 		max_pagina.set(0, (int) (total_sprites / divisao));
 	}
 
-	public static ArrayList<Tile> pegar_livro(int index) {
-		return tiles_salvos.get(index);
+	public static ArrayList<ConjuntoSprites> pegar_livro(int index) {
+		return conjuntos_salvos.get(index);
 	}
 
 	private void mostrar_nome_livro(Graphics g) {
@@ -138,31 +158,31 @@ public class TelaSprites implements Tela {
 		}
 	}
 
-	private void desenhar_livros(Graphics g) {
+	private void desenhar_livros(Graphics prGraphics) {
 		int y = caixinha_dos_livros.y;
-		g.setColor(Color.blue);
+		prGraphics.setColor(Color.blue);
 		int i;
 		for (i = max_livros_por_pagina * pagina_livros; i < max_livros_por_pagina * (pagina_livros + 1)
 				&& i < nome_livros.size(); i++) {
 			if (i == livro) {
-				g.setColor(Color.red);
-				g.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
-				g.setColor(Color.blue);
+				prGraphics.setColor(Color.red);
+				prGraphics.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
+				prGraphics.setColor(Color.blue);
 			} else if (i == salvar_nesse_livro && i != 0) {
-				g.setColor(Color.green);
-				g.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
-				g.setColor(Color.blue);
+				prGraphics.setColor(Color.green);
+				prGraphics.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
+				prGraphics.setColor(Color.blue);
 			} else {
-				g.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
+				prGraphics.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
 			}
 			y += caixinha_dos_livros.width;
 		}
 		if (i < max_livros_por_pagina * (pagina_livros + 1)) {
-			g.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
-			g.setColor(Color.green);
-			g.drawLine(caixinha_dos_livros.x + caixinha_dos_livros.width / 2, y,
+			prGraphics.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
+			prGraphics.setColor(Color.green);
+			prGraphics.drawLine(caixinha_dos_livros.x + caixinha_dos_livros.width / 2, y,
 					caixinha_dos_livros.x + caixinha_dos_livros.width / 2, y + caixinha_dos_livros.width);
-			g.drawLine(caixinha_dos_livros.x, y + caixinha_dos_livros.width / 2,
+			prGraphics.drawLine(caixinha_dos_livros.x, y + caixinha_dos_livros.width / 2,
 					caixinha_dos_livros.x + caixinha_dos_livros.width, y + caixinha_dos_livros.width / 2);
 		}
 	}
@@ -201,7 +221,7 @@ public class TelaSprites implements Tela {
 				}
 			}
 		else {
-			ArrayList<Tile> tiles = tiles_salvos.get(livro - 1);
+			ArrayList<ConjuntoSprites> tiles = conjuntos_salvos.get(livro - 1);
 			int x, y;
 			for (int i = 0; i < max_sprites_por_pagina
 					&& i + (max_sprites_por_pagina * pagina.get(livro)) < tiles.size(); i++) {
@@ -276,7 +296,7 @@ public class TelaSprites implements Tela {
 		comecar_por.add(0);
 		atual.add(0);
 		sprites.add(0);
-		tiles_salvos.add(new ArrayList<Tile>());
+		conjuntos_salvos.add(new ArrayList<ConjuntoSprites>());
 		nome_livros.add(nome);
 		max_pagina_livros = nome_livros.size() / max_livros_por_pagina;
 	}
@@ -322,14 +342,14 @@ public class TelaSprites implements Tela {
 			}
 		} else {
 			aux = aux + (max_sprites_por_pagina * pagina.get(livro));
-			if (aux == tiles_salvos.get(livro - 1).size() && sprite_selecionado.size() > 0) {
+			if (aux == conjuntos_salvos.get(livro - 1).size() && sprite_selecionado.size() > 0) {
 				// clicou no "+"
 				adicionar_novo_tile_ao_livro(livro);
 
-			} else if (aux < tiles_salvos.get(livro - 1).size()) {
+			} else if (aux < conjuntos_salvos.get(livro - 1).size()) {
 				livro_tile_pego = livro;
 				index_tile_pego = aux;
-				tiles_salvos.get(livro - 1).get(aux).pegarsprites();
+				conjuntos_salvos.get(livro - 1).get(aux).pegarsprites();
 			}
 		}
 		Gerador.sprite_selecionado_index = 0;
@@ -354,10 +374,10 @@ public class TelaSprites implements Tela {
 					"Primeiro você precisa selecionar um livro! Vá até o livro e aperte '+'");
 			return;
 		}
-		Tile tile = new Tile(0, 0, 0);
-		tile.adicionar_sprite_selecionado();
-		tiles_salvos.get(livro2 - 1).add(tile);
-		if (tiles_salvos.get(livro2 - 1).size() >= max_sprites_por_pagina) {
+		ConjuntoSprites lConjuntoSprites = new ConjuntoSprites();
+		lConjuntoSprites.adicionar_sprite_selecionado();
+		conjuntos_salvos.get(livro2 - 1).add(lConjuntoSprites);
+		if (conjuntos_salvos.get(livro2 - 1).size() >= max_sprites_por_pagina) {
 			max_pagina.set(livro2, max_pagina.get(livro2) + 1);
 		}
 		salvarCarregar.salvar_livro(livro - 1);
@@ -394,12 +414,20 @@ public class TelaSprites implements Tela {
 				pagina_livros = 0;
 			}
 			return true;
+		} else if (trocarSubTela.contains(x, y)) {
+			aTela += k;
+			if (aTela >= subTelas.size())
+				aTela = 0;
+			else if (aTela < 0)
+				aTela = subTelas.size() - 1;
+
+			return true;
 		} else {
-			for (Tela i : subTelas) {
-				if (i.trocar_pagina(x, y, prRodinha))
-					return true;
-			}
-			if (!Gerador.control) {
+
+			if (subTelas.get(aTela).trocar_pagina(x, y, prRodinha))
+				return true;
+
+			if (!Gerador.control && !Gerador.shift) {
 				trocar_Nivel(prRodinha);
 				return true;
 			}
@@ -455,9 +483,9 @@ public class TelaSprites implements Tela {
 					int px = x / Gerador.quadrado.width, py = (y - Ui.caixinha_dos_sprites.y) / Gerador.quadrado.height;
 					int aux = px + py * (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width)
 							+ (max_sprites_por_pagina * pagina.get(livro));
-					if (tiles_salvos.get(livro - 1).size() > aux) {
+					if (conjuntos_salvos.get(livro - 1).size() > aux) {
 						if (JOptionPane.showConfirmDialog(null, "tem certeza que deseja apagar esse sprite?") == 0) {
-							tiles_salvos.get(livro - 1).remove(aux);
+							conjuntos_salvos.get(livro - 1).remove(aux);
 							salvarCarregar.salvar_livro(livro - 1);
 						}
 					}
@@ -473,11 +501,11 @@ public class TelaSprites implements Tela {
 		return false;
 	}
 
-	public void adicionar_livro_salvo(String nome, ArrayList<Tile> tiles) {
+	public void adicionar_livro_salvo(String nome, ArrayList<ConjuntoSprites> lCoConjuntoSprites) {
 		adicionar_livro(nome);
-		tiles_salvos.set(tiles_salvos.size() - 1, tiles);
-		max_pagina.set(tiles_salvos.size(),
-				(int) (tiles_salvos.get(tiles_salvos.size() - 1).size() / max_sprites_por_pagina));
+		conjuntos_salvos.set(conjuntos_salvos.size() - 1, lCoConjuntoSprites);
+		max_pagina.set(conjuntos_salvos.size(),
+				(int) (conjuntos_salvos.get(conjuntos_salvos.size() - 1).size() / max_sprites_por_pagina));
 	}
 
 	public static String pegar_nome_livro(int index) {
@@ -503,6 +531,10 @@ public class TelaSprites implements Tela {
 		}
 		k += lista;
 		sprite_selecionado.add(k);
+	}
+
+	public boolean getMultiplosSprites() {
+		return subTelas.get(aTela) instanceof SubTelaMultiplosSprites;
 	}
 
 }

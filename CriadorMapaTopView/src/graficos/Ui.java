@@ -19,10 +19,10 @@ import world.Camera;
 import world.Tile;
 import world.World;
 
-public class Ui {
-	public static boolean mostrar, colocar_parede, sprite_reajivel, substituir;
+public class Ui implements Tela {
+	public static boolean mostrar, substituir;
 	public static Rectangle caixinha_dos_sprites, futuro_local_altura, preencher_tudo, fazer_caixa, limpar_selecao,
-			salvar_construcao, substitui, caixa_das_opcoes, caixa_sprite_reajivel;
+			salvar_construcao, substitui, caixa_das_opcoes;
 	private static final String altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa",
 			preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível",
 			salva_construcao = "salvar construção";
@@ -40,27 +40,38 @@ public class Ui {
 		opcao = 0;
 		maxItensPagina = 26;
 		mostrar = substituir = true;
-		colocar_parede = sprite_reajivel = false;
 		futuro_local_altura = new Rectangle(Gerador.WIDTH - 100, 20, 10, 10);
-		caixa_sprite_reajivel = new Rectangle(futuro_local_altura.x,
-				futuro_local_altura.y + futuro_local_altura.height * 2, 10, 10);
 		caixa_das_opcoes = new Rectangle(Gerador.WIDTH / 2 - (opcoes.length) / 2 * Gerador.TS, -Gerador.TS,
 				Gerador.TS * opcoes.length, Gerador.TS);
 
-		caixinha_dos_sprites = new Rectangle(0, 8, Gerador.quadrado.width * 5, Gerador.quadrado.width * 11);
-		preencher_tudo = new Rectangle(Gerador.WIDTH - 90, Gerador.HEIGHT / 2, 90, 20);
-		substitui = new Rectangle(preencher_tudo.x + preencher_tudo.width / 3, preencher_tudo.y - 60, 10, 10);
-		fazer_caixa = new Rectangle(Gerador.WIDTH - 90, Gerador.HEIGHT / 2 + preencher_tudo.height,
-				preencher_tudo.width, preencher_tudo.height);
-		limpar_selecao = new Rectangle(Gerador.WIDTH - 90, Gerador.HEIGHT / 2 - preencher_tudo.height,
-				preencher_tudo.width, preencher_tudo.height);
-		salvar_construcao = new Rectangle(Gerador.WIDTH - 90, fazer_caixa.y + preencher_tudo.height,
-				preencher_tudo.width, preencher_tudo.height);
+		caixinha_dos_sprites = new Rectangle(Gerador.quadrado.width * 5, Gerador.quadrado.width * 11);
+		preencher_tudo = new Rectangle(90, 20);
+		substitui = new Rectangle(10, 10);
+		fazer_caixa = new Rectangle(preencher_tudo.width, preencher_tudo.height);
+		limpar_selecao = new Rectangle(preencher_tudo.width, preencher_tudo.height);
+		salvar_construcao = new Rectangle(preencher_tudo.width, preencher_tudo.height);
 		aTilesSelecionados = new ArrayList<>();
+		posicionarRetangulos();
 		telas.add(new TelaSprites());
 		telas.add(new TelaConfiguracao());
 		telas.add(new TelaConstrucoes());
 		telas.add(new TelaCidadeCasa());
+	}
+
+	public void posicionarRetangulos() {
+		caixinha_dos_sprites.x = 0;
+		caixinha_dos_sprites.y = 8;
+		preencher_tudo.x = Gerador.WIDTH - 90;
+		preencher_tudo.y = Gerador.HEIGHT / 2;
+		fazer_caixa.x = Gerador.WIDTH - 90;
+		fazer_caixa.y = Gerador.HEIGHT / 2 + preencher_tudo.height;
+		substitui.x = preencher_tudo.x + preencher_tudo.width / 3;
+		substitui.y = preencher_tudo.y - 60;
+		limpar_selecao.x = Gerador.WIDTH - 90;
+		limpar_selecao.y = Gerador.HEIGHT / 2 - preencher_tudo.height;
+		salvar_construcao.x = Gerador.WIDTH - 90;
+		salvar_construcao.y = fazer_caixa.y + preencher_tudo.height;
+
 	}
 
 	private void carregar_sprites() {
@@ -160,23 +171,24 @@ public class Ui {
 		}
 	}
 
-	private void desenhar_opcoes(Graphics g) {
-		g.drawRect(preencher_tudo.x, preencher_tudo.y, preencher_tudo.width, preencher_tudo.height);
-		g.drawRect(fazer_caixa.x, fazer_caixa.y, fazer_caixa.width, fazer_caixa.height);
-		g.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
-		g.drawRect(salvar_construcao.x, salvar_construcao.y, salvar_construcao.width, salvar_construcao.height);
-		g.drawString(preencher, preencher_tudo.x, preencher_tudo.y + 10);
-		g.drawString(caixa, fazer_caixa.x, fazer_caixa.y + 10);
-		g.drawString(limpar, limpar_selecao.x, limpar_selecao.y + 10);
-		g.drawString(salva_construcao, salvar_construcao.x, salvar_construcao.y + 10);
+	private void desenhar_opcoes(Graphics prGraphics) {
+		prGraphics.drawRect(preencher_tudo.x, preencher_tudo.y, preencher_tudo.width, preencher_tudo.height);
+		prGraphics.drawRect(fazer_caixa.x, fazer_caixa.y, fazer_caixa.width, fazer_caixa.height);
+		prGraphics.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
+		prGraphics.drawRect(salvar_construcao.x, salvar_construcao.y, salvar_construcao.width,
+				salvar_construcao.height);
+		prGraphics.drawString(preencher, preencher_tudo.x, preencher_tudo.y + 10);
+		prGraphics.drawString(caixa, fazer_caixa.x, fazer_caixa.y + 10);
+		prGraphics.drawString(limpar, limpar_selecao.x, limpar_selecao.y + 10);
+		prGraphics.drawString(salva_construcao, salvar_construcao.x, salvar_construcao.y + 10);
 	}
 
 	public boolean clicou(int x, int y) {
-		// */
+		if (!mostrar)
+			return false;
+
 		if (telas.get(opcao).clicou(x, y)) {
 			return true;
-			// *
-			// */
 		} else if (caixa_das_opcoes.contains(x, y)) {
 			opcao = (x - caixa_das_opcoes.x) / Gerador.TS;
 			return true;

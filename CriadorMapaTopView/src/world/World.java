@@ -313,7 +313,7 @@ public class World {
 
 	public static void fill(ArrayList<Tile> prTilesSelecionados) {
 		int lVirarSolido = 0;
-		if (Ui.colocar_parede || (Ui.opcao == 1 && TelaConfiguracao.instance.getOpcao() == 0)) {
+		if (/* Ui.colocar_parede ||( */ Ui.opcao == 1 && TelaConfiguracao.instance.getOpcao() == 0) {
 			lVirarSolido = prTilesSelecionados.get(0).getSolid();
 			if (lVirarSolido > 1) {
 				lVirarSolido = 0;
@@ -402,7 +402,7 @@ public class World {
 		if (lPonta.size() == 0)
 			return;
 		int lVirarSolido = 0;
-		if (Ui.colocar_parede || (TelaConfiguracao.instance.getOpcao() == 0 && Ui.opcao == 1)) {
+		if (/* Ui.colocar_parede || ( */TelaConfiguracao.instance.getOpcao() == 0 && Ui.opcao == 1) {
 			lVirarSolido = prTilesSelecionados.get(0).getSolid();
 			if (lVirarSolido > 1) {
 				lVirarSolido = 0;
