@@ -537,4 +537,10 @@ public class TelaSprites implements Tela {
 		return subTelas.get(aTela) instanceof SubTelaMultiplosSprites;
 	}
 
+	@Override
+	public String getNome() {
+
+		return "colocar sprites";
+	}
+
 }

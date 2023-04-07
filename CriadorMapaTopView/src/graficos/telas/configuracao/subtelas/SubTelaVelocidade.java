@@ -63,4 +63,9 @@ public class SubTelaVelocidade implements Tela {
 		return new_speed;
 	}
 
+	@Override
+	public String getNome() {
+		return "Setar velocidade";
+	}
+
 }

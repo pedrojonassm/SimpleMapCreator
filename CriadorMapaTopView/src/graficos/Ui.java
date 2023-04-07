@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import files.salvarCarregar;
 import graficos.telas.Tela;
-import graficos.telas.cidadescasas.TelaCidadeCasa;
 import graficos.telas.configuracao.TelaConfiguracao;
 import graficos.telas.configuracao.subtelas.SubTelaVelocidade;
 import graficos.telas.construcao.TelaConstrucoes;
@@ -26,8 +25,7 @@ public class Ui implements Tela {
 	private static final String altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa",
 			preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível",
 			salva_construcao = "salvar construção";
-	public static final String[] opcoes = { "colocar sprites", "configurar", "colocar construções",
-			"criar casas/cidades" };
+
 	public static int opcao, maxItensPagina;
 	public static ArrayList<Tela> telas;
 	public static ArrayList<Tile> aTilesSelecionados;
@@ -41,8 +39,6 @@ public class Ui implements Tela {
 		maxItensPagina = 26;
 		mostrar = substituir = true;
 		futuro_local_altura = new Rectangle(Gerador.WIDTH - 100, 20, 10, 10);
-		caixa_das_opcoes = new Rectangle(Gerador.WIDTH / 2 - (opcoes.length) / 2 * Gerador.TS, -Gerador.TS,
-				Gerador.TS * opcoes.length, Gerador.TS);
 
 		caixinha_dos_sprites = new Rectangle(Gerador.quadrado.width * 5, Gerador.quadrado.width * 11);
 		preencher_tudo = new Rectangle(90, 20);
@@ -51,11 +47,13 @@ public class Ui implements Tela {
 		limpar_selecao = new Rectangle(preencher_tudo.width, preencher_tudo.height);
 		salvar_construcao = new Rectangle(preencher_tudo.width, preencher_tudo.height);
 		aTilesSelecionados = new ArrayList<>();
-		posicionarRetangulos();
 		telas.add(new TelaSprites());
 		telas.add(new TelaConfiguracao());
 		telas.add(new TelaConstrucoes());
-		telas.add(new TelaCidadeCasa());
+		// telas.add(new TelaCidadeCasa());
+		caixa_das_opcoes = new Rectangle(Gerador.TS * telas.size(), Gerador.TS);
+		posicionarRetangulos();
+
 	}
 
 	public void posicionarRetangulos() {
@@ -71,7 +69,8 @@ public class Ui implements Tela {
 		limpar_selecao.y = Gerador.HEIGHT / 2 - preencher_tudo.height;
 		salvar_construcao.x = Gerador.WIDTH - 90;
 		salvar_construcao.y = fazer_caixa.y + preencher_tudo.height;
-
+		caixa_das_opcoes.x = Gerador.WIDTH / 2 - (telas.size()) / 2 * Gerador.TS;
+		caixa_das_opcoes.y = -Gerador.TS;
 	}
 
 	private void carregar_sprites() {
@@ -95,7 +94,8 @@ public class Ui implements Tela {
 	public void tick() {
 		if (caixa_das_opcoes.intersects(
 				new Rectangle(Gerador.quadrado.x, Gerador.quadrado.y - Gerador.TS, Gerador.TS, Gerador.TS))) {
-			a_selecionar = opcoes[(Gerador.quadrado.x - caixa_das_opcoes.x) / Gerador.TS];
+
+			a_selecionar = telas.get((Gerador.quadrado.x - caixa_das_opcoes.x) / Gerador.TS).getNome();
 			if (caixa_das_opcoes.y < 0) {
 				caixa_das_opcoes.y++;
 			}
@@ -115,7 +115,7 @@ public class Ui implements Tela {
 			g.drawString(a_selecionar, caixa_das_opcoes.x + caixa_das_opcoes.width / 2 - w1 / 2,
 					caixa_das_opcoes.y + Gerador.TS + 20);
 			g.drawRect(caixa_das_opcoes.x, caixa_das_opcoes.y, caixa_das_opcoes.width, caixa_das_opcoes.height);
-			for (int i = 0; i < opcoes.length; i++) {
+			for (int i = 0; i < telas.size(); i++) {
 				g.drawImage(sprite_opcoes[i], caixa_das_opcoes.x + i * Gerador.TS, caixa_das_opcoes.y, null);
 				if (opcao == i) {
 					g.setColor(new Color(0, 255, 0, 50));
@@ -264,6 +264,11 @@ public class Ui implements Tela {
 			SubTelaPreSets.instance.ativar(prNumeroPressionado);
 		if (opcao == 1)
 			SubTelaVelocidade.instance.setNew_speed(prNumeroPressionado);
+	}
+
+	@Override
+	public String getNome() {
+		return "Ui";
 	}
 
 }

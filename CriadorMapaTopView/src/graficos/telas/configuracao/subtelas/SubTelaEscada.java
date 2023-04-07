@@ -101,4 +101,9 @@ public class SubTelaEscada implements Tela {
 		return false;
 	}
 
+	@Override
+	public String getNome() {
+		return "Setar escadas";
+	}
+
 }

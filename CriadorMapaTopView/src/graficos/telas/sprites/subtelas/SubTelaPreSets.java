@@ -70,4 +70,10 @@ public class SubTelaPreSets implements Tela {
 
 	}
 
+	@Override
+	public String getNome() {
+
+		return "Pré-Sets";
+	}
+
 }

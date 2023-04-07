@@ -127,4 +127,9 @@ public class SubTelaMultiplosSprites implements Tela {
 		aCoConjuntoSprites.addAll(aCoConjuntoSprites2);
 	}
 
+	@Override
+	public String getNome() {
+		return "Múltiplos Sprites";
+	}
+
 }

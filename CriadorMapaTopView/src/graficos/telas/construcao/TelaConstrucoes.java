@@ -87,4 +87,9 @@ public class TelaConstrucoes implements Tela {
 		construcoes = construcoes2;
 	}
 
+	@Override
+	public String getNome() {
+		return "Construções";
+	}
+
 }

@@ -26,11 +26,9 @@ public class Tile {
 	// cavar para abrí-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
 	// solid: 0 = chao normal; 1 = parede; 2 = água; 3 = lava; 4 = vip
 
-	private String house_door;
 	private HashMap<String, Object> aPropriedades;
 
 	public Tile(@JsonProperty("x") int x, @JsonProperty("y") int y, @JsonProperty("z") int z) {
-		house_door = "";
 		// ao criar a casa essa variável recebe o nome da casa, isso serve para que ela
 		// possa ser comprada
 		posicao_Conjunto = evento = solid = 0;
@@ -52,14 +50,6 @@ public class Tile {
 
 	public void setEvento(int evento) {
 		this.evento = evento;
-	}
-
-	public String getHouse_door() {
-		return house_door;
-	}
-
-	public void setHouse_door(String house_door) {
-		this.house_door = house_door;
 	}
 
 	public void setStairs_type(int stairs_type) {

@@ -71,4 +71,9 @@ public class SubTelaPropriedade implements Tela {
 		return true;
 	}
 
+	@Override
+	public String getNome() {
+		return "Setar/Adicionar propriedades";
+	}
+
 }

@@ -91,4 +91,9 @@ public class TelaCidadeCasa implements Tela {
 		g.drawImage(Ui.setas[2], voltar.x, voltar.y, voltar.width, voltar.height, null);
 	}
 
+	@Override
+	public String getNome() {
+		return "Cidades e Casas";
+	}
+
 }
