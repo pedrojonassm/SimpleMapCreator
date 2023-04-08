@@ -199,11 +199,8 @@ public class Gerador extends Canvas
 			BufferedImage imagem = World.sprites_do_mundo.get(
 					TelaSprites.array.get(sprite_selecionado_index))[TelaSprites.lista.get(sprite_selecionado_index)];
 			if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) {
-				quadradinho_teste[0] -= quadrado.width * ((imagem.getWidth() / quadrado.width) - 1); // TODO Ajustar
-																										// para imagenbs
-																										// em qualquer
-																										// tamanho
-				quadradinho_teste[1] -= quadrado.height * ((imagem.getWidth() / quadrado.height) - 1); // TODO testar
+				quadradinho_teste[0] -= quadrado.width * ((imagem.getWidth() / quadrado.width) - 1);
+				quadradinho_teste[1] -= quadrado.height * ((imagem.getWidth() / quadrado.height) - 1);
 			}
 			g.drawImage(imagem, quadradinho_teste[0], quadradinho_teste[1], null);
 		}

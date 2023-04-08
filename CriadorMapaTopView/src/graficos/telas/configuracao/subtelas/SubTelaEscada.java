@@ -98,7 +98,6 @@ public class SubTelaEscada implements Tela {
 
 	@Override
 	public Tela getSubTela() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
