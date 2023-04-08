@@ -22,10 +22,14 @@ import javax.swing.JFrame;
 import entities.Player;
 import files.salvarCarregar;
 import graficos.Ui;
+import graficos.telas.cidadescasas.TelaCidadeCasa;
 import graficos.telas.configuracao.TelaConfiguracao;
-import graficos.telas.configuracao.subtelas.SubTelaVelocidade;
+import graficos.telas.configuracao.subtelas.SubTelaEscada;
+import graficos.telas.configuracao.subtelas.SubTelaPropriedade;
 import graficos.telas.construcao.TelaConstrucoes;
 import graficos.telas.sprites.TelaSprites;
+import graficos.telas.sprites.subtelas.SubTelaMultiplosSprites;
+import graficos.telas.sprites.subtelas.SubTelaPreSets;
 import world.Camera;
 import world.Tile;
 import world.World;
@@ -125,48 +129,42 @@ public class Gerador extends Canvas
 				clique_no_mapa = false;
 			}
 			if (aCliqueMouse == 1) {
-				if (Ui.opcao == 0) {
-					if (shift) {
-						if (World.tiles[aPos] != null)
-							World.tiles[aPos].pegarsprites();
-						clique_no_mapa = false;
-					} else {
-						Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
-						if (lEscolhido != null) {
-							/*
-							 * if (Ui.colocar_parede) { lEscolhido.setSolid(aEstadoTile); if
-							 * (TelaSprites.sprite_selecionado.size() > 0) {
-							 * lEscolhido.adicionar_sprite_selecionado(); } } else
-							 */
+				if (shift) {
+					if (World.tiles[aPos] != null)
+						World.tiles[aPos].copiarPraTela();
+					clique_no_mapa = false;
+				} else if (ui.getTela() instanceof TelaSprites) {
+					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
+					if (lEscolhido != null) {
 
-							if (TelaConfiguracao.instance.getOpcao() == 0 && Ui.opcao == 1) {
-								if (lEscolhido.getZ() < World.HIGH - 1)
-									World.pegarAdicionarTileMundo(World.calcular_pos(lEscolhido.getX(),
-											lEscolhido.getY(), lEscolhido.getZ() + 1)).virar_escada();
-
-							} else if (TelaSprites.instance.getMultiplosSprites()) {
-								lEscolhido.adicionarMultiplosSprites();
-							} else {
-								lEscolhido.adicionar_sprite_selecionado();
-							}
+						if (TelaSprites.sprite_selecionado.size() == 0
+								&& ui.getTela().getSubTela() instanceof SubTelaMultiplosSprites) {
+							lEscolhido.adicionarMultiplosSprites();
+						} else {
+							lEscolhido.adicionar_sprite_selecionado();
 						}
 					}
-				} else if (Ui.opcao == 1) {
-					if (TelaConfiguracao.instance.getOpcao() == 1) {
-						Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
+				} else if (ui.getTela() instanceof TelaConfiguracao) {
+					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
+					if (Gerador.ui.getTela().getSubTela() instanceof SubTelaEscada) {
+						if (lEscolhido.getZ() < World.HIGH - 1)
+							World.pegarAdicionarTileMundo(
+									World.calcular_pos(lEscolhido.getX(), lEscolhido.getY(), lEscolhido.getZ()))
+									.virarDesvirarEscada();
 
-						if (lEscolhido != null) {
-							lEscolhido.setSpeed_modifier(SubTelaVelocidade.instance.getNew_speed());
-						}
 					}
-				} else if (Ui.opcao == 2) {
+					if (ui.getTela().getSubTela() instanceof SubTelaPropriedade) {
+						SubTelaPropriedade.instance.adicionarPropriedadeTile(lEscolhido);
+					}
+				} else if (ui.getTela() instanceof TelaConstrucoes) {
 					World.colocar_construcao(aPos, TelaConstrucoes.instance.pegar_construcao_selecionada());
-				} else if (Ui.opcao == 3) {
+				} else if (ui.getTela() instanceof TelaCidadeCasa) {
 					// Cidades e casas
 				}
 			} else if (aCliqueMouse == 3) {
 				boolean lAdicionar = (Tile.tileExisteLista(aPos, Ui.aTilesSelecionados) >= 0);
-				if ((Ui.opcao <= 1) && (lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1))
+				if ((ui.getTela() instanceof TelaSprites || ui.getTela() instanceof TelaConfiguracao)
+						&& (lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1))
 					ui.selecionarTile(aPos);
 			}
 		}
@@ -271,8 +269,10 @@ public class Gerador extends Canvas
 			control = true;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT)
 			shift = true;
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			Ui.mostrar = !Ui.mostrar;
+			return;
+		}
 		if (control) {
 			if (e.getKeyCode() == KeyEvent.VK_S)
 				World.salvar();
@@ -280,17 +280,17 @@ public class Gerador extends Canvas
 				World.novo_mundo(null);
 			else if (e.getKeyCode() == KeyEvent.VK_O)
 				World.carregar_mundo();
+		} else if (Gerador.ui.getTela().getSubTela() instanceof SubTelaPropriedade) {
+			if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+				SubTelaPropriedade.instance.retirarValor();
+			else if (e.getKeyCode() == KeyEvent.VK_DELETE)
+				SubTelaPropriedade.instance.setValorPropriedade("");
+			else if ((e.getKeyChar() + "").getBytes().length == 1)
+				SubTelaPropriedade.instance.mudarValor(e.getKeyChar());
+			return;
 		}
-		if (e.getKeyChar() == '-') {
-			int k = SubTelaVelocidade.instance.getNew_speed() * -1;
-			if (player.getSpeed() + k <= 0) {
-				k = (player.getSpeed() - 1) * -1;
-			}
-			SubTelaVelocidade.instance.setNew_speed(k);
-		}
-		if (e.getKeyCode() < 58 && e.getKeyCode() > 47) {
-			ui.hotBar(Integer.parseInt(e.getKeyChar() + ""));
-		}
+		if (e.getKeyCode() < 58 && e.getKeyCode() > 47 && ui.getTela().getSubTela() instanceof SubTelaPreSets)
+			SubTelaPreSets.instance.ativar(Integer.parseInt(e.getKeyChar() + ""));
 
 	}
 
@@ -396,7 +396,7 @@ public class Gerador extends Canvas
 			if (control) {
 				player.camada(e.getWheelRotation());
 				aPos = World.calcular_pos(e.getX() + Camera.x, e.getY() + Camera.y, player.getZ());
-			} else if (shift && TelaSprites.instance.getMultiplosSprites()) {
+			} else if (shift && ui.getTela().getSubTela() instanceof SubTelaMultiplosSprites) {
 				Tile lEscolhido = World.tiles[aPos];
 				lEscolhido.trocar_pagina(e.getX(), e.getY(), e.getWheelRotation());
 			}

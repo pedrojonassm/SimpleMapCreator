@@ -76,4 +76,9 @@ public class SubTelaPreSets implements Tela {
 		return "Pré-Sets";
 	}
 
+	@Override
+	public Tela getSubTela() {
+		return null;
+	}
+
 }

@@ -46,8 +46,9 @@ public class SubTelaEscada implements Tela {
 				prGraphics.setColor(Color.green);
 			prGraphics.drawRect(escadas[i].x, escadas[i].y, escadas[i].width, escadas[i].height);
 			prGraphics.setColor(Color.white);
-			prGraphics.drawString(opcoes[i], Ui.caixinha_dos_sprites.x + 20,
-					Ui.caixinha_dos_sprites.y + 15 + Ui.caixinha_dos_sprites.height / 4 + (i % Ui.maxItensPagina) * 20);
+			prGraphics.drawString(opcoes[i], Ui.caixinha_dos_sprites.x + escadas[i].height,
+					escadas[i].y + escadas[i].height - escadas[i].height / 3);
+
 		}
 		prGraphics.drawImage(Ui.setas[escadas_direction], direcao_escadas.x, direcao_escadas.y, direcao_escadas.width,
 				direcao_escadas.height, null);
@@ -64,24 +65,13 @@ public class SubTelaEscada implements Tela {
 		}
 		if (direcao_escadas.contains(x, y))
 			return true;
-		if (modo_escadas >= 0 && modo_escadas < opcoes.length) {
-			Tile lTile = World.pegarAdicionarTileMundo(x + Camera.x, y + Camera.y, Gerador.player.getZ());
-			if (lTile != null) {
-				if (lTile.getStairs_type() == 0)
-					lTile.virar_escada();
-				else
-					lTile.desvirar_escada();
-			}
-
-			return true;
-		}
 		return false;
 	}
 
 	@Override
 	public boolean cliquedireito(int x, int y) {
 		Tile lTile = World.pegarAdicionarTileMundo(x + Camera.x, y + Camera.y, Gerador.player.getZ());
-		if (lTile != null && lTile.getStairs_type() > 0) {
+		if (Gerador.shift && lTile != null && lTile.getStairs_type() > 0) {
 			Gerador.player.utilizarEscada(lTile);
 			return true;
 		}
@@ -104,6 +94,12 @@ public class SubTelaEscada implements Tela {
 	@Override
 	public String getNome() {
 		return "Setar escadas";
+	}
+
+	@Override
+	public Tela getSubTela() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

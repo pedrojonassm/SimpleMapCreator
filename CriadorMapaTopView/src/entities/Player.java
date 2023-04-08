@@ -13,7 +13,7 @@ import world.World;
 public class Player implements tickRender {
 	private int x, y, z, tile_speed;
 	private int horizontal, vertical, speed;
-	public boolean left, right, up, down, can_surf, can_walk_on_lava, vip, aBloqueadoMovimentacao;
+	public boolean left, right, up, down, aBloqueadoMovimentacao;
 	Tile sqm_alvo = null;
 
 	public Player(int x, int y, int z) {
@@ -21,7 +21,7 @@ public class Player implements tickRender {
 		this.y = y;
 		this.horizontal = z;
 		tile_speed = 0;
-		left = right = up = down = can_surf = can_walk_on_lava = aBloqueadoMovimentacao = vip = false;
+		left = right = up = down = aBloqueadoMovimentacao = false;
 
 		speed = 4;
 		horizontal = vertical = 0;
@@ -37,7 +37,7 @@ public class Player implements tickRender {
 				&& Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= Uteis.modulo(speed + tile_speed)) {
 			x = sqm_alvo.getX();
 			y = sqm_alvo.getY();
-			int k = sqm_alvo.getSpeed_modifier();
+			int k = sqm_alvo.ModificadorVelocidade();
 			if (k > 0)
 				tile_speed = k;
 			else
@@ -77,11 +77,10 @@ public class Player implements tickRender {
 						.pegar_chao(World.calcular_pos(x + Gerador.TS * horizontal, y + Gerador.TS * vertical, z));
 
 				if (sqm_alvo != null) {
-					if (sqm_alvo.getSolid() == 1 || (sqm_alvo.getSolid() == 2 && !can_surf)
-							|| (sqm_alvo.getSolid() == 3 && !can_walk_on_lava) || (sqm_alvo.getSolid() == 4 && !vip))
+					if (sqm_alvo.Solid())
 						sqm_alvo = null;
 
-					if (Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed * 3
+					else if (Uteis.distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed * 3
 							+ Uteis.modulo(tile_speed) * 2)
 						aBloqueadoMovimentacao = true;
 				}
@@ -100,28 +99,31 @@ public class Player implements tickRender {
 	}
 
 	public void utilizarEscada(Tile prEscada) {
+		int lsubir = 0;
 		if (prEscada == null)
 			return;
 		if (prEscada.getZ() < z)
-			z--;
+			lsubir = -1;
 		else if (prEscada.getZ() == z)
-			z++;
+			lsubir = 1;
+
+		z += lsubir;
 
 		switch (prEscada.getStairs_direction()) {
 		case 0:
-			x = prEscada.getX() + Gerador.quadrado.width;
+			x = prEscada.getX() + Gerador.quadrado.width * lsubir;
 			y = prEscada.getY();
 			break;
 		case 1:
-			y = prEscada.getY() + Gerador.quadrado.height;
+			y = prEscada.getY() + Gerador.quadrado.height * lsubir;
 			x = prEscada.getX();
 			break;
 		case 2:
-			x = prEscada.getX() - Gerador.quadrado.width;
+			x = prEscada.getX() - Gerador.quadrado.width * lsubir;
 			y = prEscada.getY();
 			break;
 		case 3:
-			y = prEscada.getY() - Gerador.quadrado.height;
+			y = prEscada.getY() - Gerador.quadrado.height * lsubir;
 			x = prEscada.getX();
 			break;
 		}
@@ -198,7 +200,7 @@ public class Player implements tickRender {
 			}
 		}
 		Tile lTile = World.pegar_chao(x, y, fz);
-		if (lTile == null || lTile.getSolid() != 1) {
+		if (lTile == null || !lTile.Solid()) {
 			z = fz;
 		}
 

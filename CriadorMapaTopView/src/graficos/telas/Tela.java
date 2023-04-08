@@ -11,4 +11,6 @@ public interface Tela extends tickRender {
 
 	public String getNome();
 
+	public Tela getSubTela();
+
 }

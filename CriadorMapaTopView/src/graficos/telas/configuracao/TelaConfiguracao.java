@@ -9,7 +9,6 @@ import graficos.Ui;
 import graficos.telas.Tela;
 import graficos.telas.configuracao.subtelas.SubTelaEscada;
 import graficos.telas.configuracao.subtelas.SubTelaPropriedade;
-import graficos.telas.configuracao.subtelas.SubTelaVelocidade;
 import main.Gerador;
 
 public class TelaConfiguracao implements Tela {
@@ -28,13 +27,13 @@ public class TelaConfiguracao implements Tela {
 				Ui.caixinha_dos_sprites.y + Gerador.TS / 4, Gerador.TS / 2, Gerador.TS / 2);
 		subTelas = new ArrayList<>();
 		subTelas.add(new SubTelaEscada());
-		subTelas.add(new SubTelaVelocidade());
 		subTelas.add(new SubTelaPropriedade());
 		opcoes = new Rectangle[subTelas.size()];
 		for (int i = 0; i < subTelas.size(); i++) {
 			opcoes[i] = new Rectangle(Ui.caixinha_dos_sprites.x,
-					Ui.caixinha_dos_sprites.y + Ui.caixinha_dos_sprites.height / 4 + (i % Ui.maxItensPagina) * 20,
-					Ui.caixinha_dos_sprites.width, 20);
+					Ui.caixinha_dos_sprites.y + Ui.caixinha_dos_sprites.height / 4
+							+ (i % Ui.maxItensPagina) * Gerador.quadrado.height / 3,
+					Ui.caixinha_dos_sprites.width, Gerador.quadrado.height / 3);
 		}
 	}
 
@@ -51,9 +50,8 @@ public class TelaConfiguracao implements Tela {
 				prGraphics.setColor(Color.green);
 				prGraphics.drawRect(opcoes[i].x, opcoes[i].y, opcoes[i].width, opcoes[i].height);
 				prGraphics.setColor(Color.white);
-				prGraphics.drawString(subTelas.get(i).getNome(), Ui.caixinha_dos_sprites.x + 20,
-						Ui.caixinha_dos_sprites.y + Gerador.TS / 10 + Ui.caixinha_dos_sprites.height / 4
-								+ (i % Ui.maxItensPagina) * 20);
+				prGraphics.drawString(subTelas.get(i).getNome(), Ui.caixinha_dos_sprites.x + opcoes[i].height,
+						opcoes[i].y + opcoes[i].height - opcoes[i].height / 3);
 			}
 		} else {
 			subTelas.get(opcao).render(prGraphics);
@@ -96,12 +94,15 @@ public class TelaConfiguracao implements Tela {
 		return false;
 	}
 
-	public int getOpcao() {
-		return opcao;
-	}
-
 	@Override
 	public String getNome() {
 		return "Configurações";
+	}
+
+	@Override
+	public Tela getSubTela() {
+		if (opcao == -1)
+			return null;
+		return subTelas.get(opcao);
 	}
 }

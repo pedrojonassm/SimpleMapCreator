@@ -92,4 +92,9 @@ public class TelaConstrucoes implements Tela {
 		return "Construções";
 	}
 
+	@Override
+	public Tela getSubTela() {
+		return null;
+	}
+
 }

@@ -132,4 +132,9 @@ public class SubTelaMultiplosSprites implements Tela {
 		return "Múltiplos Sprites";
 	}
 
+	@Override
+	public Tela getSubTela() {
+		return null;
+	}
+
 }

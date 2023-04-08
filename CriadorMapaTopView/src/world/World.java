@@ -16,7 +16,6 @@ import javax.swing.JTextField;
 import files.salvarCarregar;
 import graficos.Spritesheet;
 import graficos.Ui;
-import graficos.telas.configuracao.TelaConfiguracao;
 import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
 
@@ -179,10 +178,10 @@ public class World {
 		int x4 = (xnext + Gerador.TS);
 		int y4 = (ynext + Gerador.TS);
 
-		return !((pegar_chao(x1, y1, z) == null || pegar_chao(x1, y1, z).getSolid() == 1)
-				|| (pegar_chao(x2, y2, z) == null || pegar_chao(x2, y2, z).getSolid() == 1)
-				|| (pegar_chao(x3, y3, z) == null || pegar_chao(x3, y3, z).getSolid() == 1)
-				|| (pegar_chao(x4, y4, z) == null || pegar_chao(x4, y4, z).getSolid() == 1));
+		return !((pegar_chao(x1, y1, z) == null || pegar_chao(x1, y1, z).Solid())
+				|| (pegar_chao(x2, y2, z) == null || pegar_chao(x2, y2, z).Solid())
+				|| (pegar_chao(x3, y3, z) == null || pegar_chao(x3, y3, z).Solid())
+				|| (pegar_chao(x4, y4, z) == null || pegar_chao(x4, y4, z).Solid()));
 	}
 
 	public static Tile[] tiles_ao_redor(int x, int y, int z) {
@@ -312,18 +311,8 @@ public class World {
 	}
 
 	public static void fill(ArrayList<Tile> prTilesSelecionados) {
-		int lVirarSolido = 0;
-		if (/* Ui.colocar_parede ||( */ Ui.opcao == 1 && TelaConfiguracao.instance.getOpcao() == 0) {
-			lVirarSolido = prTilesSelecionados.get(0).getSolid();
-			if (lVirarSolido > 1) {
-				lVirarSolido = 0;
-			} else {
-				lVirarSolido = 1;
-			}
-		}
-
 		for (Tile iTile : prTilesSelecionados)
-			iTile.varios(lVirarSolido);
+			iTile.varios();
 	}
 
 	public static Tile pegarAdicionarTileMundo(int prPos) {
@@ -401,17 +390,8 @@ public class World {
 		}
 		if (lPonta.size() == 0)
 			return;
-		int lVirarSolido = 0;
-		if (/* Ui.colocar_parede || ( */TelaConfiguracao.instance.getOpcao() == 0 && Ui.opcao == 1) {
-			lVirarSolido = prTilesSelecionados.get(0).getSolid();
-			if (lVirarSolido > 1) {
-				lVirarSolido = 0;
-			} else {
-				lVirarSolido = 1;
-			}
-		}
 		for (Tile iTile : lPonta)
-			iTile.varios(lVirarSolido);
+			iTile.varios();
 	}
 
 	public static void novo_mundo(File file) {

@@ -3,24 +3,52 @@ package graficos.telas.configuracao.subtelas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
 
 import graficos.Ui;
 import graficos.telas.Tela;
 import main.Gerador;
+import world.Tile;
 
 public class SubTelaPropriedade implements Tela {
-	// Propriedades Com base na proprieddade Escolhhidda, sssera mostrado noss
-	// tiless casso tiverem
 
-	private Rectangle adicionarNovaPropriedade;
+	private Rectangle adicionarNovaPropriedade, quadradoOpcoes;
+	private int maxProprieddadesPagina, pagina;
+	private ArrayList<String> aCoPropriedades;
+
+	private String aPropriedadeSelecionada, aValorPropriedade;
 
 	public static SubTelaPropriedade instance;
 
 	public SubTelaPropriedade() {
 		instance = this;
+		pagina = 0;
+		quadradoOpcoes = new Rectangle(Ui.caixinha_dos_sprites.width, Gerador.quadrado.height / 3);
+		quadradoOpcoes.x = Ui.caixinha_dos_sprites.x;
+		quadradoOpcoes.y = Ui.caixinha_dos_sprites.y + Ui.caixinha_dos_sprites.height / 4;
 
-		adicionarNovaPropriedade = new Rectangle(Ui.caixinha_dos_sprites.x + Ui.caixinha_dos_sprites.width - 40,
-				Ui.caixinha_dos_sprites.y + 80, 20, 20);
+		adicionarNovaPropriedade = new Rectangle(
+				Ui.caixinha_dos_sprites.x + Ui.caixinha_dos_sprites.width - Gerador.quadrado.width / 2,
+				Ui.caixinha_dos_sprites.y + Gerador.quadrado.height, Gerador.quadrado.width / 3,
+				Gerador.quadrado.height / 3);
+
+		maxProprieddadesPagina = (Ui.caixinha_dos_sprites.height - quadradoOpcoes.y) / quadradoOpcoes.height;
+
+		aCoPropriedades = new ArrayList<>();
+		aCoPropriedades.add("Solid");
+		aCoPropriedades.add("Speed");
+		aValorPropriedade = "";
+	}
+
+	public void mudarValor(char novo) {
+		aValorPropriedade += novo;
+	}
+
+	public void retirarValor() {
+		if (!aValorPropriedade.isEmpty())
+			aValorPropriedade = aValorPropriedade.substring(0, aValorPropriedade.length() - 1);
 	}
 
 	@Override
@@ -43,10 +71,32 @@ public class SubTelaPropriedade implements Tela {
 				adicionarNovaPropriedade.y + adicionarNovaPropriedade.height);
 		prGraphics.setColor(Color.white);
 
+		if (aPropriedadeSelecionada != null) {
+			w1 = prGraphics.getFontMetrics().stringWidth(aPropriedadeSelecionada + " = " + aValorPropriedade);
+			prGraphics.drawString(aPropriedadeSelecionada + " = " + aValorPropriedade, Gerador.quadrado.x - w1 / 2,
+					Gerador.quadrado.y + Gerador.quadrado.height / 2);
+		}
+
 		if (adicionarNovaPropriedade.contains(Gerador.quadrado.x, Gerador.quadrado.y)) {
 			w1 = prGraphics.getFontMetrics().stringWidth("Adicionar nova propriedade");
 			prGraphics.drawString("Adicionar nova propriedade", adicionarNovaPropriedade.x + w1 / 2,
 					adicionarNovaPropriedade.y);
+		}
+
+		for (int i = 0; i < aCoPropriedades.size(); i++) {
+
+			quadradoOpcoes.y = Ui.caixinha_dos_sprites.y + Ui.caixinha_dos_sprites.height / 4
+					+ (i % Ui.maxItensPagina) * quadradoOpcoes.height;
+			if (aPropriedadeSelecionada != null
+					&& aCoPropriedades.get(i + pagina * maxProprieddadesPagina).contentEquals(aPropriedadeSelecionada))
+				prGraphics.setColor(Color.red);
+			else
+				prGraphics.setColor(Color.green);
+			prGraphics.drawRect(quadradoOpcoes.x, quadradoOpcoes.y, quadradoOpcoes.width, quadradoOpcoes.height);
+			prGraphics.setColor(Color.white);
+			prGraphics.drawString(aCoPropriedades.get(i + pagina * maxProprieddadesPagina),
+					Ui.caixinha_dos_sprites.x + quadradoOpcoes.height, Ui.caixinha_dos_sprites.y + Gerador.TS / 4
+							+ Ui.caixinha_dos_sprites.height / 4 + (i % Ui.maxItensPagina) * quadradoOpcoes.height);
 		}
 
 	}
@@ -54,8 +104,29 @@ public class SubTelaPropriedade implements Tela {
 	@Override
 	public boolean clicou(int x, int y) {
 		if (adicionarNovaPropriedade.contains(x, y)) {
-			System.out.println("Adicionar nova propriedade!");
+			String lNome;
+			do {
+				lNome = JOptionPane.showInputDialog("Insira um nome para a nova Propriedade");
+				if (lNome != null && !lNome.isBlank()) {
+					if (!aCoPropriedades.contains(lNome))
+						aCoPropriedades.add(lNome);
+				}
+			} while (lNome == null);
 			return true;
+		} else {
+			for (int i = 0; i < aCoPropriedades.size(); i++) {
+				quadradoOpcoes.y = Ui.caixinha_dos_sprites.y + Ui.caixinha_dos_sprites.height / 4
+						+ (i % Ui.maxItensPagina) * quadradoOpcoes.height;
+				if (quadradoOpcoes.contains(x, y)) {
+					if (aPropriedadeSelecionada != null && aCoPropriedades.get(i + pagina * maxProprieddadesPagina)
+							.contentEquals(aPropriedadeSelecionada))
+						aPropriedadeSelecionada = null;
+					else
+						aPropriedadeSelecionada = aCoPropriedades.get(i + pagina * maxProprieddadesPagina);
+					aValorPropriedade = "";
+					return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -63,6 +134,14 @@ public class SubTelaPropriedade implements Tela {
 	@Override
 	public boolean cliquedireito(int x, int y) {
 		return false;
+	}
+
+	public String getPropriedadeSelecionada() {
+		return aPropriedadeSelecionada;
+	}
+
+	public void adicionarPropriedadeTile(Tile prTile) {
+		prTile.addPropriedade(aPropriedadeSelecionada, aValorPropriedade);
 	}
 
 	@Override
@@ -74,6 +153,19 @@ public class SubTelaPropriedade implements Tela {
 	@Override
 	public String getNome() {
 		return "Setar/Adicionar propriedades";
+	}
+
+	@Override
+	public Tela getSubTela() {
+		return null;
+	}
+
+	public String getValorPropriedade() {
+		return aValorPropriedade;
+	}
+
+	public void setValorPropriedade(String aValorPropriedade) {
+		this.aValorPropriedade = aValorPropriedade;
 	}
 
 }

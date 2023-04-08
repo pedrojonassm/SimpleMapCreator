@@ -9,10 +9,8 @@ import java.util.ArrayList;
 import files.salvarCarregar;
 import graficos.telas.Tela;
 import graficos.telas.configuracao.TelaConfiguracao;
-import graficos.telas.configuracao.subtelas.SubTelaVelocidade;
 import graficos.telas.construcao.TelaConstrucoes;
 import graficos.telas.sprites.TelaSprites;
-import graficos.telas.sprites.subtelas.SubTelaPreSets;
 import main.Gerador;
 import world.Camera;
 import world.Tile;
@@ -26,7 +24,8 @@ public class Ui implements Tela {
 			preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível",
 			salva_construcao = "salvar construção";
 
-	public static int opcao, maxItensPagina;
+	private int opcao;
+	public static int maxItensPagina;
 	public static ArrayList<Tela> telas;
 	public static ArrayList<Tile> aTilesSelecionados;
 	private static String a_selecionar;
@@ -47,12 +46,14 @@ public class Ui implements Tela {
 		limpar_selecao = new Rectangle(preencher_tudo.width, preencher_tudo.height);
 		salvar_construcao = new Rectangle(preencher_tudo.width, preencher_tudo.height);
 		aTilesSelecionados = new ArrayList<>();
+		posicionarRetangulos();
 		telas.add(new TelaSprites());
 		telas.add(new TelaConfiguracao());
 		telas.add(new TelaConstrucoes());
 		// telas.add(new TelaCidadeCasa());
 		caixa_das_opcoes = new Rectangle(Gerador.TS * telas.size(), Gerador.TS);
-		posicionarRetangulos();
+		caixa_das_opcoes.x = Gerador.WIDTH / 2 - (telas.size()) / 2 * Gerador.TS;
+		caixa_das_opcoes.y = -Gerador.TS;
 
 	}
 
@@ -69,8 +70,6 @@ public class Ui implements Tela {
 		limpar_selecao.y = Gerador.HEIGHT / 2 - preencher_tudo.height;
 		salvar_construcao.x = Gerador.WIDTH - 90;
 		salvar_construcao.y = fazer_caixa.y + preencher_tudo.height;
-		caixa_das_opcoes.x = Gerador.WIDTH / 2 - (telas.size()) / 2 * Gerador.TS;
-		caixa_das_opcoes.y = -Gerador.TS;
 	}
 
 	private void carregar_sprites() {
@@ -259,16 +258,18 @@ public class Ui implements Tela {
 		return false;
 	}
 
-	public void hotBar(int prNumeroPressionado) {
-		if (opcao == 0)
-			SubTelaPreSets.instance.ativar(prNumeroPressionado);
-		if (opcao == 1)
-			SubTelaVelocidade.instance.setNew_speed(prNumeroPressionado);
-	}
-
 	@Override
 	public String getNome() {
 		return "Ui";
+	}
+
+	public Tela getTela() {
+		return telas.get(opcao);
+	}
+
+	@Override
+	public Tela getSubTela() {
+		return null;
 	}
 
 }

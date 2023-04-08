@@ -96,4 +96,9 @@ public class TelaCidadeCasa implements Tela {
 		return "Cidades e Casas";
 	}
 
+	@Override
+	public Tela getSubTela() {
+		return null;
+	}
+
 }
