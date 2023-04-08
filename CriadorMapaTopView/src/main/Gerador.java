@@ -387,7 +387,7 @@ public class Gerador extends Canvas
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if (ui.trocar_pagina(e.getX(), e.getY(), e.getWheelRotation()))
+		if (ui.trocar_pagina(e.getX(), e.getY(), (e.getWheelRotation() > 0) ? 1 : -1))
 			return;
 		else {
 			if (control) {

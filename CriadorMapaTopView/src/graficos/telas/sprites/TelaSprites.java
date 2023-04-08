@@ -385,11 +385,6 @@ public class TelaSprites implements Tela {
 
 	@Override
 	public boolean trocar_pagina(int x, int y, int prRodinha) {
-		int k = 0;
-		if (prRodinha > 0)
-			k = 1;
-		else
-			k = -1;
 		if (Ui.caixinha_dos_sprites.contains(x, y)) {
 			if (Gerador.control) {
 				if (sprite_selecionado.size() != 0) {
@@ -398,7 +393,7 @@ public class TelaSprites implements Tela {
 					return true;
 				}
 			}
-			pagina.set(livro, pagina.get(livro) + k);
+			pagina.set(livro, pagina.get(livro) + prRodinha);
 			if (pagina.get(livro) < 0) {
 				pagina.set(livro, max_pagina.get(livro));
 			} else if (pagina.get(livro) > max_pagina.get(livro)) {
@@ -407,7 +402,7 @@ public class TelaSprites implements Tela {
 			atualizar_caixinha();
 			return true;
 		} else if (caixinha_dos_livros.contains(x, y)) {
-			pagina_livros += k;
+			pagina_livros += prRodinha;
 			if (pagina_livros < 0) {
 				pagina_livros = max_pagina_livros;
 			} else if (pagina_livros > max_pagina_livros) {
@@ -415,7 +410,7 @@ public class TelaSprites implements Tela {
 			}
 			return true;
 		} else if (trocarSubTela.contains(x, y)) {
-			aTela += k;
+			aTela += prRodinha;
 			if (aTela >= subTelas.size())
 				aTela = 0;
 			else if (aTela < 0)

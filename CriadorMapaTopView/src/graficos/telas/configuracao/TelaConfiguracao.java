@@ -13,8 +13,8 @@ import main.Gerador;
 
 public class TelaConfiguracao implements Tela {
 
-	private Rectangle[] opcoes;
-	private int opcao;
+	private Rectangle quadradoOpcoes;
+	private int opcao, maxItensPagina;
 	private Rectangle voltar;
 	private ArrayList<Tela> subTelas;
 	public static TelaConfiguracao instance;
@@ -28,13 +28,19 @@ public class TelaConfiguracao implements Tela {
 		subTelas = new ArrayList<>();
 		subTelas.add(new SubTelaEscada());
 		subTelas.add(new SubTelaPropriedade());
-		opcoes = new Rectangle[subTelas.size()];
-		for (int i = 0; i < subTelas.size(); i++) {
-			opcoes[i] = new Rectangle(Ui.caixinha_dos_sprites.x,
-					Ui.caixinha_dos_sprites.y + Ui.caixinha_dos_sprites.height / 4
-							+ (i % Ui.maxItensPagina) * Gerador.quadrado.height / 3,
-					Ui.caixinha_dos_sprites.width, Gerador.quadrado.height / 3);
-		}
+		quadradoOpcoes = new Rectangle(Ui.caixinha_dos_sprites.width, Gerador.quadrado.height / 3);
+		quadradoOpcoes.x = Ui.caixinha_dos_sprites.x;
+		definirQuadradoOpcoesY(null);
+		maxItensPagina = (Ui.caixinha_dos_sprites.height - quadradoOpcoes.y) / quadradoOpcoes.height;
+
+	}
+
+	private void definirQuadradoOpcoesY(Integer prMultiplicador) {
+		if (prMultiplicador != null)
+			quadradoOpcoes.y = Ui.caixinha_dos_sprites.y + Ui.caixinha_dos_sprites.height / 4
+					+ (prMultiplicador % maxItensPagina) * quadradoOpcoes.height;
+		else
+			quadradoOpcoes.y = Ui.caixinha_dos_sprites.y + Ui.caixinha_dos_sprites.height / 4;
 	}
 
 	@Override
@@ -48,10 +54,11 @@ public class TelaConfiguracao implements Tela {
 			// renderizar opcoes para ir nas subtelas
 			for (int i = 0; i < subTelas.size(); i++) {
 				prGraphics.setColor(Color.green);
-				prGraphics.drawRect(opcoes[i].x, opcoes[i].y, opcoes[i].width, opcoes[i].height);
+				definirQuadradoOpcoesY(i);
+				prGraphics.drawRect(quadradoOpcoes.x, quadradoOpcoes.y, quadradoOpcoes.width, quadradoOpcoes.height);
 				prGraphics.setColor(Color.white);
-				prGraphics.drawString(subTelas.get(i).getNome(), Ui.caixinha_dos_sprites.x + opcoes[i].height,
-						opcoes[i].y + opcoes[i].height - opcoes[i].height / 3);
+				prGraphics.drawString(subTelas.get(i).getNome(), quadradoOpcoes.x + quadradoOpcoes.height,
+						quadradoOpcoes.y + (2 * quadradoOpcoes.height) / 3);
 			}
 		} else {
 			subTelas.get(opcao).render(prGraphics);
@@ -62,9 +69,10 @@ public class TelaConfiguracao implements Tela {
 
 	@Override
 	public boolean clicou(int x, int y) {
-		if (opcao < 0 || opcao >= opcoes.length) {
-			for (int i = 0; i < opcoes.length; i++) {
-				if (opcoes[i].contains(x, y)) {
+		if (opcao < 0 || opcao >= subTelas.size()) {
+			for (int i = 0; i < subTelas.size(); i++) {
+				definirQuadradoOpcoesY(i);
+				if (quadradoOpcoes.contains(x, y)) {
 					opcao = i;
 					return true;
 				}
@@ -80,7 +88,7 @@ public class TelaConfiguracao implements Tela {
 
 	@Override
 	public boolean cliquedireito(int x, int y) {
-		if (opcao >= 0 && opcao < opcoes.length) {
+		if (opcao >= 0 && opcao < subTelas.size()) {
 			return subTelas.get(opcao).cliquedireito(x, y);
 		}
 		return false;
@@ -88,7 +96,7 @@ public class TelaConfiguracao implements Tela {
 
 	@Override
 	public boolean trocar_pagina(int x, int y, int prRodinha) {
-		if (opcao >= 0 && opcao < opcoes.length) {
+		if (opcao >= 0 && opcao < subTelas.size()) {
 			return subTelas.get(opcao).trocar_pagina(x, y, prRodinha);
 		}
 		return false;

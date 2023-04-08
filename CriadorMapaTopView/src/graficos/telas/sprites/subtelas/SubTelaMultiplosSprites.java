@@ -101,14 +101,9 @@ public class SubTelaMultiplosSprites implements Tela {
 
 	@Override
 	public boolean trocar_pagina(int x, int y, int prRodinha) {
-		int k = 0;
-		if (prRodinha > 0)
-			k = 1;
-		else
-			k = -1;
 		if (caixinhaSprites.contains(x, y)) {
 
-			pagina += k;
+			pagina += prRodinha;
 			if (pagina < 0) {
 				pagina = aCoConjuntoSprites.size() / max_sprites_por_pagina;
 			} else if (pagina > aCoConjuntoSprites.size() / max_sprites_por_pagina) {

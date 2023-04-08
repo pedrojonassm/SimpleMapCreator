@@ -195,6 +195,8 @@ public class Tile {
 	}
 
 	public void addPropriedade(String prKey, Object prValor) {
+		if (prKey == null)
+			return;
 		if (aPropriedades == null)
 			aPropriedades = new HashMap<>();
 		if (aPropriedades.get(prKey) != null)

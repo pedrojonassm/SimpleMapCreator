@@ -105,7 +105,6 @@ public class salvarCarregar {
 				posicaoRelativa[0] = (iTile.getX() >> World.log_ts) - (minX >> World.log_ts);
 				posicaoRelativa[1] = (iTile.getY() >> World.log_ts) - (minY >> World.log_ts);
 				posicaoRelativa[2] = iTile.getZ() - minZ;
-				System.out.println(posicaoRelativa[0] + " , " + posicaoRelativa[1] + " , " + posicaoRelativa[2]);
 				iTile.addPropriedade("CRIADORMAPATOPVIEW_POSICAO_RELATIVA", posicaoRelativa.clone());
 			}
 			String lConteudo = toJSON(lTilesSelecionados);

@@ -25,7 +25,6 @@ public class Ui implements Tela {
 			salva_construcao = "salvar construção";
 
 	private int opcao;
-	public static int maxItensPagina;
 	public static ArrayList<Tela> telas;
 	public static ArrayList<Tile> aTilesSelecionados;
 	private static String a_selecionar;
@@ -35,7 +34,6 @@ public class Ui implements Tela {
 		telas = new ArrayList<>();
 		carregar_sprites();
 		opcao = 0;
-		maxItensPagina = 26;
 		mostrar = substituir = true;
 		futuro_local_altura = new Rectangle(Gerador.WIDTH - 100, 20, 10, 10);
 
