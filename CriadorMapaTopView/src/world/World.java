@@ -33,9 +33,10 @@ public class World {
 	public static boolean ready, ok;
 
 	public static int[] calcularPosicaoSemAltura(int prPos) {
-		int[] retorno = { 0, 0 };
+		int[] retorno = { 0, 0, 0 };
 		retorno[0] = (int) ((prPos % (WIDTH * HIGH)) / HIGH) * Gerador.TS - Camera.x;
 		retorno[1] = (int) (prPos / HEIGHT / HIGH) * Gerador.TS - Camera.y;
+		retorno[2] = (prPos % HIGH);
 		return retorno;
 	}
 
@@ -222,12 +223,11 @@ public class World {
 		Tile t;
 		int maxZ = HIGH;
 		for (int i = 0; i < HIGH - Gerador.player.getZ() - 1; i++) {
-			t = pegar_chao(((Gerador.quadrado.x >> log_ts) + (i + 1) + (i + 1) * WIDTH
-					+ (Gerador.quadrado.y >> log_ts) * WIDTH) * HIGH + Gerador.player.getZ() + 1); // trocar por
-																									// player.x e
-																									// player.y
+			t = pegar_chao(((Gerador.player.getX() >> log_ts) + (i + 1) + (i + 1) * WIDTH
+					+ (Gerador.player.getY() >> log_ts) * WIDTH) * HIGH + Gerador.player.getZ() + 1);
+
 			if (t != null && t.existe()) {
-				maxZ = t.getZ(); // caso exista uma imagem que não dá para ser vista, ela some
+				maxZ = t.getZ();
 				break;
 			}
 		}
@@ -319,7 +319,7 @@ public class World {
 		Tile lRetorno = World.pegar_chao(prPos);
 		if (lRetorno == null && prPos >= 0 && prPos < tiles.length) {
 			int[] lPosXY = World.calcularPosicaoSemAltura(prPos);
-			lRetorno = new Tile(lPosXY[0] + Camera.x, lPosXY[1] + Camera.y, Gerador.player.getZ());
+			lRetorno = new Tile(lPosXY[0] + Camera.x, lPosXY[1] + Camera.y, lPosXY[2]);
 			tiles[prPos] = lRetorno;
 		}
 		return lRetorno;
@@ -355,9 +355,8 @@ public class World {
 			ArrayList<Integer> posicaoRelativa = (ArrayList<Integer>) iTile
 					.getPropriedade("CRIADORMAPATOPVIEW_POSICAO_RELATIVA");
 
-			int iPos = World.calcular_pos(lTileInicial.getX() + (posicaoRelativa.get(0) << World.log_ts),
-					lTileInicial.getY() + (posicaoRelativa.get(1) << World.log_ts),
-					lTileInicial.getZ() + posicaoRelativa.get(2));
+			int iPos = Tile.pegarPosicaoRelativa(lTileInicial.getX(), lTileInicial.getY(), lTileInicial.getZ(),
+					posicaoRelativa);
 			iTile.setaPos(iPos);
 
 			iTile.removePropriedade("CRIADORMAPATOPVIEW_POSICAO_RELATIVA");

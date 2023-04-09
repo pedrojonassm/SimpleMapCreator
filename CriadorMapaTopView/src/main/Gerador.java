@@ -24,7 +24,6 @@ import files.salvarCarregar;
 import graficos.Ui;
 import graficos.telas.cidadescasas.TelaCidadeCasa;
 import graficos.telas.configuracao.TelaConfiguracao;
-import graficos.telas.configuracao.subtelas.SubTelaEscada;
 import graficos.telas.configuracao.subtelas.SubTelaPropriedade;
 import graficos.telas.construcao.TelaConstrucoes;
 import graficos.telas.sprites.TelaSprites;
@@ -146,13 +145,6 @@ public class Gerador extends Canvas
 					}
 				} else if (ui.getTela() instanceof TelaConfiguracao) {
 					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
-					if (Gerador.ui.getTela().getSubTela() instanceof SubTelaEscada) {
-						if (lEscolhido.getZ() < World.HIGH - 1)
-							World.pegarAdicionarTileMundo(
-									World.calcular_pos(lEscolhido.getX(), lEscolhido.getY(), lEscolhido.getZ()))
-									.virarDesvirarEscada();
-
-					}
 					if (ui.getTela().getSubTela() instanceof SubTelaPropriedade) {
 						SubTelaPropriedade.instance.adicionarPropriedadeTile(lEscolhido);
 					}
@@ -226,8 +218,12 @@ public class Gerador extends Canvas
 			lastTime = now;
 			if (delta >= 1) {
 				if (World.ready) {
-					tick();
-					render();
+					try {
+						tick();
+						render();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				frames++;
 				delta--;
@@ -344,7 +340,7 @@ public class Gerador extends Canvas
 			System.out.println("cx: " + Camera.x + " cy: " + Camera.y);
 			System.out.println("pos: " + aPos);
 			System.out.println("tem tile: " + (lEscolhido != null));
-			System.out.println("tx: " + teste[0] + " ty: " + teste[1] + "\n");
+			System.out.println("tx: " + teste[0] + " ty: " + teste[1] + " tz: " + teste[2] + "\n");
 			return;
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			if (ui.cliquedireito(e.getX(), e.getY()))

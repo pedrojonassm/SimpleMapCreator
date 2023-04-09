@@ -16,7 +16,7 @@ public class SubTelaPropriedade implements Tela {
 
 	private Rectangle adicionarNovaPropriedade, quadradoOpcoes;
 	private int maxPropriedadesPagina, pagina;
-	private ArrayList<String> aCoPropriedades;
+	protected ArrayList<String> aCoPropriedades;
 
 	private String aPropriedadeSelecionada, aValorPropriedade;
 

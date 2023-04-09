@@ -8,6 +8,7 @@ import java.util.List;
 
 import graficos.ConjuntoSprites;
 import graficos.telas.Tela;
+import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
 
 public class SubTelaMultiplosSprites implements Tela {
@@ -73,9 +74,11 @@ public class SubTelaMultiplosSprites implements Tela {
 	@Override
 	public boolean clicou(int x, int y) {
 		if (caixinhaSprites.contains(x, y)) {
-			ConjuntoSprites lConjuntoSprites = new ConjuntoSprites();
-			lConjuntoSprites.adicionar_sprite_selecionado();
-			aCoConjuntoSprites.add(lConjuntoSprites);
+			if (TelaSprites.sprite_selecionado.size() > 0) {
+				ConjuntoSprites lConjuntoSprites = new ConjuntoSprites();
+				lConjuntoSprites.adicionar_sprite_selecionado();
+				aCoConjuntoSprites.add(lConjuntoSprites);
+			}
 			return true;
 		} else if (limpar.contains(x, y)) {
 			aCoConjuntoSprites.clear();
@@ -118,8 +121,8 @@ public class SubTelaMultiplosSprites implements Tela {
 		return aCoConjuntoSprites;
 	}
 
-	public void addSpritesConjunto(List<ConjuntoSprites> aCoConjuntoSprites2) {
-		aCoConjuntoSprites.addAll(aCoConjuntoSprites2);
+	public void addSpritesConjunto(List<ConjuntoSprites> prCoConjuntoSprites) {
+		aCoConjuntoSprites.addAll(prCoConjuntoSprites);
 	}
 
 	@Override

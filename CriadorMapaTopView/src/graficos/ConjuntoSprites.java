@@ -54,7 +54,8 @@ public class ConjuntoSprites {
 	public void adicionar_sprite_selecionado() {
 
 		if (TelaSprites.sprite_selecionado.size() == 0) {
-			sprites.get(TelaSprites.tiles_nivel).clear();
+			if (sprites.size() > TelaSprites.tiles_nivel)
+				sprites.get(TelaSprites.tiles_nivel).clear();
 			return;
 		}
 

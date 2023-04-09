@@ -2,7 +2,10 @@ package entities;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.HashMap;
+import java.util.List;
 
+import graficos.telas.configuracao.subtelas.SubTelaTransporte;
 import main.Gerador;
 import main.Uteis;
 import main.interfaces.tickRender;
@@ -98,50 +101,37 @@ public class Player implements tickRender {
 		updateCamera();
 	}
 
-	public void utilizarEscada(Tile prEscada) {
-		int lsubir = 0;
-		if (prEscada == null)
+	@SuppressWarnings("unchecked")
+	public void utilizarEscada(Tile prTile) {
+		HashMap<String, Object> lHashMap = (HashMap<String, Object>) prTile.getPropriedade("TRANSPORT");
+		if (lHashMap == null || lHashMap.get("DESTINY") == null)
 			return;
-		if (prEscada.getZ() < z)
-			lsubir = -1;
-		else if (prEscada.getZ() == z)
-			lsubir = 1;
 
-		z += lsubir;
+		Tile lTile = World.pegarAdicionarTileMundo(Tile.pegarPosicaoRelativa(prTile.getX(), prTile.getY(),
+				prTile.getZ(), (List<Integer>) lHashMap.get("DESTINY")));
 
-		switch (prEscada.getStairs_direction()) {
-		case 0:
-			x = prEscada.getX() + Gerador.quadrado.width * lsubir;
-			y = prEscada.getY();
-			break;
-		case 1:
-			y = prEscada.getY() + Gerador.quadrado.height * lsubir;
-			x = prEscada.getX();
-			break;
-		case 2:
-			x = prEscada.getX() - Gerador.quadrado.width * lsubir;
-			y = prEscada.getY();
-			break;
-		case 3:
-			y = prEscada.getY() - Gerador.quadrado.height * lsubir;
-			x = prEscada.getX();
-			break;
-		}
-		sqm_alvo = World.pegarAdicionarTileMundo(World.calcular_pos(x, y, z));
-		x = sqm_alvo.getX();
-		y = sqm_alvo.getY();
+		x = lTile.getX();
+		y = lTile.getY();
+		z = lTile.getZ();
+		sqm_alvo = lTile;
+
 	}
 
 	private void colidindo_com_escada() {
-		Tile t = World.pegar_chao(x + Gerador.TS / 2, y + Gerador.TS / 2, z);
-		if (t != null && t.getStairs_type() != 0 && t.pode_subir_com_colisao()) {
-			utilizarEscada(t);
+		if (!(Gerador.ui.getTela().getSubTela() instanceof SubTelaTransporte))
 			return;
-		}
-		t = World.pegar_chao(x + Gerador.TS / 2, y + Gerador.TS / 2, z - 1);
-		if (t != null && t.getStairs_type() != 0 && t.pode_descer_com_colisao()) {
-			utilizarEscada(t);
-			return;
+
+		Tile lTile = World.pegar_chao(x + Gerador.TS / 2, y + Gerador.TS / 2, z);
+
+		if (lTile != null && lTile.getPropriedade("TRANSPORT") != null) {
+			@SuppressWarnings("unchecked")
+			HashMap<String, Object> lHashmap = (HashMap<String, Object>) lTile.getPropriedade("TRANSPORT");
+			try {
+				if (lHashmap.get("TYPE") != null
+						&& lHashmap.get("TYPE").toString().contentEquals(SubTelaTransporte.instance.opcaoSelecionada))
+					utilizarEscada(lTile);
+			} catch (Exception e) {
+			}
 		}
 
 	}

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import graficos.Ui;
 import graficos.telas.Tela;
-import graficos.telas.configuracao.subtelas.SubTelaEscada;
+import graficos.telas.configuracao.subtelas.SubTelaTransporte;
 import graficos.telas.configuracao.subtelas.SubTelaPropriedade;
 import main.Gerador;
 
@@ -26,7 +26,7 @@ public class TelaConfiguracao implements Tela {
 		voltar = new Rectangle(Ui.caixinha_dos_sprites.width - Gerador.TS * 4 / 6,
 				Ui.caixinha_dos_sprites.y + Gerador.TS / 4, Gerador.TS / 2, Gerador.TS / 2);
 		subTelas = new ArrayList<>();
-		subTelas.add(new SubTelaEscada());
+		subTelas.add(new SubTelaTransporte());
 		subTelas.add(new SubTelaPropriedade());
 		quadradoOpcoes = new Rectangle(Ui.caixinha_dos_sprites.width, Gerador.quadrado.height / 3);
 		quadradoOpcoes.x = Ui.caixinha_dos_sprites.x;

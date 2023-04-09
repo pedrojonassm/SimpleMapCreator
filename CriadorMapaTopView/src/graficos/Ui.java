@@ -107,26 +107,12 @@ public class Ui implements Tela {
 	public void render(Graphics g) {
 		int w1;
 
-		if (a_selecionar != null) {
-			w1 = g.getFontMetrics().stringWidth(a_selecionar);
-			g.drawString(a_selecionar, caixa_das_opcoes.x + caixa_das_opcoes.width / 2 - w1 / 2,
-					caixa_das_opcoes.y + Gerador.TS + 20);
-			g.drawRect(caixa_das_opcoes.x, caixa_das_opcoes.y, caixa_das_opcoes.width, caixa_das_opcoes.height);
-			for (int i = 0; i < telas.size(); i++) {
-				g.drawImage(sprite_opcoes[i], caixa_das_opcoes.x + i * Gerador.TS, caixa_das_opcoes.y, null);
-				if (opcao == i) {
-					g.setColor(new Color(0, 255, 0, 50));
-					g.fillRect(caixa_das_opcoes.x + i * Gerador.TS, caixa_das_opcoes.y, Gerador.TS, Gerador.TS);
-					g.setColor(Color.white);
-				}
-			}
-		}
-
 		g.setColor(new Color(255, 255, 0, 50));
 		int dx, dy;
+
 		if (opcao <= 1)
 			for (Tile iTile : aTilesSelecionados) {
-				if (iTile == null)
+				if (iTile == null || iTile.getZ() != Gerador.player.getZ())
 					continue;
 				dx = iTile.getX() - Camera.x - (iTile.getZ() - Gerador.player.getZ()) * Gerador.quadrado.width;
 				dy = iTile.getY() - Camera.y - (iTile.getZ() - Gerador.player.getZ()) * Gerador.quadrado.height;
@@ -135,23 +121,40 @@ public class Ui implements Tela {
 					g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
 			}
 
-		if (aTilesSelecionados.size() > 0) {
-			g.setColor(Color.green);
-			if (opcao == 0 || opcao == 1) {
-				desenhar_opcoes(g);
-			}
-
-			w1 = g.getFontMetrics().stringWidth(substituira);
-			g.setColor(Color.white);
-			if (substituir) {
-				g.fillRect(substitui.x, substitui.y, substitui.width, substitui.height);
-			} else {
-				g.drawRect(substitui.x, substitui.y, substitui.width, substitui.height);
-			}
-			g.drawString(substituira, substitui.x - substitui.width - w1, substitui.y + substitui.height);
-		}
-
+		g.setColor(Color.white);
 		if (mostrar) {
+
+			if (a_selecionar != null) {
+				w1 = g.getFontMetrics().stringWidth(a_selecionar);
+				g.drawString(a_selecionar, caixa_das_opcoes.x + caixa_das_opcoes.width / 2 - w1 / 2,
+						caixa_das_opcoes.y + Gerador.TS + 20);
+				g.drawRect(caixa_das_opcoes.x, caixa_das_opcoes.y, caixa_das_opcoes.width, caixa_das_opcoes.height);
+				for (int i = 0; i < telas.size(); i++) {
+					g.drawImage(sprite_opcoes[i], caixa_das_opcoes.x + i * Gerador.TS, caixa_das_opcoes.y, null);
+					if (opcao == i) {
+						g.setColor(new Color(0, 255, 0, 50));
+						g.fillRect(caixa_das_opcoes.x + i * Gerador.TS, caixa_das_opcoes.y, Gerador.TS, Gerador.TS);
+						g.setColor(Color.white);
+					}
+				}
+			}
+
+			if (aTilesSelecionados.size() > 0) {
+				g.setColor(Color.green);
+				if (opcao == 0 || opcao == 1) {
+					desenhar_opcoes(g);
+				}
+
+				w1 = g.getFontMetrics().stringWidth(substituira);
+				g.setColor(Color.white);
+				if (substituir) {
+					g.fillRect(substitui.x, substitui.y, substitui.width, substitui.height);
+				} else {
+					g.drawRect(substitui.x, substitui.y, substitui.width, substitui.height);
+				}
+				g.drawString(substituira, substitui.x - substitui.width - w1, substitui.y + substitui.height);
+			}
+
 			g.setColor(Color.black);
 			g.fillRect(caixinha_dos_sprites.x, caixinha_dos_sprites.y, caixinha_dos_sprites.width,
 					caixinha_dos_sprites.height);
@@ -184,12 +187,7 @@ public class Ui implements Tela {
 		if (!mostrar)
 			return false;
 
-		if (telas.get(opcao).clicou(x, y)) {
-			return true;
-		} else if (caixa_das_opcoes.contains(x, y)) {
-			opcao = (x - caixa_das_opcoes.x) / Gerador.TS;
-			return true;
-		} else if (aTilesSelecionados.size() > 0) {
+		if (aTilesSelecionados.size() > 0) {
 			if (substitui.contains(x, y)) {
 				substituir = !substituir;
 				return true;
@@ -204,7 +202,15 @@ public class Ui implements Tela {
 				return true;
 			} else if (salvar_construcao.contains(x, y)) {
 				salvarCarregar.salvar_construcao(aTilesSelecionados);
+				return true;
 			}
+		}
+
+		if (caixa_das_opcoes.contains(x, y)) {
+			opcao = (x - caixa_das_opcoes.x) / Gerador.TS;
+			return true;
+		} else if (telas.get(opcao).clicou(x, y)) {
+			return true;
 		}
 
 		return false;

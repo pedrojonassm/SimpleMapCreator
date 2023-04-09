@@ -11,15 +11,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import graficos.ConjuntoSprites;
 import graficos.Ui;
-import graficos.telas.configuracao.subtelas.SubTelaEscada;
 import graficos.telas.configuracao.subtelas.SubTelaPropriedade;
+import graficos.telas.configuracao.subtelas.SubTelaTransporte;
 import graficos.telas.sprites.TelaSprites;
 import graficos.telas.sprites.subtelas.SubTelaMultiplosSprites;
 import main.Gerador;
+import main.Uteis;
 
 public class Tile {
-	List<ConjuntoSprites> aCoConjuntoSprites;
-	private int x, y, z, aPos, stairs_type, stairs_direction, posicao_Conjunto;
+	private List<ConjuntoSprites> CoConjuntoSprites;
+	private int x, y, z, aPos, posicao_Conjunto;
 	// stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito, 3
 	// = buraco sempre aberto, 4 = Buraco fechado (usar picareta ou
 	// cavar para abrí-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
@@ -33,22 +34,12 @@ public class Tile {
 		posicao_Conjunto = 0;
 		// quando o player interage com um tile, ocorre um evento, o evento é um int
 		// enviado para o servidor junto com o tile para ocorrer algo
-		stairs_type = 0;
-		stairs_direction = 0;
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		aCoConjuntoSprites = new ArrayList<>();
-		aCoConjuntoSprites.add(new ConjuntoSprites());
+		CoConjuntoSprites = new ArrayList<>();
+		CoConjuntoSprites.add(new ConjuntoSprites());
 		aPos = World.calcular_pos(x, y, z);
-	}
-
-	public void setStairs_type(int stairs_type) {
-		this.stairs_type = stairs_type;
-	}
-
-	public void setStairs_direction(int stairs_direction) {
-		this.stairs_direction = stairs_direction;
 	}
 
 	public int ModificadorVelocidade() {
@@ -58,14 +49,6 @@ public class Tile {
 			} catch (Exception e) {
 			}
 		return 0;
-	}
-
-	public int getStairs_type() {
-		return stairs_type;
-	}
-
-	public int getStairs_direction() {
-		return stairs_direction;
 	}
 
 	public int getX() {
@@ -89,12 +72,13 @@ public class Tile {
 	}
 
 	public ArrayList<BufferedImage> obterSprite_atual() {
-		return aCoConjuntoSprites.get(posicao_Conjunto).obterSprite_atual();
+		return CoConjuntoSprites.get(posicao_Conjunto).obterSprite_atual();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void render(Graphics g) {
-		if (posicao_Conjunto < aCoConjuntoSprites.size() && aCoConjuntoSprites.get(posicao_Conjunto) != null)
-			for (ArrayList<int[]> imagens : aCoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
+		if (posicao_Conjunto < CoConjuntoSprites.size() && CoConjuntoSprites.get(posicao_Conjunto) != null)
+			for (ArrayList<int[]> imagens : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
 				if (imagens != null && imagens.size() > 0) {
 					int[] sprite = imagens.get(World.tiles_index % imagens.size());
 					int dx, dy;
@@ -112,16 +96,10 @@ public class Tile {
 				}
 			}
 
-		if (Gerador.ui.getTela().getSubTela() instanceof SubTelaEscada && stairs_type != 0) {
-			int[] cor = { 255, 255, 255 };
-			if (stairs_type != 4)
-				cor[stairs_type - 1] = 0;
-			g.setColor(new Color(cor[0], cor[1], cor[2], 50));
-			g.fillRect(x - Camera.x - (z - Gerador.player.getZ()) * Gerador.quadrado.width,
-					y - Camera.y - (z - Gerador.player.getZ()) * Gerador.quadrado.height, Gerador.TS, Gerador.TS);
-		}
 		if (Gerador.ui.getTela().getSubTela() instanceof SubTelaPropriedade && aPropriedades != null
 				&& aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()) != null) {
+			g.setColor(new Color(255, 255, 255, 50));
+			g.fillRect(x - Camera.x, y - Camera.y, Gerador.TS, Gerador.TS);
 			g.setColor(Color.white);
 
 			int w1 = g.getFontMetrics()
@@ -132,39 +110,68 @@ public class Tile {
 						.substring(0, aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada())
 								.toString().length() / ((w1 / Gerador.TS) + 1));
 				w1 = g.getFontMetrics().stringWidth(lPropriedadeMostrada + "...");
-				g.drawString(lPropriedadeMostrada + "...", x + Gerador.TS / 2 - w1 / 2, y + Gerador.TS / 2);
+				g.drawString(lPropriedadeMostrada + "...", x + Gerador.TS / 2 - w1 / 2 - Camera.x,
+						y + Gerador.TS / 2 - Camera.y);
 			} else
 				g.drawString(aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()).toString(),
-						x + Gerador.TS / 2 - w1 / 2, y + Gerador.TS / 2);
+						x + Gerador.TS / 2 - w1 / 2 - Camera.x, y + Gerador.TS / 2 - Camera.y);
 
+		} else if (Gerador.ui.getTela().getSubTela() instanceof SubTelaTransporte && aPropriedades != null) {
+			if (aPropriedades.get("TRANSPORT") != null) {
+				HashMap<String, Object> lHashMap = (HashMap<String, Object>) aPropriedades.get("TRANSPORT");
+				if (lHashMap.get("TYPE") != null && SubTelaTransporte.instance.opcaoSelecionada != null
+						&& SubTelaTransporte.instance.opcaoSelecionada.contentEquals(lHashMap.get("TYPE").toString())) {
+					g.setColor(new Color(255, 255, 255, 50));
+					g.fillRect(x - Camera.x, y - Camera.y, Gerador.TS, Gerador.TS);
+					if (Gerador.player.getZ() == z
+							&& Gerador.quadrado.intersects(x - Camera.x + Gerador.quadrado.x % Gerador.TS,
+									y - Camera.y + Gerador.quadrado.y % Gerador.TS, Gerador.TS, Gerador.TS)
+							&& lHashMap.get("DESTINY") != null) {
+						g.setColor(Color.white);
+						Tile lTile = World.pegarAdicionarTileMundo(
+								Tile.pegarPosicaoRelativa(x, y, z, (List<Integer>) lHashMap.get("DESTINY")));
+						if (lTile != null) {
+							int lDiferencaNivel = lTile.getZ() - z, angulo = (lDiferencaNivel > 0) ? 45 : 225;
+							g.drawRect(lTile.getX() - Camera.x, lTile.getY() - Camera.y, Gerador.TS, Gerador.TS);
+							for (int i = 0; i < Uteis.modulo(lDiferencaNivel); i++) {
+								g.drawArc(lTile.getX() - Camera.x + Gerador.quadrado.width / 2,
+										lTile.getY() - Camera.y + Gerador.quadrado.height / 2
+												+ (i + 1) * Gerador.TS / 10,
+										Gerador.TS / 10, Gerador.TS / 10, angulo, 90);
+							}
+
+						}
+					}
+				}
+			}
 		}
 
 	}
 
 	public void adicionar_sprite_selecionado() {
-		if (aCoConjuntoSprites.size() == 0)
-			aCoConjuntoSprites.add(new ConjuntoSprites());
-		aCoConjuntoSprites.get(posicao_Conjunto).adicionar_sprite_selecionado();
+		if (CoConjuntoSprites.size() == 0)
+			CoConjuntoSprites.add(new ConjuntoSprites());
+		CoConjuntoSprites.get(posicao_Conjunto).adicionar_sprite_selecionado();
 	}
 
 	@SuppressWarnings("unchecked")
 	public void adicionarMultiplosSprites() {
 		if (SubTelaMultiplosSprites.instance.getConjuntoSprites() != null) {
-			aCoConjuntoSprites = (List<ConjuntoSprites>) SubTelaMultiplosSprites.instance.getConjuntoSprites().clone();
+			CoConjuntoSprites = (List<ConjuntoSprites>) SubTelaMultiplosSprites.instance.getConjuntoSprites().clone();
 		}
 
 	}
 
 	public void copiarPraTela() {
 		if (Gerador.ui.getTela().getSubTela() instanceof SubTelaMultiplosSprites)
-			SubTelaMultiplosSprites.instance.addSpritesConjunto(aCoConjuntoSprites);
+			SubTelaMultiplosSprites.instance.addSpritesConjunto(CoConjuntoSprites);
 		else if (Gerador.ui.getTela().getSubTela() instanceof SubTelaPropriedade) {
 			if (aPropriedades != null
 					&& aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()) != null)
 				SubTelaPropriedade.instance.setValorPropriedade(
 						aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()).toString());
 		} else
-			aCoConjuntoSprites.get(posicao_Conjunto).pegarsprites();
+			CoConjuntoSprites.get(posicao_Conjunto).pegarsprites();
 	}
 
 	public void setX(int x) {
@@ -180,7 +187,7 @@ public class Tile {
 	}
 
 	public boolean existe() {
-		for (ArrayList<int[]> spr : aCoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
+		for (ArrayList<int[]> spr : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
 			if (spr.size() > 0) {
 				return true;
 			}
@@ -217,24 +224,8 @@ public class Tile {
 		aPropriedades.remove(prKey);
 	}
 
-	public void virar_escada() {
-		stairs_type = SubTelaEscada.instance.modo_escadas + 1;
-		stairs_direction = SubTelaEscada.instance.escadas_direction;
-	}
-
-	public void virarDesvirarEscada() {
-		if (getStairs_type() == 0)
-			virar_escada();
-		else
-			desvirar_escada();
-	}
-
-	public void desvirar_escada() {
-		stairs_type = 0;
-	}
-
 	public boolean tem_sprites() {
-		for (ArrayList<int[]> spr : aCoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
+		for (ArrayList<int[]> spr : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
 			if (spr.size() > 0) {
 				return true;
 			}
@@ -242,27 +233,12 @@ public class Tile {
 		return false;
 	}
 
-	public boolean pode_descer_com_colisao() {
-		if (stairs_type == 1 || stairs_type == 2
-				|| stairs_type == 3 /* || (stairs_type == 4 && !aberto_ou_fechado) */) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean pode_subir_com_colisao() {
-		if (stairs_type == 1) {
-			return true;
-		}
-		return false;
-	}
-
 	public boolean trocar_pagina(int x, int y, int prRodinha) {
 		posicao_Conjunto += prRodinha;
-		if (posicao_Conjunto >= aCoConjuntoSprites.size())
+		if (posicao_Conjunto >= CoConjuntoSprites.size())
 			posicao_Conjunto = 0;
 		else if (posicao_Conjunto < 0)
-			posicao_Conjunto = aCoConjuntoSprites.size() - 1;
+			posicao_Conjunto = CoConjuntoSprites.size() - 1;
 
 		return true;
 	}
@@ -288,12 +264,12 @@ public class Tile {
 		return false;
 	}
 
-	public void setSprites(ArrayList<ArrayList<int[]>> sprites) {
-		this.aCoConjuntoSprites.get(posicao_Conjunto).setSprites(sprites);
+	public List<ConjuntoSprites> getCoConjuntoSprites() {
+		return CoConjuntoSprites;
 	}
 
-	public ArrayList<ArrayList<int[]>> getSprites() {
-		return aCoConjuntoSprites.get(posicao_Conjunto).getSprites();
+	public void setCoConjuntoSprites(List<ConjuntoSprites> aCoConjuntoSprites) {
+		this.CoConjuntoSprites = aCoConjuntoSprites;
 	}
 
 	public HashMap<String, Object> getaPropriedades() {
@@ -312,6 +288,20 @@ public class Tile {
 			}
 		}
 		return -1;
+	}
+
+	public static List<Integer> pegarPosicaoRelativa(int prFromX, int prFromY, int prFromZ, int prX, int prY, int prZ) {
+		List<Integer> lRetorno = new ArrayList<>(); // Horizontal, vertical, altura
+		lRetorno.add((prX >> World.log_ts) - (prFromX >> World.log_ts));
+		lRetorno.add((prY >> World.log_ts) - (prFromY >> World.log_ts));
+		lRetorno.add(prZ - prFromZ);
+
+		return lRetorno;
+	}
+
+	public static int pegarPosicaoRelativa(int prFromX, int prFromY, int prFromZ, List<Integer> prPosicaoRelativa) {
+		return World.calcular_pos(prFromX + (prPosicaoRelativa.get(0) << World.log_ts),
+				prFromY + (prPosicaoRelativa.get(1) << World.log_ts), prFromZ + prPosicaoRelativa.get(2));
 	}
 
 }

@@ -100,12 +100,9 @@ public class salvarCarregar {
 					maxZ = iTile.getZ();
 				lTilesSelecionados.add((Tile) fromJson(toJSON(iTile), iTile.getClass()));
 			}
-			int[] posicaoRelativa = new int[3];
 			for (Tile iTile : lTilesSelecionados) {
-				posicaoRelativa[0] = (iTile.getX() >> World.log_ts) - (minX >> World.log_ts);
-				posicaoRelativa[1] = (iTile.getY() >> World.log_ts) - (minY >> World.log_ts);
-				posicaoRelativa[2] = iTile.getZ() - minZ;
-				iTile.addPropriedade("CRIADORMAPATOPVIEW_POSICAO_RELATIVA", posicaoRelativa.clone());
+				iTile.addPropriedade("CRIADORMAPATOPVIEW_POSICAO_RELATIVA",
+						Tile.pegarPosicaoRelativa(minX, minY, minZ, iTile.getX(), iTile.getY(), iTile.getZ()));
 			}
 			String lConteudo = toJSON(lTilesSelecionados);
 			int horizontal = (maxX >> World.log_ts) - (minX >> World.log_ts),
