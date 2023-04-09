@@ -144,6 +144,8 @@ public class SubTelaTransporte implements Tela {
 			String lNome;
 			do {
 				lNome = JOptionPane.showInputDialog("Insira um nome para o Transporte");
+				if (lNome == null)
+					break;
 				if (lNome != null && !lNome.isBlank()) {
 					if (!opcoes.contains(lNome))
 						opcoes.add(lNome);

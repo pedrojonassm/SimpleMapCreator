@@ -127,8 +127,14 @@ public class Ui implements Tela {
 		g.setColor(Color.white);
 
 		for (Runnable iRunnable : renderizarDepois) {
-			iRunnable.run();
+			try {
+				iRunnable.run();
+			} catch (Exception e) {
+			}
+			
 		}
+		
+		renderizarDepois.clear();
 
 		g.setColor(Color.white);
 		if (mostrar) {

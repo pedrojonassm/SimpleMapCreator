@@ -115,6 +115,8 @@ public class SubTelaPropriedade implements Tela {
 			String lNome;
 			do {
 				lNome = JOptionPane.showInputDialog("Insira um nome para a nova Propriedade");
+				if (lNome == null)
+					break;
 				if (lNome != null && !lNome.isBlank()) {
 					if (!aCoPropriedades.contains(lNome))
 						aCoPropriedades.add(lNome);
