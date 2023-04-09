@@ -20,7 +20,7 @@ import main.Uteis;
 
 public class Tile {
 	private List<ConjuntoSprites> CoConjuntoSprites;
-	private int x, y, z, aPos, posicao_Conjunto;
+	private int x, y, z, aPos, posicao_Conjunto, aux;
 	// stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito, 3
 	// = buraco sempre aberto, 4 = Buraco fechado (usar picareta ou
 	// cavar para abrí-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
@@ -102,19 +102,20 @@ public class Tile {
 			g.fillRect(x - Camera.x, y - Camera.y, Gerador.TS, Gerador.TS);
 			g.setColor(Color.white);
 
-			int w1 = g.getFontMetrics()
+			aux = g.getFontMetrics()
 					.stringWidth(aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()).toString());
-			if (w1 > Gerador.TS) {
+			if (aux > Gerador.TS) {
 				String lPropriedadeMostrada = aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada())
 						.toString()
 						.substring(0, aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada())
-								.toString().length() / ((w1 / Gerador.TS) + 1));
-				w1 = g.getFontMetrics().stringWidth(lPropriedadeMostrada + "...");
-				g.drawString(lPropriedadeMostrada + "...", x + Gerador.TS / 2 - w1 / 2 - Camera.x,
-						y + Gerador.TS / 2 - Camera.y);
+								.toString().length() / ((aux / Gerador.TS) + 1));
+				aux = g.getFontMetrics().stringWidth(lPropriedadeMostrada + "...");
+				Ui.renderizarDepois.add(() -> g.drawString(lPropriedadeMostrada + "...",
+						x + Gerador.TS / 2 - aux / 2 - Camera.x, y + Gerador.TS / 2 - Camera.y));
 			} else
-				g.drawString(aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()).toString(),
-						x + Gerador.TS / 2 - w1 / 2 - Camera.x, y + Gerador.TS / 2 - Camera.y);
+				Ui.renderizarDepois.add(() -> g.drawString(
+						aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()).toString(),
+						x + Gerador.TS / 2 - aux / 2 - Camera.x, y + Gerador.TS / 2 - Camera.y));
 
 		} else if (Gerador.ui.getTela().getSubTela() instanceof SubTelaTransporte && aPropriedades != null) {
 			if (aPropriedades.get("TRANSPORT") != null) {
@@ -132,12 +133,18 @@ public class Tile {
 								Tile.pegarPosicaoRelativa(x, y, z, (List<Integer>) lHashMap.get("DESTINY")));
 						if (lTile != null) {
 							int lDiferencaNivel = lTile.getZ() - z, angulo = (lDiferencaNivel > 0) ? 45 : 225;
-							g.drawRect(lTile.getX() - Camera.x, lTile.getY() - Camera.y, Gerador.TS, Gerador.TS);
-							for (int i = 0; i < Uteis.modulo(lDiferencaNivel); i++) {
-								g.drawArc(lTile.getX() - Camera.x + Gerador.quadrado.width / 2,
+							Ui.renderizarDepois.add(
+									() -> g.drawRect(lTile.getX() - Camera.x - Gerador.quadrado.width * lDiferencaNivel,
+											lTile.getY() - Camera.y - Gerador.quadrado.height * lDiferencaNivel,
+											Gerador.TS, Gerador.TS));
+							for (aux = 0; aux < Uteis.modulo(lDiferencaNivel); aux++) {
+								Ui.renderizarDepois.add(() -> g.drawArc(
+										lTile.getX() - Camera.x + Gerador.quadrado.width / 2
+												- Gerador.quadrado.width * lDiferencaNivel,
 										lTile.getY() - Camera.y + Gerador.quadrado.height / 2
-												+ (i + 1) * Gerador.TS / 10,
-										Gerador.TS / 10, Gerador.TS / 10, angulo, 90);
+												+ (aux + 1) * Gerador.TS / 10
+												- Gerador.quadrado.height * lDiferencaNivel,
+										Gerador.TS / 10, Gerador.TS / 10, angulo, 90));
 							}
 
 						}

@@ -30,11 +30,14 @@ public class Ui implements Tela {
 	private static String a_selecionar;
 	public static BufferedImage[] setas, sprite_opcoes;
 
+	public static ArrayList<Runnable> renderizarDepois;
+
 	public Ui() {
 		telas = new ArrayList<>();
 		carregar_sprites();
 		opcao = 0;
 		mostrar = substituir = true;
+		renderizarDepois = new ArrayList<>();
 		futuro_local_altura = new Rectangle(Gerador.WIDTH - 100, 20, 10, 10);
 
 		caixinha_dos_sprites = new Rectangle(Gerador.quadrado.width * 5, Gerador.quadrado.width * 11);
@@ -120,6 +123,12 @@ public class Ui implements Tela {
 						&& dy < Gerador.HEIGHT)
 					g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
 			}
+
+		g.setColor(Color.white);
+
+		for (Runnable iRunnable : renderizarDepois) {
+			iRunnable.run();
+		}
 
 		g.setColor(Color.white);
 		if (mostrar) {

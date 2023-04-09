@@ -84,6 +84,8 @@ public class SubTelaTransporte implements Tela {
 					adicionarNovoTransporte.y + adicionarNovoTransporte.height / 2);
 		}
 		w1 = prGraphics.getFontMetrics().stringWidth("Ida e Volta");
+		HashMap<String, Runnable> lHashMap = new HashMap<>();
+
 		prGraphics.drawString("Ida e Volta", aIdaVolta.x + aIdaVolta.width / 2 - w1 / 2,
 				aIdaVolta.y + (aIdaVolta.height * 2));
 
