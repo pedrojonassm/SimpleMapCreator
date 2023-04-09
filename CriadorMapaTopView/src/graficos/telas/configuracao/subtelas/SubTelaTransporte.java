@@ -82,11 +82,10 @@ public class SubTelaTransporte implements Tela {
 			w1 = prGraphics.getFontMetrics().stringWidth("Adicionar novo Transporte");
 			prGraphics.drawString("Adicionar novo Transporte", adicionarNovoTransporte.x + w1 / 2,
 					adicionarNovoTransporte.y + adicionarNovoTransporte.height / 2);
-		} else if (aIdaVolta.contains(Gerador.quadrado.x, Gerador.quadrado.y)) {
-			w1 = prGraphics.getFontMetrics().stringWidth("Ida e Volta");
-			prGraphics.drawString("Ida e Volta", aIdaVolta.x + aIdaVolta.width / 2 - w1 / 2,
-					aIdaVolta.y + (aIdaVolta.height * 2));
 		}
+		w1 = prGraphics.getFontMetrics().stringWidth("Ida e Volta");
+		prGraphics.drawString("Ida e Volta", aIdaVolta.x + aIdaVolta.width / 2 - w1 / 2,
+				aIdaVolta.y + (aIdaVolta.height * 2));
 
 		for (int i = 0; (i + pagina * maxItensPagina) < opcoes.size() && i < maxItensPagina; i++) {
 
