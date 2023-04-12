@@ -161,8 +161,9 @@ public class Player implements tickRender {
 	}
 
 	public void updateCamera() {
-		Camera.x = Camera.clamp(x - Gerador.WIDTH / 2, 0, World.WIDTH * Gerador.TS - Gerador.WIDTH);
-		Camera.y = Camera.clamp(y - Gerador.HEIGHT / 2, 0, World.HEIGHT * Gerador.TS - Gerador.HEIGHT);
+		Camera.x = Camera.clamp(x - Gerador.windowWidth / 2, 0, World.WIDTH * Gerador.VariavelX - Gerador.windowWidth);
+		Camera.y = Camera.clamp(y - Gerador.windowHEIGHT / 2, 0,
+				World.HEIGHT * Gerador.VariavelY - Gerador.windowHEIGHT);
 
 	}
 

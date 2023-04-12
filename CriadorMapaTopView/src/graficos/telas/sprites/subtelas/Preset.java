@@ -14,11 +14,18 @@ public class Preset {
 	private Rectangle rectangle;
 	private Rectangle rectangleOld;
 
-	public Preset(int x, int y, int width, int height) {
-		rectangle = new Rectangle(x, y, width, height);
-		rectangleOld = new Rectangle(rectangle.x + rectangle.width * 2, rectangle.y, rectangle.width, rectangle.height);
+	public Preset(int width, int height) {
+		rectangle = new Rectangle(width, height);
+		rectangleOld = new Rectangle(rectangle.width, rectangle.height);
 		sprites = new ArrayList<>();
 		spritesOld = new ArrayList<>();
+	}
+
+	public void posicionarRetangulos(int x, int y) {
+		rectangle.x = x;
+		rectangle.y = y;
+		rectangleOld.x = rectangle.x + rectangle.width * 2;
+		rectangleOld.y = rectangle.y;
 	}
 
 	public ArrayList<ArrayList<int[]>> getSprites() {

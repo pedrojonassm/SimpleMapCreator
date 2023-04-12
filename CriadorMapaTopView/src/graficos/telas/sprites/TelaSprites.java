@@ -20,7 +20,7 @@ import world.World;
 public class TelaSprites implements Tela {
 
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
-	private Rectangle caixinha_dos_livros;
+	private Rectangle caixinha_dos_livros, trocarSubTela;
 	private static ArrayList<String> nome_livros;
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego,
 			index_tile_pego, salvar_nesse_livro, aTela;
@@ -29,8 +29,6 @@ public class TelaSprites implements Tela {
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens
 																		// estáticas World.sprites.get(array)[lista]
 	private ArrayList<Tela> subTelas;
-
-	private Rectangle trocarSubTela;
 
 	public static TelaSprites instance;
 
@@ -61,20 +59,22 @@ public class TelaSprites implements Tela {
 		subTelas = new ArrayList<>();
 		subTelas.add(new SubTelaPreSets());
 		subTelas.add(new SubTelaMultiplosSprites());
-		caixinha_dos_livros = new Rectangle(Gerador.quadrado.width / 3, Ui.caixinha_dos_sprites.height);
-		max_sprites_por_pagina = (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width)
-				* (Ui.caixinha_dos_sprites.height / Gerador.quadrado.width);
-		trocarSubTela = new Rectangle(subTelas.size() * (Gerador.quadrado.height / 3), Gerador.quadrado.height / 3);
-		posicionarRetangulos();
+		caixinha_dos_livros = new Rectangle(Gerador.VariavelX / 3, Ui.caixinha_dos_sprites.height);
+		max_sprites_por_pagina = (Ui.caixinha_dos_sprites.width / Gerador.VariavelX)
+				* (Ui.caixinha_dos_sprites.height / Gerador.VariavelX);
+		trocarSubTela = new Rectangle(subTelas.size() * (Gerador.VariavelY / 3), Gerador.VariavelY / 3);
 		max_livros_por_pagina = caixinha_dos_livros.height / caixinha_dos_livros.width;
 
 	}
 
-	private void posicionarRetangulos() {
+	@Override
+	public void posicionarRetangulos() {
 		caixinha_dos_livros.x = Ui.caixinha_dos_sprites.x + Ui.caixinha_dos_sprites.width;
 		caixinha_dos_livros.y = Ui.caixinha_dos_sprites.y;
-		trocarSubTela.x = Gerador.WIDTH - Gerador.TS * 2 - (subTelas.size() * 20) / 2;
-		trocarSubTela.y = Gerador.HEIGHT / (Gerador.quadrado.width / 4);
+		trocarSubTela.x = Gerador.windowWidth - Gerador.VariavelX * 2 - (subTelas.size() * Gerador.VariavelX / 3);
+		trocarSubTela.y = Gerador.windowHEIGHT / (Gerador.VariavelY / 4);
+		for (Tela iTela : subTelas)
+			iTela.posicionarRetangulos();
 	}
 
 	@Override
@@ -117,23 +117,23 @@ public class TelaSprites implements Tela {
 		prGraphics.setColor(Color.white);
 		String tile_nivel = "Nível nos tiles: ";
 		w1 = prGraphics.getFontMetrics().stringWidth(tile_nivel + (tiles_nivel + 1));
-		prGraphics.drawString(tile_nivel + (tiles_nivel + 1),
-				Ui.futuro_local_altura.x - w1 + Ui.futuro_local_altura.width,
-				Gerador.HEIGHT - Ui.futuro_local_altura.y);
+		prGraphics.drawString(tile_nivel + (tiles_nivel + 1), Ui.local_altura.x - w1 + Ui.local_altura.width,
+				Ui.local_altura.y + (Ui.local_altura.height * 2) / 3);
 		w1 = prGraphics.getFontMetrics().stringWidth("Trocar");
 		prGraphics.drawRect(trocarSubTela.x, trocarSubTela.y, trocarSubTela.width, trocarSubTela.height);
 		prGraphics.setColor(Color.red);
 		prGraphics.fillRect(trocarSubTela.x + (trocarSubTela.width / subTelas.size()) * aTela, trocarSubTela.y,
 				trocarSubTela.width / subTelas.size(), trocarSubTela.height);
 		prGraphics.setColor(Color.white);
-		prGraphics.drawString("Trocar", trocarSubTela.x + trocarSubTela.width / 2 - w1 / 2, trocarSubTela.y + 15);
+		prGraphics.drawString("Trocar", trocarSubTela.x + trocarSubTela.width / 2 - w1 / 2,
+				trocarSubTela.y + (trocarSubTela.height * 3) / 4);
 
 		subTelas.get(aTela).render(prGraphics);
 	}
 
 	public void max_pagina_por_total_de_sprites(int total_sprites) {
-		int divisao = ((Ui.caixinha_dos_sprites.width / Gerador.quadrado.width)
-				* (Ui.caixinha_dos_sprites.height / Gerador.quadrado.width));
+		int divisao = ((Ui.caixinha_dos_sprites.width / Gerador.VariavelX)
+				* (Ui.caixinha_dos_sprites.height / Gerador.VariavelY));
 		max_pagina.set(0, (int) (total_sprites / divisao));
 	}
 
@@ -154,7 +154,7 @@ public class TelaSprites implements Tela {
 			nome = "Adicionar novo livro";
 		}
 		if (nome != null) {
-			g.drawString(nome, Gerador.quadrado.x + Gerador.quadrado.width, Gerador.quadrado.y + 10);
+			g.drawString(nome, Gerador.quadrado.x + Gerador.VariavelX, Gerador.quadrado.y + Gerador.VariavelY / 6);
 		}
 	}
 
@@ -226,18 +226,18 @@ public class TelaSprites implements Tela {
 			for (int i = 0; i < max_sprites_por_pagina
 					&& i + (max_sprites_por_pagina * pagina.get(livro)) < tiles.size(); i++) {
 				x = desenhando % (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width);
-				y = desenhando / (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width);
+				y = desenhando / (Ui.caixinha_dos_sprites.width / Gerador.quadrado.height);
 				ArrayList<BufferedImage> lDesenhoAtual = tiles.get(i + (max_sprites_por_pagina * pagina.get(livro)))
 						.obterSprite_atual();
 				for (BufferedImage iBufferedImage : lDesenhoAtual)
 					g.drawImage(iBufferedImage, x * Gerador.quadrado.width + Ui.caixinha_dos_sprites.x,
-							y * Gerador.quadrado.width + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
+							y * Gerador.quadrado.height + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
 							Gerador.quadrado.height, null);
 
 				if (i + (max_sprites_por_pagina * pagina.get(livro)) == index_tile_pego && livro == livro_tile_pego) {
 					g.setColor(new Color(0, 255, 0, 50));
 					g.fillRect(x * Gerador.quadrado.width + Ui.caixinha_dos_sprites.x,
-							y * Gerador.quadrado.width + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
+							y * Gerador.quadrado.height + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
 							Gerador.quadrado.height);
 				}
 
@@ -252,24 +252,24 @@ public class TelaSprites implements Tela {
 						+ Ui.caixinha_dos_sprites.y;
 				g.setColor(Color.green);
 				g.drawRect(x, y, Gerador.quadrado.width, Gerador.quadrado.height);
-				g.drawLine(x + Gerador.quadrado.width / 2, y + Gerador.quadrado.width / 5,
-						x + Gerador.quadrado.width / 2, y + Gerador.quadrado.height - Gerador.quadrado.width / 5);
+				g.drawLine(x + Gerador.quadrado.width / 2, y + Gerador.quadrado.height / 5,
+						x + Gerador.quadrado.width / 2, y + Gerador.quadrado.height - Gerador.quadrado.height / 5);
 				g.drawLine(x + Gerador.quadrado.width / 5, y + Gerador.quadrado.height / 2,
-						x + Gerador.quadrado.width - Gerador.quadrado.width / 5, y + Gerador.quadrado.height / 2);
+						x + Gerador.quadrado.width - Gerador.quadrado.height / 5, y + Gerador.quadrado.height / 2);
 			}
 		}
 	}
 
 	private void desenhar_no_quadrado(BufferedImage bufferedImage, int desenhando, Graphics g) {
 		int x = desenhando % (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width),
-				y = desenhando / (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width);
+				y = desenhando / (Ui.caixinha_dos_sprites.width / Gerador.quadrado.height);
 		g.drawImage(bufferedImage, x * Gerador.quadrado.width + Ui.caixinha_dos_sprites.x,
-				y * Gerador.quadrado.width + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width, Gerador.quadrado.height,
-				null);
+				y * Gerador.quadrado.height + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
+				Gerador.quadrado.height, null);
 		if (sprite_selecionado.contains(desenhando + max_sprites_por_pagina * pagina.get(livro))) {
 			g.setColor(new Color(0, 255, 0, 50));
 			g.fillRect(x * Gerador.quadrado.width + Ui.caixinha_dos_sprites.x,
-					y * Gerador.quadrado.width + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
+					y * Gerador.quadrado.height + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
 					Gerador.quadrado.height);
 		}
 	}
@@ -302,8 +302,8 @@ public class TelaSprites implements Tela {
 	}
 
 	private void pegar_ou_retirar_sprite_selecionado(int x, int y) {
-		int px = x / Gerador.quadrado.width, py = (y - Ui.caixinha_dos_sprites.y) / Gerador.quadrado.height;
-		int aux = px + py * (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width);
+		int px = x / Gerador.VariavelX, py = (y - Ui.caixinha_dos_sprites.y) / Gerador.VariavelY;
+		int aux = px + py * (Ui.caixinha_dos_sprites.width / Gerador.VariavelX);
 		if (livro == 0) {
 			if (!Gerador.control && sprite_selecionado.contains(aux + max_sprites_por_pagina * pagina.get(livro))) {
 				sprite_selecionado.remove((Integer) (aux + max_sprites_por_pagina * pagina.get(livro)));
@@ -475,8 +475,8 @@ public class TelaSprites implements Tela {
 					livro_tile_pego = -1;
 					index_tile_pego = -1;
 				} else if (livro > 0) {
-					int px = x / Gerador.quadrado.width, py = (y - Ui.caixinha_dos_sprites.y) / Gerador.quadrado.height;
-					int aux = px + py * (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width)
+					int px = x / Gerador.VariavelX, py = (y - Ui.caixinha_dos_sprites.y) / Gerador.VariavelY;
+					int aux = px + py * (Ui.caixinha_dos_sprites.width / Gerador.VariavelX)
 							+ (max_sprites_por_pagina * pagina.get(livro));
 					if (conjuntos_salvos.get(livro - 1).size() > aux) {
 						if (JOptionPane.showConfirmDialog(null, "tem certeza que deseja apagar esse sprite?") == 0) {

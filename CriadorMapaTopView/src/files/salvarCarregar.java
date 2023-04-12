@@ -21,16 +21,16 @@ import graficos.ConjuntoSprites;
 import graficos.telas.construcao.TelaConstrucoes;
 import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
+import main.configs.ExConfig;
 import world.Build;
 import world.Tile;
 import world.World;
 
 public class salvarCarregar {
 	public static File arquivo_books, arquivo_worlds, arquivo_construcoes;
-	// carregar e salvar os "livros"
 	public static final String local_books = "books", local_worlds = "worlds", local_builds = "construcoes",
 			name_file_builds = "build.bld", name_foto_builds = "image.png", end_file_book = ".book",
-			name_file_world = "world.world";
+			name_file_world = "world.world", name_file_config = "world.config";
 
 	public salvarCarregar() {
 		arquivo_books = new File(local_books);
@@ -76,7 +76,6 @@ public class salvarCarregar {
 					if (pasta.exists()) {
 						pasta = null;
 					} else {
-						// file.createNewFile();
 						pasta.mkdir();
 					}
 				}
@@ -127,7 +126,6 @@ public class salvarCarregar {
 	}
 
 	private static void criar_imagem(File pasta) {
-		// World world = new World(new File(novo.getFile(), name_file_builds));
 		Tile[] tiles;
 		BufferedReader reader;
 		try {
@@ -218,18 +216,79 @@ public class salvarCarregar {
 		}
 	}
 
-	public static void salvar_mundo(File pasta_do_mundo, String salvar) {
+	public static void salvarConfiguracoesMundo(File pasta_do_mundo) throws IOException {
+		File lFileworld = new File(pasta_do_mundo, name_file_config);
+		if (!lFileworld.exists())
+			lFileworld.createNewFile();
+		BufferedWriter writer = new BufferedWriter(new FileWriter(lFileworld));
+
+		Gerador.aConfig.atualizarAntesSalvar();
+
+		writer.write(toJSON(Gerador.aConfig));
+		writer.flush();
+		writer.close();
+
+	}
+
+	public static void carregarConfiguracoesMundo(File lFileConfig) throws Exception {
+		if (lFileConfig.exists()) {
+			BufferedReader reader = new BufferedReader(new FileReader(lFileConfig));
+			String singleLine = null;
+			String lFile = "";
+			while ((singleLine = reader.readLine()) != null) {
+				lFile += singleLine;
+			}
+			Gerador.aConfig = (ExConfig) fromJson(lFile, ExConfig.class);
+		} else {
+			Gerador.aConfig = new ExConfig();
+		}
+	}
+
+	public static void salvar_mundo(File pastaDoMundo) {
+		if (pastaDoMundo == null) {
+
+			try {
+				String nome = null;
+				do {
+					nome = JOptionPane.showInputDialog("Insira um nome válido para esse mundo");
+					if (nome == null) {
+						if (JOptionPane.showConfirmDialog(null, "Tem certeza que deseja cancelar?") == 0)
+							return;
+					}
+				} while (nome == null || nome.isBlank()
+						|| (pastaDoMundo = new File(salvarCarregar.arquivo_worlds, nome)).exists());
+				pastaDoMundo.mkdir();
+				new File(pastaDoMundo, salvarCarregar.name_file_world).createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+		String salvar = "";
+		salvar += salvarCarregar.toJSON(World.tiles);
 		try {
-			File world = new File(pasta_do_mundo, name_file_world);
-			if (!world.exists())
-				world.createNewFile();
-			BufferedWriter writer = new BufferedWriter(new FileWriter(world));
+			salvarConfiguracoesMundo(pastaDoMundo);
+			File lFileworld = new File(pastaDoMundo, name_file_world);
+			if (!lFileworld.exists())
+				lFileworld.createNewFile();
+			BufferedWriter writer = new BufferedWriter(new FileWriter(lFileworld));
 			writer.write(salvar);
 			writer.flush();
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static Tile[] carregarMundo(File prfile) throws Exception {
+		carregarConfiguracoesMundo(new File(prfile.getParentFile().getAbsolutePath() + "/" + name_file_config));
+		@SuppressWarnings("resource")
+		BufferedReader reader = new BufferedReader(new FileReader(prfile));
+		String singleLine = null;
+		while ((singleLine = reader.readLine()) == null || singleLine.isBlank()) {
+		}
+		return (Tile[]) salvarCarregar.fromJson(singleLine, Tile[].class);
+
 	}
 
 	public static String toJSON(final Object prObj) {

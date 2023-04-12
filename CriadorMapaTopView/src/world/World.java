@@ -1,29 +1,23 @@
 package world;
 
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 
 import files.salvarCarregar;
 import graficos.Spritesheet;
 import graficos.Ui;
 import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
+import main.configs.ExConfig;
 
 public class World {
 
 	public static Tile[] tiles;
 	public static int WIDTH, HEIGHT, HIGH;
-	public static int maxDistance = (Gerador.WIDTH / Gerador.TS + 10) / 2, posX, posY;
 	public static ArrayList<BufferedImage[]> sprites_do_mundo; // chaos64, chaos128, paredes64, paredes128, itens64,
 																// itens128, escadas64, escadas128
 	public static int log_ts;
@@ -50,74 +44,35 @@ public class World {
 
 	public World(File file) {
 		ready = false;
-		log_ts = log2(Gerador.TS);
 		// *
 		tiles_index = tiles_animation_time = 0;
 		max_tiles_animation_time = 15;
 		try {
+			ok = true;
 			if (file == null) {
 				arquivo = null;
-				determinar_tamanho();
-				tiles = new Tile[WIDTH * HEIGHT * HIGH];
+				Integer[] lTamanho = ExConfig.loadValoresPadrao();
+				if (Gerador.player != null)
+					lTamanho = ExConfig.determinarTmanhoMundo();
+				if (lTamanho == null)
+					ok = false;
+				else {
+					WIDTH = lTamanho[0];
+					HEIGHT = lTamanho[1];
+					HIGH = lTamanho[2];
+					tiles = new Tile[WIDTH * HEIGHT * HIGH];
+					Gerador.aConfig.mundoCarregado();
+				}
+
 			} else {
 				arquivo = file.getParentFile();
-				carregar(file);
+				tiles = salvarCarregar.carregarMundo(file);
 			}
-			ready = true;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		// */
-	}
-
-	private void determinar_tamanho() {
-		JTextField width = new JTextField(), height = new JTextField(), high = new JTextField();
-		KeyListener l = new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-				if (!(e.getKeyChar() >= '0' && e.getKeyChar() <= '9')) {
-					e.consume();
-				}
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
-		};
-		width.addKeyListener(l);
-		height.addKeyListener(l);
-		high.addKeyListener(l);
-		Object[] message = { "Width (>= 20):", width, "Height (>= 20):", height, "High:", high };
-
-		int option = JOptionPane.showConfirmDialog(null, message, "Tamanho do mundo", JOptionPane.OK_CANCEL_OPTION);
-		if (option == JOptionPane.OK_OPTION) {
-			if (!width.getText().isBlank() && !height.getText().isBlank() && !high.getText().isBlank()) {
-				WIDTH = Integer.parseInt(width.getText());
-				HEIGHT = Integer.parseInt(height.getText());
-				HIGH = Integer.parseInt(high.getText());
-			}
-
-			if (WIDTH <= 20 || HEIGHT <= 20 || HIGH <= 0) {
-				JOptionPane.showMessageDialog(null,
-						"alguns dados não foram inseridos ou foram inseridos incorretamente;\n Inserindo valores padrão");
-				valores_padrao();
-			}
-			ok = true;
-		} else {
-			ok = false;
-		}
-	}
-
-	private void valores_padrao() {
-		WIDTH = 20;
-		HEIGHT = 20;
-		HIGH = 7;
 	}
 
 	public static void carregar_sprites() {
@@ -199,21 +154,12 @@ public class World {
 		return retorno;
 	}
 
-	private int log2(int n) {
-		int k = 0;
-		while (n % 2 == 0) {
-			k++;
-			n = n / 2;
-		}
-		return k;
-	}
-
 	public void render(Graphics g) {
 		int xstart = Camera.x >> log_ts;
 		int ystart = Camera.y >> log_ts;
 
-		int xfinal = xstart + (Gerador.WIDTH >> log_ts) + 1;
-		int yfinal = ystart + (Gerador.HEIGHT >> log_ts) + 1;
+		int xfinal = xstart + (Gerador.windowWidth >> log_ts) + 1;
+		int yfinal = ystart + (Gerador.windowHEIGHT >> log_ts) + 1;
 
 		if ((xstart -= (Gerador.player.getZ() + 1)) < 0)
 			xstart = 0;
@@ -243,71 +189,6 @@ public class World {
 					if (lTile != null)
 						lTile.render(g);
 				}
-	}
-
-	public static void salvar() {
-		if (arquivo == null) {
-
-			try {
-				String nome = null;
-				do {
-					nome = JOptionPane.showInputDialog("Insira um nome válido para esse mundo");
-					if (nome == null) {
-						if (JOptionPane.showConfirmDialog(null, "Tem certeza que deseja cancelar?") == 0)
-							return;
-					}
-				} while (nome == null || nome.isBlank()
-						|| (arquivo = new File(salvarCarregar.arquivo_worlds, nome)).exists());
-				arquivo.mkdir();
-				new File(arquivo, salvarCarregar.name_file_world).createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}
-		String salvar = "" + WIDTH + ";" + HEIGHT + ";" + HIGH + "\n";
-		int lSize = salvar.length();
-		salvar += salvarCarregar.toJSON(tiles);
-		// se tiver falho em salvar da forma acima
-		if (salvar.length() == lSize)
-			for (int xx = 0; xx < WIDTH; xx++)
-				for (int yy = 0; yy < HEIGHT; yy++)
-					for (int zz = 0; zz < HIGH; zz++)
-						salvar += salvarCarregar.toJSON(tiles[(xx + (yy * WIDTH)) * HIGH + zz]);
-
-		salvarCarregar.salvar_mundo(arquivo, salvar);
-	}
-
-	private void carregar(File prfile) throws Exception {
-		@SuppressWarnings("resource")
-		BufferedReader reader = new BufferedReader(new FileReader(prfile));
-		String singleLine = null;
-		singleLine = reader.readLine();
-		String[] sla = singleLine.split(";");
-		ArrayList<String> lLinhas = new ArrayList<>();
-		WIDTH = Integer.parseInt(sla[0]);
-		HEIGHT = Integer.parseInt(sla[1]);
-		HIGH = Integer.parseInt(sla[2]);
-		while ((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
-			lLinhas.add(singleLine);
-		}
-		tiles = (Tile[]) salvarCarregar.fromJson(lLinhas.get(0), tiles.getClass());
-		if (tiles == null || tiles.length == 0) {
-			tiles = new Tile[WIDTH * HEIGHT * HIGH];
-			for (int xx = 0; xx < WIDTH; xx++)
-				for (int yy = 0; yy < HEIGHT; yy++)
-					for (int zz = 0; zz < HIGH; zz++) {
-						int lPos = (xx + (yy * WIDTH)) * HIGH + zz;
-						String lTileString = lLinhas.get(lPos);
-						if (lTileString == null || lTileString.isEmpty() || lTileString == "null")
-							continue;
-						Tile t = (Tile) salvarCarregar.fromJson(lTileString, Tile.class);
-						t.setX(xx * Gerador.TS);
-						t.setY(yy * Gerador.TS);
-						t.setZ(zz);
-						tiles[lPos] = t;
-					}
-		}
 	}
 
 	public static void fill(ArrayList<Tile> prTilesSelecionados) {
@@ -397,12 +278,20 @@ public class World {
 		if (JOptionPane.showConfirmDialog(null, "Deseja salvar o mundo atual?") == 0)
 			salvar();
 
+		ready = false;
 		Gerador.world = new World(file);
+		Gerador.instance.startGerador();
+	}
+
+	public static void salvar() {
+		salvarCarregar.salvar_mundo(arquivo);
+
 	}
 
 	public static void carregar_mundo() {
 		Gerador.fd.setVisible(true);
-		novo_mundo(Gerador.fd.getFiles()[0]);
+		if (Gerador.fd.getFiles() != null && Gerador.fd.getFiles().length > 0)
+			novo_mundo(Gerador.fd.getFiles()[0]);
 	}
 
 }

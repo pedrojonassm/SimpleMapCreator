@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 import graficos.Ui;
 import graficos.telas.Tela;
-import graficos.telas.configuracao.subtelas.SubTelaTransporte;
 import graficos.telas.configuracao.subtelas.SubTelaPropriedade;
+import graficos.telas.configuracao.subtelas.SubTelaTransporte;
 import main.Gerador;
 
 public class TelaConfiguracao implements Tela {
@@ -23,15 +23,23 @@ public class TelaConfiguracao implements Tela {
 		instance = this;
 		opcao = -1;
 
-		voltar = new Rectangle(Ui.caixinha_dos_sprites.width - Gerador.TS * 4 / 6,
-				Ui.caixinha_dos_sprites.y + Gerador.TS / 4, Gerador.TS / 2, Gerador.TS / 2);
+		voltar = new Rectangle(Gerador.VariavelX / 2, Gerador.VariavelY / 2);
 		subTelas = new ArrayList<>();
 		subTelas.add(new SubTelaTransporte());
 		subTelas.add(new SubTelaPropriedade());
-		quadradoOpcoes = new Rectangle(Ui.caixinha_dos_sprites.width, Gerador.quadrado.height / 3);
+		quadradoOpcoes = new Rectangle(Ui.caixinha_dos_sprites.width, Gerador.VariavelY / 3);
+
+	}
+
+	@Override
+	public void posicionarRetangulos() {
+		voltar.x = Ui.caixinha_dos_sprites.width - Gerador.VariavelX * 4 / 6;
+		voltar.y = Ui.caixinha_dos_sprites.y + Gerador.VariavelY / 4;
 		quadradoOpcoes.x = Ui.caixinha_dos_sprites.x;
 		definirQuadradoOpcoesY(null);
 		maxItensPagina = (Ui.caixinha_dos_sprites.height - quadradoOpcoes.y) / quadradoOpcoes.height;
+		for (Tela iTela : subTelas)
+			iTela.posicionarRetangulos();
 
 	}
 
@@ -113,4 +121,5 @@ public class TelaConfiguracao implements Tela {
 			return null;
 		return subTelas.get(opcao);
 	}
+
 }

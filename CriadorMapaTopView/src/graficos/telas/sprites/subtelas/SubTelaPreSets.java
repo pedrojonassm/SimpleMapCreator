@@ -8,7 +8,7 @@ import main.Gerador;
 
 public class SubTelaPreSets implements Tela {
 
-	private final int aPreSetSize = Gerador.TS / 2;
+	private int aPreSetSize;
 
 	private Preset[] aPreSets;
 
@@ -16,11 +16,18 @@ public class SubTelaPreSets implements Tela {
 
 	public SubTelaPreSets() {
 		instance = this;
+		aPreSetSize = Gerador.aConfig.getTamanhoPreSets();
 		aPreSets = new Preset[10];
 		for (int i = 0; i < aPreSets.length; i++) {
-			aPreSets[i] = new Preset(Gerador.WIDTH - aPreSetSize * 4,
-					Gerador.HEIGHT / 2 - (aPreSetSize * aPreSets.length) / 2 + i * aPreSetSize, aPreSetSize,
-					aPreSetSize);
+			aPreSets[i] = new Preset(aPreSetSize, aPreSetSize);
+		}
+	}
+
+	@Override
+	public void posicionarRetangulos() {
+		for (int i = 0; i < aPreSets.length; i++) {
+			aPreSets[i].posicionarRetangulos(Gerador.windowWidth - (Gerador.VariavelX / 2) * 5, Gerador.windowHEIGHT / 2
+					- ((Gerador.VariavelX / 2) * aPreSets.length) / 2 + i * (Gerador.VariavelX / 2));
 		}
 	}
 

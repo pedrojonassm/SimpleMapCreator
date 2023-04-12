@@ -22,6 +22,11 @@ public class TelaConstrucoes implements Tela {
 		pagina = 0;
 
 		quadradoOpcoes = new Rectangle(Ui.caixinha_dos_sprites.width, Gerador.quadrado.height / 3);
+
+	}
+
+	@Override
+	public void posicionarRetangulos() {
 		quadradoOpcoes.x = Ui.caixinha_dos_sprites.x;
 		definirQuadradoOpcoesY(null);
 		maxItensPagina = (Ui.caixinha_dos_sprites.height - quadradoOpcoes.y) / quadradoOpcoes.height;

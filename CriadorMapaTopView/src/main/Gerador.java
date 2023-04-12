@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -29,6 +31,7 @@ import graficos.telas.construcao.TelaConstrucoes;
 import graficos.telas.sprites.TelaSprites;
 import graficos.telas.sprites.subtelas.SubTelaMultiplosSprites;
 import graficos.telas.sprites.subtelas.SubTelaPreSets;
+import main.configs.ExConfig;
 import world.Camera;
 import world.Tile;
 import world.World;
@@ -41,13 +44,16 @@ public class Gerador extends Canvas
 	public static FileDialog fd;
 	private Thread thread;
 	private boolean isRunning = true;
-	public static final int WIDTH = 1240, HEIGHT = 720, TS = 64;
+	public static int windowWidth = 1240, windowHEIGHT = 720, TS, VariavelX, VariavelY, sprite_selecionado_index;
+	// alguns itens da UI ficaram bem posicionados, mas foram utilizando o TS
+	// constante como = 64 e uma tela fixa
+	// VariavelX e VariavelY, é a variavel onde, quando era 1240/720 a tela, o valor
+	// era 64 e 64
 	public static int FPS = 0;
 	private BufferedImage image;
 
 	public static int nivel;
 	public static World world;
-	public static double amountOfTicks = 60.0;
 
 	public static Player player;
 	salvarCarregar memoria;
@@ -58,31 +64,44 @@ public class Gerador extends Canvas
 	public static boolean control, shift;
 	public static Random random;
 	public static Ui ui;
-	public static int sprite_selecionado_index;
 	private int sprite_selecionado_animation_time, aEstadoTile;
 
+	public static ExConfig aConfig;
+
+	public static Gerador instance;
+
 	public Gerador() {
-
-		player = new Player(Gerador.TS * 5, Gerador.TS * 5, 0);
+		instance = this;
+		aConfig = new ExConfig();
 		memoria = new salvarCarregar();
-		quadrado = new Rectangle(Gerador.TS, Gerador.TS);
-		ui = new Ui();
 		world = new World(null);
-		if (world.ok) {
-			World.carregar_sprites();
-			control = shift = clique_no_mapa = false;
-			random = new Random();
-			memoria.carregar_livros();
-			memoria.carregar_construcoes();
+		if (World.ok) {
+			startGerador();
 			initFrame();
-			fd = new FileDialog(Gerador.frame, "Choose a file", FileDialog.LOAD);
-			fd.setDirectory("C:\\");
-			fd.setFile("*.world");
-
-			image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-			sprite_selecionado_index = sprite_selecionado_animation_time = 0;
 		}
 
+	}
+
+	public void startGerador() {
+		TS = aConfig.getTileSize();
+		VariavelX = windowWidth / 19;
+		VariavelY = windowHEIGHT / 11;
+		player = new Player(aConfig.getPlayerX(), aConfig.getPlayerY(), 0);
+		World.log_ts = Uteis.log(Gerador.TS, 2);
+		quadrado = new Rectangle(Gerador.TS, Gerador.TS);
+		ui = new Ui();
+		World.carregar_sprites();
+		control = shift = clique_no_mapa = false;
+		random = new Random();
+		memoria.carregar_livros();
+		memoria.carregar_construcoes();
+		fd = new FileDialog(Gerador.frame, "Choose a file", FileDialog.LOAD);
+		fd.setDirectory(Gerador.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+		fd.setFile("*.world");
+
+		image = new BufferedImage(windowWidth, windowHEIGHT, BufferedImage.TYPE_INT_RGB);
+		sprite_selecionado_index = sprite_selecionado_animation_time = 0;
+		World.ready = true;
 	}
 
 	public void initFrame() {
@@ -90,7 +109,23 @@ public class Gerador extends Canvas
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
-		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				// TODO é bem feito, vai ter que reposicionar alguns quadrados unicamente, e
+				// resto acreito que irá funcionar
+				// mas faça isso depois. E lembre-se do frame.setResizable(false);
+
+				windowWidth = e.getComponent().getWidth();
+				windowHEIGHT = e.getComponent().getHeight();
+				VariavelX = windowWidth / 19;
+				VariavelY = windowHEIGHT / 11;
+				ui.posicionarRetangulos();
+
+				super.componentResized(e);
+			}
+		});
+		setPreferredSize(new Dimension(windowWidth, windowHEIGHT));
 		frame = new JFrame("Gerador de mundo");
 		frame.add(this);
 		frame.setResizable(false);
@@ -174,7 +209,7 @@ public class Gerador extends Canvas
 
 		Graphics g = image.getGraphics();
 		g.setColor(new Color(0, 0, 0));
-		g.fillRect(0, 0, WIDTH, HEIGHT);
+		g.fillRect(0, 0, windowWidth, windowHEIGHT);
 		world.render(g);
 
 		g.setColor(Color.red);
@@ -201,13 +236,13 @@ public class Gerador extends Canvas
 		ui.render(g);
 		g.dispose();
 		g = bs.getDrawGraphics();
-		g.drawImage(image, 0, 0, WIDTH, HEIGHT, null);
+		g.drawImage(image, 0, 0, windowWidth, windowHEIGHT, null);
 		bs.show();
 	}
 
 	public void run() {
 		long lastTime = System.nanoTime();
-		double ns = 1000000000 / amountOfTicks;
+		double ns = 1000000000 / aConfig.getAmountOfTicks();
 		double delta = 0;
 		int frames = 0;
 		double timer = System.currentTimeMillis();
@@ -217,7 +252,7 @@ public class Gerador extends Canvas
 			delta += (now - lastTime) / ns;
 			lastTime = now;
 			if (delta >= 1) {
-				if (World.ready) {
+				if (World.ready && ui.getTela() != null) {
 					try {
 						tick();
 						render();

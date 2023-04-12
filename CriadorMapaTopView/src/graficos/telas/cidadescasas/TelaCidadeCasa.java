@@ -23,10 +23,11 @@ public class TelaCidadeCasa implements Tela {
 
 		cidades = new ArrayList<Cidade>();
 
-		adicionar_nova_cidade = new Rectangle(Ui.caixinha_dos_sprites.x + Ui.caixinha_dos_sprites.width - 40,
-				Ui.caixinha_dos_sprites.y + 80, 20, 20);
-		voltar = new Rectangle(Ui.caixinha_dos_sprites.x + 20, adicionar_nova_cidade.y, adicionar_nova_cidade.width,
-				adicionar_nova_cidade.height);
+		adicionar_nova_cidade = new Rectangle(
+				Ui.caixinha_dos_sprites.x + Ui.caixinha_dos_sprites.width - Gerador.VariavelX / 2,
+				Ui.caixinha_dos_sprites.y + Gerador.VariavelY, Gerador.VariavelX / 3, Gerador.VariavelY / 3);
+		voltar = new Rectangle(Ui.caixinha_dos_sprites.width - Gerador.TS * 4 / 6,
+				Ui.caixinha_dos_sprites.y + Gerador.TS / 4, Gerador.TS / 2, Gerador.TS / 2);
 	}
 
 	@Override
@@ -99,6 +100,11 @@ public class TelaCidadeCasa implements Tela {
 	@Override
 	public Tela getSubTela() {
 		return null;
+	}
+
+	@Override
+	public void posicionarRetangulos() {
+
 	}
 
 }

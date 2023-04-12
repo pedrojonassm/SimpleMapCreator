@@ -18,11 +18,9 @@ import world.World;
 
 public class Ui implements Tela {
 	public static boolean mostrar, substituir;
-	public static Rectangle caixinha_dos_sprites, futuro_local_altura, preencher_tudo, fazer_caixa, limpar_selecao,
+	public static Rectangle caixinha_dos_sprites, local_altura, preencher_tudo, fazer_caixa, limpar_selecao,
 			salvar_construcao, substitui, caixa_das_opcoes;
-	private static final String altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa",
-			preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível",
-			salva_construcao = "salvar construção";
+	private static String altura, limpar, caixa, preencher, substituira, interactive_sprite, salva_construcao;
 
 	private int opcao;
 	public static ArrayList<Tela> telas;
@@ -33,44 +31,57 @@ public class Ui implements Tela {
 	public static ArrayList<Runnable> renderizarDepois;
 
 	public Ui() {
+		altura = Gerador.aConfig.getNomeAlturaUi();
+		limpar = Gerador.aConfig.getNomeLimparUi();
+		caixa = Gerador.aConfig.getNomeCaixaUi();
+		preencher = Gerador.aConfig.getNomePreencherUi();
+		substituira = Gerador.aConfig.getNomeSubstituirUi();
+		interactive_sprite = Gerador.aConfig.getNomeSpriteInteragivelUi();
+		salva_construcao = Gerador.aConfig.getNomeSalva_construcaoUi();
 		telas = new ArrayList<>();
 		carregar_sprites();
 		opcao = 0;
 		mostrar = substituir = true;
 		renderizarDepois = new ArrayList<>();
-		futuro_local_altura = new Rectangle(Gerador.WIDTH - 100, 20, 10, 10);
+		local_altura = new Rectangle(Gerador.VariavelX / 6, Gerador.VariavelY / 6);
 
-		caixinha_dos_sprites = new Rectangle(Gerador.quadrado.width * 5, Gerador.quadrado.width * 11);
-		preencher_tudo = new Rectangle(90, 20);
-		substitui = new Rectangle(10, 10);
+		caixinha_dos_sprites = new Rectangle(Gerador.VariavelX * 5,
+				Gerador.VariavelY * (Gerador.windowHEIGHT / Gerador.VariavelY));
+		preencher_tudo = new Rectangle((Gerador.VariavelX * 3) / 2, Gerador.VariavelY / 3);
+		substitui = new Rectangle(Gerador.VariavelX / 6, Gerador.VariavelY / 6);
 		fazer_caixa = new Rectangle(preencher_tudo.width, preencher_tudo.height);
 		limpar_selecao = new Rectangle(preencher_tudo.width, preencher_tudo.height);
 		salvar_construcao = new Rectangle(preencher_tudo.width, preencher_tudo.height);
 		aTilesSelecionados = new ArrayList<>();
-		posicionarRetangulos();
 		telas.add(new TelaSprites());
 		telas.add(new TelaConfiguracao());
 		telas.add(new TelaConstrucoes());
 		// telas.add(new TelaCidadeCasa());
-		caixa_das_opcoes = new Rectangle(Gerador.TS * telas.size(), Gerador.TS);
-		caixa_das_opcoes.x = Gerador.WIDTH / 2 - (telas.size()) / 2 * Gerador.TS;
-		caixa_das_opcoes.y = -Gerador.TS;
+		caixa_das_opcoes = new Rectangle(Gerador.VariavelX * telas.size(), Gerador.VariavelY);
+		posicionarRetangulos();
 
 	}
 
+	@Override
 	public void posicionarRetangulos() {
+		local_altura.x = Gerador.windowWidth - (Gerador.VariavelX * 3) / 2;
+		local_altura.y = Gerador.windowHEIGHT - Gerador.VariavelY / 3;
 		caixinha_dos_sprites.x = 0;
-		caixinha_dos_sprites.y = 8;
-		preencher_tudo.x = Gerador.WIDTH - 90;
-		preencher_tudo.y = Gerador.HEIGHT / 2;
-		fazer_caixa.x = Gerador.WIDTH - 90;
-		fazer_caixa.y = Gerador.HEIGHT / 2 + preencher_tudo.height;
-		substitui.x = preencher_tudo.x + preencher_tudo.width / 3;
-		substitui.y = preencher_tudo.y - 60;
-		limpar_selecao.x = Gerador.WIDTH - 90;
-		limpar_selecao.y = Gerador.HEIGHT / 2 - preencher_tudo.height;
-		salvar_construcao.x = Gerador.WIDTH - 90;
+		caixinha_dos_sprites.y = Gerador.VariavelY / 8;
+		preencher_tudo.x = Gerador.windowWidth - preencher_tudo.width;
+		preencher_tudo.y = Gerador.windowHEIGHT / 2;
+		fazer_caixa.x = Gerador.windowWidth - fazer_caixa.width;
+		fazer_caixa.y = Gerador.windowHEIGHT / 2 + preencher_tudo.height;
+		substitui.x = preencher_tudo.x;
+		substitui.y = preencher_tudo.y - preencher_tudo.height * 3;
+		limpar_selecao.x = Gerador.windowWidth - limpar_selecao.width;
+		limpar_selecao.y = Gerador.windowHEIGHT / 2 - preencher_tudo.height;
+		salvar_construcao.x = Gerador.windowWidth - salvar_construcao.width;
 		salvar_construcao.y = fazer_caixa.y + preencher_tudo.height;
+		caixa_das_opcoes.x = Gerador.windowWidth / 2 - (telas.size()) / 2 * Gerador.VariavelX;
+		caixa_das_opcoes.y = -Gerador.VariavelY;
+		for (Tela iTela : telas)
+			iTela.posicionarRetangulos();
 	}
 
 	private void carregar_sprites() {
@@ -92,16 +103,16 @@ public class Ui implements Tela {
 	}
 
 	public void tick() {
-		if (caixa_das_opcoes.intersects(
-				new Rectangle(Gerador.quadrado.x, Gerador.quadrado.y - Gerador.TS, Gerador.TS, Gerador.TS))) {
+		if (caixa_das_opcoes.intersects(new Rectangle(Gerador.quadrado.x, Gerador.quadrado.y - Gerador.VariavelY,
+				Gerador.VariavelX, Gerador.VariavelY))) {
 
-			a_selecionar = telas.get((Gerador.quadrado.x - caixa_das_opcoes.x) / Gerador.TS).getNome();
+			a_selecionar = telas.get((Gerador.quadrado.x - caixa_das_opcoes.x) / Gerador.VariavelX).getNome();
 			if (caixa_das_opcoes.y < 0) {
 				caixa_das_opcoes.y++;
 			}
 		} else {
 			a_selecionar = null;
-			if (caixa_das_opcoes.y > -Gerador.TS) {
+			if (caixa_das_opcoes.y > -Gerador.VariavelX) {
 				caixa_das_opcoes.y--;
 			}
 		}
@@ -117,24 +128,27 @@ public class Ui implements Tela {
 			for (Tile iTile : aTilesSelecionados) {
 				if (iTile == null || iTile.getZ() != Gerador.player.getZ())
 					continue;
-				dx = iTile.getX() - Camera.x - (iTile.getZ() - Gerador.player.getZ()) * Gerador.quadrado.width;
-				dy = iTile.getY() - Camera.y - (iTile.getZ() - Gerador.player.getZ()) * Gerador.quadrado.height;
-				if (dx + Gerador.quadrado.width >= 0 && dx < Gerador.WIDTH && dy + Gerador.quadrado.height >= 0
-						&& dy < Gerador.HEIGHT)
-					g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
+				dx = iTile.getX() - Camera.x - (iTile.getZ() - Gerador.player.getZ()) * Gerador.VariavelX;
+				dy = iTile.getY() - Camera.y - (iTile.getZ() - Gerador.player.getZ()) * Gerador.VariavelY;
+				if (dx + Gerador.VariavelX >= 0 && dx < Gerador.windowWidth && dy + Gerador.VariavelY >= 0
+						&& dy < Gerador.windowHEIGHT)
+					g.fillRect(dx, dy, Gerador.VariavelX, Gerador.VariavelY);
 			}
 
 		g.setColor(Color.white);
 
-		for (Runnable iRunnable : renderizarDepois) {
-			try {
-				iRunnable.run();
-			} catch (Exception e) {
+		if (renderizarDepois.size() > 0) {
+
+			for (Runnable iRunnable : renderizarDepois) {
+				try {
+					iRunnable.run();
+				} catch (Exception e) {
+				}
+
 			}
-			
+
+			renderizarDepois.clear();
 		}
-		
-		renderizarDepois.clear();
 
 		g.setColor(Color.white);
 		if (mostrar) {
@@ -142,13 +156,15 @@ public class Ui implements Tela {
 			if (a_selecionar != null) {
 				w1 = g.getFontMetrics().stringWidth(a_selecionar);
 				g.drawString(a_selecionar, caixa_das_opcoes.x + caixa_das_opcoes.width / 2 - w1 / 2,
-						caixa_das_opcoes.y + Gerador.TS + 20);
+						caixa_das_opcoes.y + sprite_opcoes[0].getWidth() + (local_altura.height * 3) / 2);
 				g.drawRect(caixa_das_opcoes.x, caixa_das_opcoes.y, caixa_das_opcoes.width, caixa_das_opcoes.height);
 				for (int i = 0; i < telas.size(); i++) {
-					g.drawImage(sprite_opcoes[i], caixa_das_opcoes.x + i * Gerador.TS, caixa_das_opcoes.y, null);
+					g.drawImage(sprite_opcoes[i], caixa_das_opcoes.x + i * sprite_opcoes[0].getWidth(),
+							caixa_das_opcoes.y, null);
 					if (opcao == i) {
 						g.setColor(new Color(0, 255, 0, 50));
-						g.fillRect(caixa_das_opcoes.x + i * Gerador.TS, caixa_das_opcoes.y, Gerador.TS, Gerador.TS);
+						g.fillRect(caixa_das_opcoes.x + i * sprite_opcoes[0].getWidth(), caixa_das_opcoes.y,
+								sprite_opcoes[0].getWidth(), sprite_opcoes[0].getWidth());
 						g.setColor(Color.white);
 					}
 				}
@@ -160,14 +176,13 @@ public class Ui implements Tela {
 					desenhar_opcoes(g);
 				}
 
-				w1 = g.getFontMetrics().stringWidth(substituira);
 				g.setColor(Color.white);
 				if (substituir) {
 					g.fillRect(substitui.x, substitui.y, substitui.width, substitui.height);
 				} else {
 					g.drawRect(substitui.x, substitui.y, substitui.width, substitui.height);
 				}
-				g.drawString(substituira, substitui.x - substitui.width - w1, substitui.y + substitui.height);
+				g.drawString(substituira, substitui.x + (substitui.width * 3) / 2, substitui.y + substitui.height);
 			}
 
 			g.setColor(Color.black);
@@ -181,8 +196,8 @@ public class Ui implements Tela {
 
 			g.setColor(Color.white);
 			w1 = g.getFontMetrics().stringWidth(altura + (Gerador.player.getZ() + 1));
-			g.drawString(altura + (Gerador.player.getZ() + 1), futuro_local_altura.x - w1 + futuro_local_altura.width,
-					Gerador.HEIGHT - futuro_local_altura.y - 15);
+			g.drawString(altura + (Gerador.player.getZ() + 1), local_altura.x - w1 + local_altura.width,
+					local_altura.y - (local_altura.height * 3) / 2);
 		}
 	}
 
@@ -192,10 +207,11 @@ public class Ui implements Tela {
 		prGraphics.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
 		prGraphics.drawRect(salvar_construcao.x, salvar_construcao.y, salvar_construcao.width,
 				salvar_construcao.height);
-		prGraphics.drawString(preencher, preencher_tudo.x, preencher_tudo.y + 10);
-		prGraphics.drawString(caixa, fazer_caixa.x, fazer_caixa.y + 10);
-		prGraphics.drawString(limpar, limpar_selecao.x, limpar_selecao.y + 10);
-		prGraphics.drawString(salva_construcao, salvar_construcao.x, salvar_construcao.y + 10);
+		prGraphics.drawString(preencher, preencher_tudo.x, preencher_tudo.y + (local_altura.height * 3) / 2);
+		prGraphics.drawString(caixa, fazer_caixa.x, fazer_caixa.y + (local_altura.height * 3) / 2);
+		prGraphics.drawString(limpar, limpar_selecao.x, limpar_selecao.y + (local_altura.height * 3) / 2);
+		prGraphics.drawString(salva_construcao, salvar_construcao.x,
+				salvar_construcao.y + (local_altura.height * 3) / 2);
 	}
 
 	public boolean clicou(int x, int y) {
@@ -222,7 +238,7 @@ public class Ui implements Tela {
 		}
 
 		if (caixa_das_opcoes.contains(x, y)) {
-			opcao = (x - caixa_das_opcoes.x) / Gerador.TS;
+			opcao = (x - caixa_das_opcoes.x) / Gerador.VariavelX;
 			return true;
 		} else if (telas.get(opcao).clicou(x, y)) {
 			return true;

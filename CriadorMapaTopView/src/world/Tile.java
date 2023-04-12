@@ -21,19 +21,11 @@ import main.Uteis;
 public class Tile {
 	private List<ConjuntoSprites> CoConjuntoSprites;
 	private int x, y, z, aPos, posicao_Conjunto, aux;
-	// stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito, 3
-	// = buraco sempre aberto, 4 = Buraco fechado (usar picareta ou
-	// cavar para abrí-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
-	// solid: 0 = chao normal; 1 = parede; 2 = água; 3 = lava; 4 = vip
 
 	private HashMap<String, Object> aPropriedades;
 
 	public Tile(@JsonProperty("x") int x, @JsonProperty("y") int y, @JsonProperty("z") int z) {
-		// ao criar a casa essa variável recebe o nome da casa, isso serve para que ela
-		// possa ser comprada
 		posicao_Conjunto = 0;
-		// quando o player interage com um tile, ocorre um evento, o evento é um int
-		// enviado para o servidor junto com o tile para ocorrer algo
 		this.x = x;
 		this.y = y;
 		this.z = z;

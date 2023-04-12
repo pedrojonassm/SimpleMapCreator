@@ -13,4 +13,13 @@ public class Uteis {
 			return prValor *= -1;
 	}
 
+	public static int log(int prValor, int prLogaritmo) {
+		int k = 0;
+		while (prValor != 0 && prValor % prLogaritmo == 0) {
+			k++;
+			prValor = prValor / prLogaritmo;
+		}
+		return k;
+	}
+
 }

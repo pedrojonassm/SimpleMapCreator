@@ -13,4 +13,6 @@ public interface Tela extends tickRender {
 
 	public Tela getSubTela();
 
+	public void posicionarRetangulos();
+
 }

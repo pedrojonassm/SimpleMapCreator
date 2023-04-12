@@ -33,30 +33,38 @@ public class SubTelaTransporte implements Tela {
 	public SubTelaTransporte() {
 		instance = this;
 		aIsIdaVolta = false;
-		opcoes = new ArrayList<>();
-		opcoes.add("colisao");
-		opcoes.add("clique direito");
-		opcoes.add("Buraco aberto");
-		opcoes.add("Buraco fechado");
+		opcoes = Gerador.aConfig.getTransportes();
+
 		opcaoSelecionada = null;
 		direction = pagina = 0;
 
-		quadradoOpcoes = new Rectangle(Ui.caixinha_dos_sprites.width, 20);
+		quadradoOpcoes = new Rectangle(Ui.caixinha_dos_sprites.width, Gerador.VariavelY / 3);
+
+		adicionarNovoTransporte = new Rectangle(
+				Ui.caixinha_dos_sprites.x + Ui.caixinha_dos_sprites.width - Gerador.VariavelX / 2,
+				Ui.caixinha_dos_sprites.y + Gerador.VariavelY, Gerador.VariavelX / 3, Gerador.VariavelY / 3);
+
+		aIdaVolta = new Rectangle(Gerador.VariavelX / 3, Gerador.VariavelY / 3);
+
+		direcaoTransporte = new Rectangle(Gerador.VariavelX, Gerador.VariavelY);
+	}
+
+	@Override
+	public void posicionarRetangulos() {
 		quadradoOpcoes.x = Ui.caixinha_dos_sprites.x;
 		definirQuadradoOpcoesY(null);
 		maxItensPagina = (Ui.caixinha_dos_sprites.height - quadradoOpcoes.y) / quadradoOpcoes.height;
+		adicionarNovoTransporte.x = Ui.caixinha_dos_sprites.x + Ui.caixinha_dos_sprites.width - Gerador.VariavelX / 2;
+		adicionarNovoTransporte.y = Ui.caixinha_dos_sprites.y + Gerador.VariavelY;
+		direcaoTransporte.x = quadradoOpcoes.x + quadradoOpcoes.width / 2 - Gerador.VariavelX / 2;
+		direcaoTransporte.y = quadradoOpcoes.y - Gerador.VariavelY * 2;
+		aIdaVolta.x = Ui.caixinha_dos_sprites.x + Gerador.quadrado.width / 2;
+		aIdaVolta.y = Ui.caixinha_dos_sprites.y + Gerador.quadrado.height;
 
-		adicionarNovoTransporte = new Rectangle(
-				Ui.caixinha_dos_sprites.x + Ui.caixinha_dos_sprites.width - Gerador.quadrado.width / 2,
-				Ui.caixinha_dos_sprites.y + Gerador.quadrado.height, Gerador.quadrado.width / 3,
-				Gerador.quadrado.height / 3);
+	}
 
-		aIdaVolta = new Rectangle(Ui.caixinha_dos_sprites.x + Gerador.quadrado.width / 2,
-				Ui.caixinha_dos_sprites.y + Gerador.quadrado.height, Gerador.quadrado.width / 3,
-				Gerador.quadrado.height / 3);
-
-		direcaoTransporte = new Rectangle(quadradoOpcoes.x + quadradoOpcoes.width / 2 - Gerador.TS / 2,
-				quadradoOpcoes.y - Gerador.TS * 2, Gerador.TS, Gerador.TS);
+	public ArrayList<String> getOpcoes() {
+		return opcoes;
 	}
 
 	@Override
@@ -116,9 +124,10 @@ public class SubTelaTransporte implements Tela {
 		if (aInicio != null) {
 			int lDiferencaNivel = Gerador.player.getZ() - aInicio.getZ(), angulo = (lDiferencaNivel > 0) ? 45 : 225;
 			int[] lVariacao = direcaoHorizontalVertical();
-			prGraphics.drawLine(Gerador.quadrado.x + lVariacao[0] * Gerador.TS,
-					Gerador.quadrado.y + lVariacao[1] * Gerador.TS, aInicio.getX() - Camera.x + Gerador.TS / 2,
-					aInicio.getY() + Gerador.TS / 2 - Camera.y);
+			prGraphics.drawLine(Gerador.quadrado.x + lVariacao[0] * Gerador.VariavelX,
+					Gerador.quadrado.y + lVariacao[1] * Gerador.VariavelY,
+					aInicio.getX() - Camera.x + Gerador.VariavelX / 2,
+					aInicio.getY() + Gerador.VariavelY / 2 - Camera.y);
 			for (int i = 0; i < Uteis.modulo(lDiferencaNivel); i++) {
 				prGraphics.drawArc(Gerador.quadrado.x - quadradoOpcoes.height,
 						Gerador.quadrado.y + (i + 1) * quadradoOpcoes.height / 4, quadradoOpcoes.height / 2,
@@ -224,7 +233,8 @@ public class SubTelaTransporte implements Tela {
 		int[] lVariacao = direcaoHorizontalVertical();
 
 		List<Integer> lDestino = Tile.pegarPosicaoRelativa(prFrom.getX(), prFrom.getY(), prFrom.getZ(),
-				prTo.getX() + lVariacao[0] * Gerador.TS, prTo.getY() + lVariacao[1] * Gerador.TS, prTo.getZ());
+				prTo.getX() + lVariacao[0] * Gerador.VariavelX, prTo.getY() + lVariacao[1] * Gerador.VariavelY,
+				prTo.getZ());
 
 		if (World.pegarAdicionarTileMundo(
 				Tile.pegarPosicaoRelativa(prFrom.getX(), prFrom.getY(), prFrom.getZ(), lDestino)) != null) {

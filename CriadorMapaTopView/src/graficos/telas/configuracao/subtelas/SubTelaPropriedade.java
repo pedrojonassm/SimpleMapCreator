@@ -16,7 +16,7 @@ public class SubTelaPropriedade implements Tela {
 
 	private Rectangle adicionarNovaPropriedade, quadradoOpcoes;
 	private int maxPropriedadesPagina, pagina;
-	protected ArrayList<String> aCoPropriedades;
+	private ArrayList<String> aCoPropriedades;
 
 	private String aPropriedadeSelecionada, aValorPropriedade;
 
@@ -25,21 +25,22 @@ public class SubTelaPropriedade implements Tela {
 	public SubTelaPropriedade() {
 		instance = this;
 		pagina = 0;
-		quadradoOpcoes = new Rectangle(Ui.caixinha_dos_sprites.width, Gerador.quadrado.height / 3);
+		quadradoOpcoes = new Rectangle(Ui.caixinha_dos_sprites.width, Gerador.VariavelY / 3);
+
+		adicionarNovaPropriedade = new Rectangle(Gerador.VariavelX / 3, Gerador.VariavelY / 3);
+
+		aCoPropriedades = Gerador.aConfig.getPropriedades();
+
+		aValorPropriedade = "";
+	}
+
+	@Override
+	public void posicionarRetangulos() {
 		quadradoOpcoes.x = Ui.caixinha_dos_sprites.x;
 		definirQuadradoOpcoesY(null);
 		maxPropriedadesPagina = (Ui.caixinha_dos_sprites.height - quadradoOpcoes.y) / quadradoOpcoes.height;
-
-		adicionarNovaPropriedade = new Rectangle(
-				Ui.caixinha_dos_sprites.x + Ui.caixinha_dos_sprites.width - Gerador.quadrado.width / 2,
-				Ui.caixinha_dos_sprites.y + Gerador.quadrado.height, Gerador.quadrado.width / 3,
-				Gerador.quadrado.height / 3);
-
-		aCoPropriedades = new ArrayList<>();
-		aCoPropriedades.add("Solid");
-		aCoPropriedades.add("Speed");
-
-		aValorPropriedade = "";
+		adicionarNovaPropriedade.x = Ui.caixinha_dos_sprites.x + Ui.caixinha_dos_sprites.width - Gerador.VariavelX / 2;
+		adicionarNovaPropriedade.y = Ui.caixinha_dos_sprites.y + Gerador.VariavelY;
 	}
 
 	public void mudarValor(char novo) {
@@ -82,7 +83,7 @@ public class SubTelaPropriedade implements Tela {
 		if (aPropriedadeSelecionada != null) {
 			w1 = prGraphics.getFontMetrics().stringWidth(aPropriedadeSelecionada + " = " + aValorPropriedade);
 			prGraphics.drawString(aPropriedadeSelecionada + " = " + aValorPropriedade, Gerador.quadrado.x - w1 / 2,
-					Gerador.quadrado.y + Gerador.quadrado.height / 2);
+					Gerador.quadrado.y + Gerador.VariavelY / 2);
 		}
 
 		if (adicionarNovaPropriedade.contains(Gerador.quadrado.x, Gerador.quadrado.y)) {
@@ -197,6 +198,10 @@ public class SubTelaPropriedade implements Tela {
 
 	public void setValorPropriedade(String aValorPropriedade) {
 		this.aValorPropriedade = aValorPropriedade;
+	}
+
+	public ArrayList<String> getaCoPropriedades() {
+		return aCoPropriedades;
 	}
 
 }

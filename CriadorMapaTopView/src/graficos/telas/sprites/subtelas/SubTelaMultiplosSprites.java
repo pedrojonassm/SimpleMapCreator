@@ -23,20 +23,21 @@ public class SubTelaMultiplosSprites implements Tela {
 
 	public SubTelaMultiplosSprites() {
 		instance = this;
-		caixinhaSprites = new Rectangle(Gerador.quadrado.width * 3, Gerador.quadrado.width * 9);
-		limpar = new Rectangle(caixinhaSprites.width / 3, Gerador.quadrado.height / 3);
+		caixinhaSprites = new Rectangle(Gerador.VariavelX * 3, Gerador.VariavelX * 9);
+		limpar = new Rectangle(caixinhaSprites.width / 3, Gerador.VariavelY / 3);
 		aCoConjuntoSprites = new ArrayList<>();
 		pagina = 0;
-		max_sprites_por_pagina = caixinhaSprites.width / Gerador.quadrado.width * caixinhaSprites.height
-				/ Gerador.quadrado.width;
-		posicionarRetangulos();
+
 	}
 
-	private void posicionarRetangulos() {
-		caixinhaSprites.x = Gerador.WIDTH - Gerador.quadrado.width * 3 - Gerador.quadrado.width / 2;
-		caixinhaSprites.y = Gerador.HEIGHT / 9;
+	@Override
+	public void posicionarRetangulos() {
+		caixinhaSprites.x = Gerador.windowWidth - Gerador.VariavelX * 3 - Gerador.VariavelX / 2;
+		caixinhaSprites.y = Gerador.windowHEIGHT / 9;
 		limpar.x = caixinhaSprites.x + caixinhaSprites.width - caixinhaSprites.width / 5 - limpar.width / 2;
-		limpar.y = Gerador.HEIGHT / (Gerador.quadrado.width / 4);
+		limpar.y = Gerador.windowHEIGHT / (Gerador.VariavelX / 4);
+		max_sprites_por_pagina = (caixinhaSprites.width / Gerador.VariavelX)
+				* (caixinhaSprites.height / Gerador.VariavelX);
 	}
 
 	@Override
@@ -50,22 +51,22 @@ public class SubTelaMultiplosSprites implements Tela {
 		prGraphics.drawRect(caixinhaSprites.x, caixinhaSprites.y, caixinhaSprites.width, caixinhaSprites.height);
 		prGraphics.drawRect(limpar.x, limpar.y, limpar.width, limpar.height);
 		w1 = prGraphics.getFontMetrics().stringWidth("Limpar");
-		prGraphics.drawString("Limpar", limpar.x + limpar.width / 2 - w1 / 2, limpar.y + Gerador.HEIGHT / limpar.y);
+		prGraphics.drawString("Limpar", limpar.x + limpar.width / 2 - w1 / 2,
+				limpar.y + Gerador.windowHEIGHT / limpar.y);
 		w1 = prGraphics.getFontMetrics()
 				.stringWidth((pagina + 1) + "/" + ((aCoConjuntoSprites.size() / max_sprites_por_pagina) + 1));
 		prGraphics.drawString((pagina + 1) + "/" + ((aCoConjuntoSprites.size() / max_sprites_por_pagina) + 1),
-				caixinhaSprites.x + Gerador.quadrado.width / 2 - w1 / 2, limpar.y + Gerador.HEIGHT / limpar.y);
+				caixinhaSprites.x + Gerador.VariavelX / 2 - w1 / 2, limpar.y + Gerador.windowHEIGHT / limpar.y);
 		int x, y, desenhando = 0;
 		for (int i = 0; i < max_sprites_por_pagina
 				&& i + (max_sprites_por_pagina * pagina) < aCoConjuntoSprites.size(); i++) {
-			x = desenhando % (caixinhaSprites.width / Gerador.quadrado.width);
-			y = desenhando / (caixinhaSprites.width / Gerador.quadrado.width);
+			x = desenhando % (caixinhaSprites.width / Gerador.VariavelX);
+			y = desenhando / (caixinhaSprites.width / Gerador.VariavelX);
 			ArrayList<BufferedImage> lDesenhoAtual = aCoConjuntoSprites.get(i + (max_sprites_por_pagina * pagina))
 					.obterSprite_atual();
 			for (BufferedImage iBufferedImage : lDesenhoAtual)
-				prGraphics.drawImage(iBufferedImage, x * Gerador.quadrado.width + caixinhaSprites.x,
-						y * Gerador.quadrado.width + caixinhaSprites.y, Gerador.quadrado.width, Gerador.quadrado.height,
-						null);
+				prGraphics.drawImage(iBufferedImage, x * Gerador.VariavelX + caixinhaSprites.x,
+						y * Gerador.VariavelX + caixinhaSprites.y, Gerador.VariavelX, Gerador.VariavelY, null);
 
 			desenhando++;
 		}
@@ -91,9 +92,8 @@ public class SubTelaMultiplosSprites implements Tela {
 	public boolean cliquedireito(int x, int y) {
 		if (caixinhaSprites.contains(x, y)) {
 			if (!aCoConjuntoSprites.isEmpty()) {
-				int px = (x - caixinhaSprites.x) / Gerador.quadrado.width,
-						py = (y - caixinhaSprites.y) / Gerador.quadrado.height;
-				int aux = px + py * (caixinhaSprites.width / Gerador.quadrado.width);
+				int px = (x - caixinhaSprites.x) / Gerador.VariavelX, py = (y - caixinhaSprites.y) / Gerador.VariavelY;
+				int aux = px + py * (caixinhaSprites.width / Gerador.VariavelX);
 				aux = aux + (max_sprites_por_pagina * pagina);
 				aCoConjuntoSprites.remove(aux);
 			}
