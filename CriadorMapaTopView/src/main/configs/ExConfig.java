@@ -12,10 +12,11 @@ import main.Gerador;
 import world.World;
 
 public class ExConfig {
-	private int worldWidth, worldHeight, worldHigh, amountOfTicks, TileSize, playerX, playerY, tamanhoPreSets;
-	private ArrayList<String> propriedades, transportes;
+	private int worldWidth, worldHeight, worldHigh, amountOfTicks, TileSize, playerX, playerY, tamanhoPreSets,
+			totalLayers;
+	private ArrayList<String> propriedades, transportes, nomeModosSprites;
 	private String nomeAlturaUi, nomeLimparUi, nomeCaixaUi, nomePreencherUi, nomeSubstituirUi, nomeSpriteInteragivelUi,
-			nomeSalva_construcaoUi;
+			nomeSalva_construcaoUi, nomeTilesNivel, nomeModo;
 
 	public ExConfig() {
 		worldWidth = 20;
@@ -26,9 +27,11 @@ public class ExConfig {
 		playerX = playerY = 0;
 		propriedades = new ArrayList<>();
 		transportes = new ArrayList<>();
-		propriedadespadrao();
-		transportespadrao();
+		nomeModosSprites = new ArrayList<>();
+		listasPadrao();
+
 		tamanhoPreSets = 32;
+		totalLayers = 5;
 		nomeAlturaUi = "Altura: ";
 		nomeLimparUi = "limpar_seleção";
 		nomeCaixaUi = "caixa";
@@ -36,6 +39,15 @@ public class ExConfig {
 		nomeSubstituirUi = "substituir?";
 		nomeSpriteInteragivelUi = "Adicionar sprite reajível";
 		nomeSalva_construcaoUi = "salvar construção";
+		nomeTilesNivel = "layer dos tiles: ";
+		nomeModo = "modo: ";
+	}
+
+	private void listasPadrao() {
+		nomeModosSprites.add("Full Tile");
+		nomeModosSprites.add("layer");
+		propriedadespadrao();
+		transportespadrao();
 	}
 
 	private void propriedadespadrao() {
@@ -195,6 +207,14 @@ public class ExConfig {
 		this.tamanhoPreSets = tamanhoPreSets;
 	}
 
+	public int getTotalLayers() {
+		return totalLayers;
+	}
+
+	public void setTotalLayers(int totalLayers) {
+		this.totalLayers = totalLayers;
+	}
+
 	public String getNomeAlturaUi() {
 		return nomeAlturaUi;
 	}
@@ -249,5 +269,29 @@ public class ExConfig {
 
 	public void setNomeSalva_construcaoUi(String nomeSalva_construcaoUi) {
 		this.nomeSalva_construcaoUi = nomeSalva_construcaoUi;
+	}
+
+	public String getNomeTilesNivel() {
+		return nomeTilesNivel;
+	}
+
+	public void setNomeTilesNivel(String nomeTilesNivel) {
+		this.nomeTilesNivel = nomeTilesNivel;
+	}
+
+	public ArrayList<String> getNomeModosSprites() {
+		return nomeModosSprites;
+	}
+
+	public void setNomeModosSprites(ArrayList<String> nomeModosSprites) {
+		this.nomeModosSprites = nomeModosSprites;
+	}
+
+	public String getNomeModo() {
+		return nomeModo;
+	}
+
+	public void setNomeModo(String nomeModo) {
+		this.nomeModo = nomeModo;
 	}
 }

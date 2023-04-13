@@ -233,8 +233,7 @@ public class SubTelaTransporte implements Tela {
 		int[] lVariacao = direcaoHorizontalVertical();
 
 		List<Integer> lDestino = Tile.pegarPosicaoRelativa(prFrom.getX(), prFrom.getY(), prFrom.getZ(),
-				prTo.getX() + lVariacao[0] * Gerador.VariavelX, prTo.getY() + lVariacao[1] * Gerador.VariavelY,
-				prTo.getZ());
+				prTo.getX() + lVariacao[0] * Gerador.TS, prTo.getY() + lVariacao[1] * Gerador.TS, prTo.getZ());
 
 		if (World.pegarAdicionarTileMundo(
 				Tile.pegarPosicaoRelativa(prFrom.getX(), prFrom.getY(), prFrom.getZ(), lDestino)) != null) {
