@@ -69,7 +69,7 @@ public class SubTelaPreSets implements Tela {
 		if (prNumeroPressionado < 0)
 			prNumeroPressionado = aPreSets.length - 1;
 
-		if (TelaSprites.sprite_selecionado.size() > 0) {
+		if (TelaSprites.instance.contemSpritesSelecionados()) {
 			aPreSets[prNumeroPressionado].colar();
 		} else {
 			aPreSets[prNumeroPressionado].copiar();

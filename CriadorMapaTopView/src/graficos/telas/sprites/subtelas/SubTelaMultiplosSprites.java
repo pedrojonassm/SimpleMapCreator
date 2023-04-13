@@ -75,7 +75,7 @@ public class SubTelaMultiplosSprites implements Tela {
 	@Override
 	public boolean clicou(int x, int y) {
 		if (caixinhaSprites.contains(x, y)) {
-			if (TelaSprites.sprite_selecionado.size() > 0) {
+			if (TelaSprites.instance.contemSpritesSelecionados()) {
 				ConjuntoSprites lConjuntoSprites = new ConjuntoSprites();
 				lConjuntoSprites.adicionar_sprite_selecionado();
 				aCoConjuntoSprites.add(lConjuntoSprites);

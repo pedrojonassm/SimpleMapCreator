@@ -16,7 +16,7 @@ public class ExConfig {
 			totalLayers;
 	private ArrayList<String> propriedades, transportes, nomeModosSprites;
 	private String nomeAlturaUi, nomeLimparUi, nomeCaixaUi, nomePreencherUi, nomeSubstituirUi, nomeSpriteInteragivelUi,
-			nomeSalva_construcaoUi, nomeTilesNivel, nomeModo;
+			nomeSalva_construcaoUi, nomeTilesNivel, nomeModo, nomeTrocar;
 
 	public ExConfig() {
 		worldWidth = 20;
@@ -40,7 +40,8 @@ public class ExConfig {
 		nomeSpriteInteragivelUi = "Adicionar sprite reajível";
 		nomeSalva_construcaoUi = "salvar construção";
 		nomeTilesNivel = "layer dos tiles: ";
-		nomeModo = "modo: ";
+		nomeModo = "Modo e colocação dos Sprites";
+		nomeTrocar = "Trocar";
 	}
 
 	private void listasPadrao() {
@@ -293,5 +294,13 @@ public class ExConfig {
 
 	public void setNomeModo(String nomeModo) {
 		this.nomeModo = nomeModo;
+	}
+
+	public String getNomeTrocar() {
+		return nomeTrocar;
+	}
+
+	public void setNomeTrocar(String nomeTrocar) {
+		this.nomeTrocar = nomeTrocar;
 	}
 }

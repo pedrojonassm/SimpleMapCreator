@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import graficos.telas.sprites.TelaSprites;
+import graficos.telas.sprites.TelaSprites.kdModoColocar;
 import world.World;
 
 public class Preset {
@@ -46,9 +47,7 @@ public class Preset {
 
 	public void render(Graphics prGraphics) {
 		prGraphics.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-		ArrayList<int[]> imagens;
-		if (sprites != null && TelaSprites.tiles_nivel < sprites.size()) {
-			imagens = sprites.get(TelaSprites.tiles_nivel);
+		for (ArrayList<int[]> imagens : sprites) {
 			if (imagens != null && imagens.size() > 0) {
 				int[] sprite = imagens.get(World.tiles_index % imagens.size());
 				BufferedImage image = World.sprites_do_mundo.get(sprite[0])[sprite[1]];
@@ -57,8 +56,7 @@ public class Preset {
 
 		}
 
-		if (spritesOld != null && TelaSprites.tiles_nivel < spritesOld.size()) {
-			imagens = spritesOld.get(TelaSprites.tiles_nivel);
+		for (ArrayList<int[]> imagens : spritesOld) {
 			if (imagens != null && imagens.size() > 0) {
 				int[] sprite = imagens.get(World.tiles_index % imagens.size());
 				BufferedImage image = World.sprites_do_mundo.get(sprite[0])[sprite[1]];
@@ -74,32 +72,41 @@ public class Preset {
 
 	private void colar(ArrayList<ArrayList<int[]>> prSprites) {
 		// Do selecionado traz pra cá
-		if (TelaSprites.sprite_selecionado.size() == 0) {
-			prSprites.get(TelaSprites.tiles_nivel).clear();
-			return;
-		}
 
-		if (TelaSprites.array.size() == 0 && prSprites.size() < TelaSprites.tiles_nivel && prSprites.size() > 0) {
-			prSprites.set(TelaSprites.tiles_nivel, null);
-			return;
-		}
+		if (!TelaSprites.instance.contemSpritesSelecionados()) {
 
-		ArrayList<int[]> novo = new ArrayList<int[]>();
-		for (int i = 0; i < TelaSprites.sprite_selecionado.size(); i++) {
-			int[] a = { TelaSprites.array.get(i), TelaSprites.lista.get(i) };
-			novo.add(a);
-		}
-		if (prSprites.size() > TelaSprites.tiles_nivel
-				|| (prSprites.size() > TelaSprites.tiles_nivel && prSprites.get(TelaSprites.tiles_nivel) == null)) {
-			if (spritesOld.size() > TelaSprites.tiles_nivel || (spritesOld.size() > TelaSprites.tiles_nivel
-					&& spritesOld.get(TelaSprites.tiles_nivel) == null)) {
-				spritesOld.set(TelaSprites.tiles_nivel, prSprites.get(TelaSprites.tiles_nivel));
-			} else {
-				spritesOld.add(prSprites.get(TelaSprites.tiles_nivel));
+			if (kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())) {
+				if (sprites.size() > TelaSprites.tilesLayer)
+					sprites.get(TelaSprites.tilesLayer).clear();
+			} else if (kdModoColocar.kdFullTile.equals(TelaSprites.instance.getModoColocar())) {
+				for (ArrayList<int[]> iSprites : sprites)
+					iSprites.clear();
+
 			}
-			prSprites.set(TelaSprites.tiles_nivel, novo);
-		} else
-			prSprites.add(novo);
+			return;
+		}
+		ArrayList<int[]> novo;
+		for (int iLayerTile = 0; iLayerTile < TelaSprites.instance.sprite_selecionado.size(); iLayerTile++) {
+			if (kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
+					&& TelaSprites.tilesLayer != iLayerTile)
+				continue;
+			novo = new ArrayList<int[]>();
+			for (int i = 0; i < TelaSprites.instance.sprite_selecionado.size(); i++) {
+				int[] a = { TelaSprites.instance.array.get(iLayerTile).get(i),
+						TelaSprites.instance.lista.get(iLayerTile).get(i) };
+				novo.add(a);
+			}
+			if (prSprites.size() > iLayerTile || (prSprites.size() > iLayerTile && prSprites.get(iLayerTile) == null)) {
+				if (spritesOld.size() > iLayerTile
+						|| (spritesOld.size() > iLayerTile && spritesOld.get(iLayerTile) == null)) {
+					spritesOld.set(iLayerTile, prSprites.get(iLayerTile));
+				} else {
+					spritesOld.add(prSprites.get(iLayerTile));
+				}
+				prSprites.set(iLayerTile, novo);
+			} else
+				prSprites.add(novo);
+		}
 	}
 
 	public void copiar() {
@@ -107,17 +114,12 @@ public class Preset {
 	}
 
 	private void copiar(ArrayList<ArrayList<int[]>> prSprites) {
-		// Daqui joga pros selecionados
-
-		if (prSprites.size() <= TelaSprites.tiles_nivel || prSprites.get(TelaSprites.tiles_nivel).size() == 0) {
-			return;
-		}
-		TelaSprites.pegar_tile_ja_colocado(prSprites.get(TelaSprites.tiles_nivel));
+		TelaSprites.instance.pegar_tile_ja_colocado(prSprites);
 	}
 
 	public boolean clicou(int x, int y) {
 		if (rectangle.contains(x, y)) {
-			if (TelaSprites.sprite_selecionado.size() > 0) {
+			if (TelaSprites.instance.contemSpritesSelecionados()) {
 				colar();
 			} else {
 				copiar();

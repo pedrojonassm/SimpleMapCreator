@@ -44,12 +44,11 @@ public class Gerador extends Canvas
 	public static FileDialog fd;
 	private Thread thread;
 	private boolean isRunning = true;
-	public static int windowWidth = 1240, windowHEIGHT = 720, TS, VariavelX, VariavelY, sprite_selecionado_index;
+	public static int windowWidth = 1240, windowHEIGHT = 720, TS, VariavelX, VariavelY, sprite_selecionado_index, FPS;
 	// alguns itens da UI ficaram bem posicionados, mas foram utilizando o TS
 	// constante como = 64 e uma tela fixa
 	// VariavelX e VariavelY, é a variavel onde, quando era 1240/720 a tela, o valor
 	// era 64 e 64
-	public static int FPS = 0;
 	private BufferedImage image;
 
 	public static int nivel;
@@ -100,7 +99,8 @@ public class Gerador extends Canvas
 		fd.setFile("*.world");
 
 		image = new BufferedImage(windowWidth, windowHEIGHT, BufferedImage.TYPE_INT_RGB);
-		sprite_selecionado_index = sprite_selecionado_animation_time = 0;
+		sprite_selecionado_index = 0;
+		sprite_selecionado_animation_time = 0;
 		World.ready = true;
 	}
 
@@ -171,7 +171,7 @@ public class Gerador extends Canvas
 					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
 					if (lEscolhido != null) {
 
-						if (TelaSprites.sprite_selecionado.size() == 0
+						if (!TelaSprites.instance.contemSpritesSelecionados()
 								&& ui.getTela().getSubTela() instanceof SubTelaMultiplosSprites) {
 							lEscolhido.adicionarMultiplosSprites();
 						} else {
@@ -215,21 +215,28 @@ public class Gerador extends Canvas
 		g.setColor(Color.red);
 		int[] quadradinho_teste = World.calcularPosicaoSemAltura(aPos);
 		g.drawRect(quadradinho_teste[0], quadradinho_teste[1], quadrado.width, quadrado.height);
-		if (TelaSprites.sprite_selecionado.size() > 0
+		if (TelaSprites.instance.contemSpritesSelecionados()
 				&& (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar)) {
 			if (++sprite_selecionado_animation_time >= World.max_tiles_animation_time) {
 				sprite_selecionado_animation_time = 0;
-				if (++sprite_selecionado_index >= TelaSprites.sprite_selecionado.size()) {
+				if (++sprite_selecionado_index >= TelaSprites.instance.getNumeroMaxSpritesSelecionados()) {
 					sprite_selecionado_index = 0;
 				}
 			}
-			BufferedImage imagem = World.sprites_do_mundo.get(
-					TelaSprites.array.get(sprite_selecionado_index))[TelaSprites.lista.get(sprite_selecionado_index)];
-			if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) {
-				quadradinho_teste[0] -= quadrado.width * ((imagem.getWidth() / quadrado.width) - 1);
-				quadradinho_teste[1] -= quadrado.height * ((imagem.getWidth() / quadrado.height) - 1);
+			for (int i = 0; i < TelaSprites.instance.sprite_selecionado.size(); i++) {
+				if (TelaSprites.instance.sprite_selecionado.get(i).size() == 0)
+					continue;
+
+				BufferedImage imagem = World.sprites_do_mundo.get(TelaSprites.instance.array.get(i).get(
+						sprite_selecionado_index % TelaSprites.instance.array.get(i).size()))[TelaSprites.instance.lista
+								.get(i).get(sprite_selecionado_index % TelaSprites.instance.lista.get(i).size())];
+				if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) {
+					quadradinho_teste[0] -= quadrado.width * ((imagem.getWidth() / quadrado.width) - 1);
+					quadradinho_teste[1] -= quadrado.height * ((imagem.getWidth() / quadrado.height) - 1);
+				}
+				g.drawImage(imagem, quadradinho_teste[0], quadradinho_teste[1], null);
+
 			}
-			g.drawImage(imagem, quadradinho_teste[0], quadradinho_teste[1], null);
 		}
 		// */
 		player.render(g);
@@ -308,6 +315,10 @@ public class Gerador extends Canvas
 				World.novo_mundo(null);
 			else if (e.getKeyCode() == KeyEvent.VK_O)
 				World.carregar_mundo();
+			else if (e.getKeyCode() == KeyEvent.VK_C)
+				if (World.tiles[aPos] != null)
+					World.tiles[aPos].copiarPraTela();
+
 		} else if (Gerador.ui.getTela().getSubTela() instanceof SubTelaPropriedade) {
 			if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
 				SubTelaPropriedade.instance.retirarValor();

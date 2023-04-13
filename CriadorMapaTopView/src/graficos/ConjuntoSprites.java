@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import graficos.telas.sprites.TelaSprites;
+import graficos.telas.sprites.TelaSprites.kdModoColocar;
 import world.World;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -42,37 +43,45 @@ public class ConjuntoSprites {
 	}
 
 	public void pegarsprites() {
-		ArrayList<int[]> sprite;
-		sprite = (sprites.size() > TelaSprites.tiles_nivel) ? sprites.get(TelaSprites.tiles_nivel) : null;
-
-		if (sprite == null || sprite.size() == 0) {
-			return;
-		}
-		TelaSprites.pegar_tile_ja_colocado(sprite);
+		TelaSprites.instance.pegar_tile_ja_colocado(sprites);
 	}
 
 	public void adicionar_sprite_selecionado() {
 
-		if (TelaSprites.sprite_selecionado.size() == 0) {
-			if (sprites.size() > TelaSprites.tiles_nivel)
-				sprites.get(TelaSprites.tiles_nivel).clear();
+		if (!TelaSprites.instance.contemSpritesSelecionados()) {
+
+			if (kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())) {
+				if (sprites.size() > TelaSprites.tilesLayer)
+					sprites.get(TelaSprites.tilesLayer).clear();
+			} else if (kdModoColocar.kdFullTile.equals(TelaSprites.instance.getModoColocar())) {
+				for (ArrayList<int[]> iSprites : sprites)
+					iSprites.clear();
+
+			}
 			return;
 		}
 
-		ArrayList<int[]> novo = new ArrayList<int[]>();
-		if (TelaSprites.array.size() == 0 && sprites.size() < TelaSprites.tiles_nivel && sprites.size() > 0) {
-			sprites.set(TelaSprites.tiles_nivel, null);
-			return;
+		for (int iLayerTile = 0; iLayerTile < TelaSprites.instance.sprite_selecionado.size(); iLayerTile++) {
+			if (kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
+					&& TelaSprites.tilesLayer != iLayerTile)
+				continue;
+
+			if (TelaSprites.instance.array.get(iLayerTile).size() == 0 && sprites.size() < iLayerTile
+					&& sprites.size() > 0) {
+				sprites.set(iLayerTile, null);
+				continue;
+			}
+			ArrayList<int[]> novo = new ArrayList<int[]>();
+			for (int i = 0; i < TelaSprites.instance.sprite_selecionado.get(iLayerTile).size(); i++) {
+				int[] a = { TelaSprites.instance.array.get(iLayerTile).get(i),
+						TelaSprites.instance.lista.get(iLayerTile).get(i) };
+				novo.add(a);
+			}
+			if (sprites.size() > iLayerTile || (sprites.size() > iLayerTile && sprites.get(iLayerTile) == null))
+				sprites.set(iLayerTile, novo);
+			else
+				sprites.add(novo);
 		}
-		for (int i = 0; i < TelaSprites.sprite_selecionado.size(); i++) {
-			int[] a = { TelaSprites.array.get(i), TelaSprites.lista.get(i) };
-			novo.add(a);
-		}
-		if (sprites.size() > TelaSprites.tiles_nivel
-				|| (sprites.size() > TelaSprites.tiles_nivel && sprites.get(TelaSprites.tiles_nivel) == null))
-			sprites.set(TelaSprites.tiles_nivel, novo);
-		else
-			sprites.add(novo);
 	}
 
 }
