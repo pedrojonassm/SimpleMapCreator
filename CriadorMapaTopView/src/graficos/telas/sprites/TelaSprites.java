@@ -308,13 +308,17 @@ public class TelaSprites implements Tela {
 		g.drawImage(bufferedImage, x * Gerador.quadrado.width + Ui.caixinha_dos_sprites.x,
 				y * Gerador.quadrado.height + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
 				Gerador.quadrado.height, null);
-		for (ArrayList<Integer> iSprites : sprite_selecionado)
+		for (int iTilesLayer = 0; iTilesLayer < sprite_selecionado.size(); iTilesLayer++) {
+			if (kdModoColocar.kdLayerToLayer.equals(getModoColocar()) && iTilesLayer != tilesLayer)
+				continue;
+			ArrayList<Integer> iSprites = sprite_selecionado.get(iTilesLayer);
 			if (iSprites.contains(desenhando + max_sprites_por_pagina * pagina.get(livro))) {
 				g.setColor(new Color(0, 255, 0, 50));
 				g.fillRect(x * Gerador.quadrado.width + Ui.caixinha_dos_sprites.x,
 						y * Gerador.quadrado.height + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
 						Gerador.quadrado.height);
 			}
+		}
 	}
 
 	private void trocar_livro(int x, int y) {
@@ -350,16 +354,18 @@ public class TelaSprites implements Tela {
 		if (livro == 0) {
 			boolean lContem = false;
 			if (!Gerador.control) {
-				for (int i = 0; i < sprite_selecionado.size(); i++) {
-					ArrayList<Integer> iSprites = sprite_selecionado.get(i);
+				for (int iTileNivel = 0; iTileNivel < sprite_selecionado.size(); iTileNivel++) {
+					if (kdModoColocar.kdLayerToLayer.equals(getModoColocar()) && iTileNivel != tilesLayer)
+						continue;
+					ArrayList<Integer> iSprites = sprite_selecionado.get(iTileNivel);
 					if (iSprites.contains(aux + max_sprites_por_pagina * pagina.get(livro))) {
 						lContem = true;
 						iSprites.remove((Integer) (aux + max_sprites_por_pagina * pagina.get(livro)));
 						int k = atual.get(livro), spr = sprites.get(livro), desenhando = 0;
 						while (spr < World.sprites_do_mundo.size()) {
 							if (desenhando == aux) {
-								array.get(i).remove((Integer) spr);
-								lista.get(i).remove((Integer) k);
+								array.get(iTileNivel).remove((Integer) spr);
+								lista.get(iTileNivel).remove((Integer) k);
 
 								break;
 							}
