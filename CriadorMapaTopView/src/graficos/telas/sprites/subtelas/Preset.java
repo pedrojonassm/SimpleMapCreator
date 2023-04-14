@@ -97,8 +97,8 @@ public class Preset {
 				continue;
 			novo = new ArrayList<int[]>();
 			for (int i = 0; i < TelaSprites.instance.sprite_selecionado.get(iLayerTile).size(); i++) {
-				int[] a = { TelaSprites.instance.array.get(iLayerTile).get(i),
-						TelaSprites.instance.lista.get(iLayerTile).get(i) };
+				int[] a = { TelaSprites.instance.nomeSpritesheet.get(iLayerTile).get(i),
+						TelaSprites.instance.PosicaoSprite.get(iLayerTile).get(i) };
 				novo.add(a);
 			}
 			if (prSprites.size() > iLayerTile || (prSprites.size() > iLayerTile && prSprites.get(iLayerTile) == null)) {

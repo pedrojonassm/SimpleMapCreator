@@ -66,15 +66,15 @@ public class ConjuntoSprites {
 					&& TelaSprites.tilesLayer != iLayerTile)
 				continue;
 
-			if (TelaSprites.instance.array.get(iLayerTile).size() == 0 && sprites.size() < iLayerTile
+			if (TelaSprites.instance.nomeSpritesheet.get(iLayerTile).size() == 0 && sprites.size() < iLayerTile
 					&& sprites.size() > 0) {
 				sprites.set(iLayerTile, null);
 				continue;
 			}
 			ArrayList<int[]> novo = new ArrayList<int[]>();
 			for (int i = 0; i < TelaSprites.instance.sprite_selecionado.get(iLayerTile).size(); i++) {
-				int[] a = { TelaSprites.instance.array.get(iLayerTile).get(i),
-						TelaSprites.instance.lista.get(iLayerTile).get(i) };
+				int[] a = { TelaSprites.instance.nomeSpritesheet.get(iLayerTile).get(i),
+						TelaSprites.instance.PosicaoSprite.get(iLayerTile).get(i) };
 				novo.add(a);
 			}
 			if (sprites.size() > iLayerTile || (sprites.size() > iLayerTile && sprites.get(iLayerTile) == null))

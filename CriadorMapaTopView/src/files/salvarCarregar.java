@@ -27,23 +27,28 @@ import world.Tile;
 import world.World;
 
 public class salvarCarregar {
-	public static File arquivo_books, arquivo_worlds, arquivo_construcoes;
-	public static final String local_books = "books", local_worlds = "worlds", local_builds = "construcoes",
-			name_file_builds = "build.bld", name_foto_builds = "image.png", end_file_book = ".book",
-			name_file_world = "world.world", name_file_config = "world.config";
+	public static File arquivoBooks, arquivoWorlds, arquivoConstrucoes, arquivoLocalSpritesExternos;
+	public static final String localBooks = "books", localWorlds = "worlds", localBuilds = "construcoes",
+			localSpritesExternos = "externalSprites", name_file_builds = "build.bld", name_foto_builds = "image.png",
+			end_file_book = ".book", name_file_world = "world.world", name_file_config = "world.config";
 
 	public salvarCarregar() {
-		arquivo_books = new File(local_books);
-		if (!arquivo_books.exists()) {
-			arquivo_books.mkdir();
+		arquivoBooks = new File(localBooks);
+		if (!arquivoBooks.exists()) {
+			arquivoBooks.mkdir();
 		}
-		arquivo_worlds = new File(local_worlds);
-		if (!arquivo_worlds.exists()) {
-			arquivo_worlds.mkdir();
+		arquivoWorlds = new File(localWorlds);
+		if (!arquivoWorlds.exists()) {
+			arquivoWorlds.mkdir();
 		}
-		arquivo_construcoes = new File(local_builds);
-		if (!arquivo_construcoes.exists()) {
-			arquivo_construcoes.mkdir();
+		arquivoConstrucoes = new File(localBuilds);
+		if (!arquivoConstrucoes.exists()) {
+			arquivoConstrucoes.mkdir();
+		}
+
+		arquivoLocalSpritesExternos = new File(localSpritesExternos);
+		if (!arquivoLocalSpritesExternos.exists()) {
+			arquivoLocalSpritesExternos.mkdir();
 		}
 	}
 
@@ -72,7 +77,7 @@ public class salvarCarregar {
 				if (nome == null)
 					return;
 				if (!nome.isBlank()) {
-					pasta = new File(local_builds, nome);
+					pasta = new File(localBuilds, nome);
 					if (pasta.exists()) {
 						pasta = null;
 					} else {
@@ -157,7 +162,7 @@ public class salvarCarregar {
 	}
 
 	public void carregar_construcoes() {
-		File[] arquivos = arquivo_construcoes.listFiles();
+		File[] arquivos = arquivoConstrucoes.listFiles();
 		try {
 			BufferedReader reader;
 			ArrayList<Build> construcoes = new ArrayList<Build>();
@@ -175,7 +180,7 @@ public class salvarCarregar {
 	}
 
 	public void carregar_livros() {
-		ArrayList<String> arquivos = listFilesForFolder(arquivo_books);
+		ArrayList<String> arquivos = listFilesForFolder(arquivoBooks);
 		try {
 			BufferedReader reader;
 			for (String caminho : arquivos) {
@@ -197,7 +202,7 @@ public class salvarCarregar {
 	public static void salvar_livro(int index) {
 		ArrayList<ConjuntoSprites> lConjunto = TelaSprites.pegar_livro(index);
 		String nome = TelaSprites.pegar_nome_livro(index + 1);
-		File file = new File(arquivo_books, nome + end_file_book);
+		File file = new File(arquivoBooks, nome + end_file_book);
 		try {
 			if (!file.exists())
 				file.createNewFile();
@@ -256,7 +261,7 @@ public class salvarCarregar {
 							return;
 					}
 				} while (nome == null || nome.isBlank()
-						|| (pastaDoMundo = new File(salvarCarregar.arquivo_worlds, nome)).exists());
+						|| (pastaDoMundo = new File(salvarCarregar.arquivoWorlds, nome)).exists());
 				pastaDoMundo.mkdir();
 				new File(pastaDoMundo, salvarCarregar.name_file_world).createNewFile();
 			} catch (IOException e) {

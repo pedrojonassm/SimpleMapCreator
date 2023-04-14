@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
 
@@ -30,7 +31,8 @@ public class TelaSprites implements Tela {
 			index_tile_pego, salvar_nesse_livro, aTela, aModoColocar;
 	public static int tilesLayer, max_tiles_nivel;
 	private static ArrayList<ArrayList<ConjuntoSprites>> conjuntos_salvos;
-	public ArrayList<ArrayList<Integer>> sprite_selecionado, array, lista;
+	public ArrayList<ArrayList<Integer>> sprite_selecionado, PosicaoSprite;
+	public ArrayList<ArrayList<String>> nomeSpritesheet;
 
 	private String[] aModosColocar;
 	// esses dois pegam a imagem na lista de imagens estáticas
@@ -72,12 +74,12 @@ public class TelaSprites implements Tela {
 		sprites.add(0);
 		conjuntos_salvos = new ArrayList<ArrayList<ConjuntoSprites>>();
 		sprite_selecionado = new ArrayList<ArrayList<Integer>>(max_tiles_nivel);
-		array = new ArrayList<ArrayList<Integer>>(max_tiles_nivel);
-		lista = new ArrayList<ArrayList<Integer>>(max_tiles_nivel);
+		nomeSpritesheet = new ArrayList<ArrayList<String>>(max_tiles_nivel);
+		PosicaoSprite = new ArrayList<ArrayList<Integer>>(max_tiles_nivel);
 		for (int i = 0; i < max_tiles_nivel; i++) {
 			sprite_selecionado.add(i, new ArrayList<Integer>());
-			array.add(i, new ArrayList<Integer>());
-			lista.add(i, new ArrayList<Integer>());
+			nomeSpritesheet.add(i, new ArrayList<String>());
+			PosicaoSprite.add(i, new ArrayList<Integer>());
 		}
 		subTelas = new ArrayList<>();
 		subTelas.add(new SubTelaPreSets());
@@ -231,19 +233,18 @@ public class TelaSprites implements Tela {
 
 	public void atualizar_caixinha() {
 		comecar_por.set(livro, pagina.get(livro) * max_sprites_por_pagina);
-		int atual = 0, sprites = 0;
-		for (sprites = 0; sprites < World.sprites_do_mundo.size() && atual < comecar_por.get(livro); sprites++) {
-			if (World.sprites_do_mundo.get(sprites).length <= comecar_por.get(livro) - atual) {
-				atual += World.sprites_do_mundo.get(sprites).length;
-			} else {
-				atual += comecar_por.get(livro) - atual;
+		int atual = 0, sprites = 0, posicao = 0;
+		for (Entry<String, BufferedImage[]> iSpriteCarregado : World.spritesCarregados.entrySet()) {
+			if (iSpriteCarregado.getValue().length <= comecar_por.get(livro) - atual)
+				atual += iSpriteCarregado.getValue().length;
+			else {
+				posicao = comecar_por.get(livro) - atual;
 				break;
 			}
+			sprites++;
 		}
-		for (int i = 0; i < sprites; i++) {
-			atual -= World.sprites_do_mundo.get(i).length;
-		}
-		this.atual.set(livro, atual);
+
+		this.atual.set(livro, posicao);
 		this.sprites.set(livro, sprites);
 	}
 
@@ -364,8 +365,8 @@ public class TelaSprites implements Tela {
 						int k = atual.get(livro), spr = sprites.get(livro), desenhando = 0;
 						while (spr < World.sprites_do_mundo.size()) {
 							if (desenhando == aux) {
-								array.get(iTileNivel).remove((Integer) spr);
-								lista.get(iTileNivel).remove((Integer) k);
+								nomeSpritesheet.get(iTileNivel).remove((Integer) spr);
+								PosicaoSprite.get(iTileNivel).remove((Integer) k);
 
 								break;
 							}
@@ -384,8 +385,8 @@ public class TelaSprites implements Tela {
 				int k = atual.get(livro), spr = sprites.get(livro), desenhando = 0;
 				while (spr < World.sprites_do_mundo.size()) {
 					if (desenhando == aux) {
-						array.get(tilesLayer).add(spr);
-						lista.get(tilesLayer).add(k);
+						nomeSpritesheet.get(tilesLayer).add(spr);
+						PosicaoSprite.get(tilesLayer).add(k);
 						break;
 					}
 					k++;
@@ -434,7 +435,7 @@ public class TelaSprites implements Tela {
 	}
 
 	private void adicionar_novo_tile_ao_livro(int livro2) {
-		if (array.size() == 0)
+		if (nomeSpritesheet.size() == 0)
 			return;
 		if (livro2 == 0 && salvar_nesse_livro == 0) {
 			JOptionPane.showMessageDialog(null,
@@ -547,8 +548,8 @@ public class TelaSprites implements Tela {
 				if (contemSpritesSelecionados()) {
 					for (int i = 0; i < sprite_selecionado.size(); i++) {
 						sprite_selecionado.get(i).clear();
-						array.get(i).clear();
-						lista.get(i).clear();
+						nomeSpritesheet.get(i).clear();
+						PosicaoSprite.get(i).clear();
 					}
 					livro_tile_pego = -1;
 					index_tile_pego = -1;
@@ -590,12 +591,12 @@ public class TelaSprites implements Tela {
 			if (kdModoColocar.kdLayerToLayer.equals(kdModoColocar.values()[aModoColocar]) && i != tilesLayer)
 				continue;
 			sprite_selecionado.get(i).clear();
-			array.get(i).clear();
-			lista.get(i).clear();
+			nomeSpritesheet.get(i).clear();
+			PosicaoSprite.get(i).clear();
 			ArrayList<int[]> lSprites = prSprites.get(i);
 			for (int[] a : lSprites) {
-				array.get(i).add(a[0]);
-				lista.get(i).add(a[1]);
+				nomeSpritesheet.get(i).add(a[0]);
+				PosicaoSprite.get(i).add(a[1]);
 				int k = 0;
 				for (int j = 0; j < a[0]; j++) {
 					k += World.sprites_do_mundo.get(j).length;

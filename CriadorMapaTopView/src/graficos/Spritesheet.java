@@ -1,6 +1,7 @@
 package graficos;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -8,14 +9,27 @@ import javax.imageio.ImageIO;
 public class Spritesheet {
 
 	private BufferedImage spritesheet;
-	private int tamanho, quadradosX, quadradosY, spritesPorSkin;
-	String p;
+	private int tamanho, quadradosX, quadradosY;
+	String arquivo;
 
-	public Spritesheet(String path, int t) {
-		tamanho = t;
-		p = path;
+	public Spritesheet(File prArquivo, int prSize) {
+		tamanho = prSize;
+		arquivo = prArquivo.getName();
 		try {
-			spritesheet = ImageIO.read(getClass().getResource(path));
+			spritesheet = ImageIO.read(prArquivo);
+			quadradosX = spritesheet.getWidth() / tamanho;
+			quadradosY = spritesheet.getHeight() / tamanho;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public Spritesheet(String prCaminhho, int t) {
+		tamanho = t;
+		arquivo = prCaminhho;
+		try {
+			spritesheet = ImageIO.read(getClass().getResource(prCaminhho));
 			quadradosX = spritesheet.getWidth() / tamanho;
 			quadradosY = spritesheet.getHeight() / tamanho;
 		} catch (IOException e) {
@@ -53,7 +67,8 @@ public class Spritesheet {
 		return tamanho;
 	}
 
-	public int getSpritesPorSkin() {
-		return spritesPorSkin;
+	public String getArquivo() {
+		return arquivo;
 	}
+
 }

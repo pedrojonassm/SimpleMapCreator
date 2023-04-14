@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
@@ -18,8 +19,10 @@ public class World {
 
 	public static Tile[] tiles;
 	public static int WIDTH, HEIGHT, HIGH;
-	public static ArrayList<BufferedImage[]> sprites_do_mundo; // chaos64, chaos128, paredes64, paredes128, itens64,
-																// itens128, escadas64, escadas128
+	public static HashMap<String, BufferedImage[]> spritesCarregados;
+
+	// chaos64, chaos128, paredes64, paredes128, itens64, itens128, escadas64,
+	// escadas128
 	public static int log_ts;
 
 	public static int tiles_index, tiles_animation_time, max_tiles_animation_time;
@@ -75,8 +78,14 @@ public class World {
 		// */
 	}
 
-	public static void carregar_sprites() {
-		sprites_do_mundo = new ArrayList<BufferedImage[]>();
+	public static void carregarSprites() {
+		spritesCarregados = new HashMap<String, BufferedImage[]>();
+		int maxPagina = carregarSpritesPadroes();
+		TelaSprites.instance.max_pagina_por_total_de_sprites(maxPagina);
+	}
+
+	public static int carregarSpritesPadroes() {
+
 		Spritesheet[] sprites = new Spritesheet[8];
 		int[] total_de_sprites = { 36 * 40 + 16, 9, 27 * 20 - 3, 40 * 32 - 11, 40 * 23 - 16, 20 * 16 + 2, 35, 40 };
 		sprites[0] = new Spritesheet("/chaos64.png", 64); // total de sprites: 36*40 + 16
@@ -90,10 +99,11 @@ public class World {
 
 		int max_pagina = 0;
 		for (int i = 0; i < 8; i++) {
-			sprites_do_mundo.add(sprites[i].get_x_sprites(total_de_sprites[i]));
+			spritesCarregados.put(sprites[i].getArquivo(), sprites[i].get_x_sprites(total_de_sprites[i]));
 			max_pagina += total_de_sprites[i];
 		}
-		TelaSprites.instance.max_pagina_por_total_de_sprites(max_pagina);
+		return max_pagina;
+
 	}
 
 	public static Tile pegar_chao(int pos) {
