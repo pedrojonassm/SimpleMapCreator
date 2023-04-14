@@ -81,8 +81,8 @@ public class Preset {
 		if (!TelaSprites.instance.contemSpritesSelecionados()) {
 
 			if (kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())) {
-				if (sprites.size() > TelaSprites.tilesLayer)
-					sprites.get(TelaSprites.tilesLayer).clear();
+				if (prSprites.size() > TelaSprites.tilesLayer)
+					prSprites.get(TelaSprites.tilesLayer).clear();
 			} else if (kdModoColocar.kdFullTile.equals(TelaSprites.instance.getModoColocar())) {
 				for (ArrayList<int[]> iSprites : sprites)
 					iSprites.clear();
