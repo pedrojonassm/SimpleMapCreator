@@ -47,22 +47,27 @@ public class Preset {
 
 	public void render(Graphics prGraphics) {
 		prGraphics.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-		for (ArrayList<int[]> imagens : sprites) {
+		ArrayList<int[]> imagens;
+		for (int i = 0; i < sprites.size() && i < spritesOld.size(); i++) {
+			if ((TelaSprites.kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
+					&& i != TelaSprites.tilesLayer))
+				continue;
+			imagens = sprites.get(i);
+
 			if (imagens != null && imagens.size() > 0) {
 				int[] sprite = imagens.get(World.tiles_index % imagens.size());
 				BufferedImage image = World.sprites_do_mundo.get(sprite[0])[sprite[1]];
 				prGraphics.drawImage(image, rectangle.x, rectangle.y, rectangle.width, rectangle.height, null);
 			}
 
-		}
-
-		for (ArrayList<int[]> imagens : spritesOld) {
+			imagens = spritesOld.get(i);
 			if (imagens != null && imagens.size() > 0) {
 				int[] sprite = imagens.get(World.tiles_index % imagens.size());
 				BufferedImage image = World.sprites_do_mundo.get(sprite[0])[sprite[1]];
 				prGraphics.drawImage(image, rectangleOld.x, rectangleOld.y, rectangleOld.width, rectangleOld.height,
 						null);
 			}
+
 		}
 	}
 
@@ -91,7 +96,7 @@ public class Preset {
 					&& TelaSprites.tilesLayer != iLayerTile)
 				continue;
 			novo = new ArrayList<int[]>();
-			for (int i = 0; i < TelaSprites.instance.sprite_selecionado.size(); i++) {
+			for (int i = 0; i < TelaSprites.instance.sprite_selecionado.get(iLayerTile).size(); i++) {
 				int[] a = { TelaSprites.instance.array.get(iLayerTile).get(i),
 						TelaSprites.instance.lista.get(iLayerTile).get(i) };
 				novo.add(a);

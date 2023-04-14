@@ -31,7 +31,7 @@ public class ExConfig {
 		listasPadrao();
 
 		tamanhoPreSets = 32;
-		totalLayers = 5;
+		totalLayers = 4;
 		nomeAlturaUi = "Altura: ";
 		nomeLimparUi = "limpar_seleção";
 		nomeCaixaUi = "caixa";
