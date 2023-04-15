@@ -48,23 +48,27 @@ public class Preset {
 	public void render(Graphics prGraphics) {
 		prGraphics.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 		ArrayList<Sprite> imagens;
-		for (int i = 0; i < sprites.size() && i < spritesOld.size(); i++) {
+		for (int i = 0; i < sprites.size() || i < spritesOld.size(); i++) {
 			if ((TelaSprites.kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
 					&& i != TelaSprites.tilesLayer))
 				continue;
-			imagens = sprites.get(i);
+			if (i < sprites.size()) {
+				imagens = sprites.get(i);
 
-			if (imagens != null && imagens.size() > 0) {
-				Sprite sprite = imagens.get(World.tiles_index % imagens.size());
-				prGraphics.drawImage(sprite.pegarImagem(), rectangle.x, rectangle.y, rectangle.width, rectangle.height,
-						null);
+				if (imagens != null && imagens.size() > 0) {
+					Sprite sprite = imagens.get(World.tiles_index % imagens.size());
+					prGraphics.drawImage(sprite.pegarImagem(), rectangle.x, rectangle.y, rectangle.width,
+							rectangle.height, null);
+				}
 			}
 
-			imagens = spritesOld.get(i);
-			if (imagens != null && imagens.size() > 0) {
-				Sprite sprite = imagens.get(World.tiles_index % imagens.size());
-				prGraphics.drawImage(sprite.pegarImagem(), rectangleOld.x, rectangleOld.y, rectangleOld.width,
-						rectangleOld.height, null);
+			if (i < spritesOld.size()) {
+				imagens = spritesOld.get(i);
+				if (imagens != null && imagens.size() > 0) {
+					Sprite sprite = imagens.get(World.tiles_index % imagens.size());
+					prGraphics.drawImage(sprite.pegarImagem(), rectangleOld.x, rectangleOld.y, rectangleOld.width,
+							rectangleOld.height, null);
+				}
 			}
 
 		}
