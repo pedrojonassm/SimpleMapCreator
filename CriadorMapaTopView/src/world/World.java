@@ -20,6 +20,7 @@ public class World {
 	public static Tile[] tiles;
 	public static int WIDTH, HEIGHT, HIGH;
 	public static HashMap<String, BufferedImage[]> spritesCarregados;
+	public static ArrayList<String> nomeSprites;
 
 	// chaos64, chaos128, paredes64, paredes128, itens64, itens128, escadas64,
 	// escadas128
@@ -80,6 +81,7 @@ public class World {
 
 	public static void carregarSprites() {
 		spritesCarregados = new HashMap<String, BufferedImage[]>();
+		nomeSprites = new ArrayList<>();
 		int maxPagina = carregarSpritesPadroes();
 		TelaSprites.instance.max_pagina_por_total_de_sprites(maxPagina);
 	}
@@ -99,7 +101,7 @@ public class World {
 
 		int max_pagina = 0;
 		for (int i = 0; i < 8; i++) {
-			spritesCarregados.put(sprites[i].getArquivo(), sprites[i].get_x_sprites(total_de_sprites[i]));
+			adicionarSpriteSheet(sprites[i].getArquivo(), sprites[i].get_x_sprites(total_de_sprites[i]));
 			max_pagina += total_de_sprites[i];
 		}
 		return max_pagina;
@@ -302,6 +304,15 @@ public class World {
 		Gerador.fd.setVisible(true);
 		if (Gerador.fd.getFiles() != null && Gerador.fd.getFiles().length > 0)
 			novo_mundo(Gerador.fd.getFiles()[0]);
+	}
+
+	public static void adicionarSpriteSheet(String nome, BufferedImage[] imagens) {
+		spritesCarregados.put(nome, imagens);
+		nomeSprites.add(nome);
+	}
+
+	public static BufferedImage PegarSprite(String Key, int posicao) {
+		return spritesCarregados.get(Key)[posicao];
 	}
 
 }

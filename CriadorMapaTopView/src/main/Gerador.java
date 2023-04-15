@@ -229,9 +229,11 @@ public class Gerador extends Canvas
 								&& i != TelaSprites.tilesLayer))
 					continue;
 
-				BufferedImage imagem = World.sprites_do_mundo.get(TelaSprites.instance.nomeSpritesheet.get(i).get(
-						sprite_selecionado_index % TelaSprites.instance.nomeSpritesheet.get(i).size()))[TelaSprites.instance.PosicaoSprite
-								.get(i).get(sprite_selecionado_index % TelaSprites.instance.PosicaoSprite.get(i).size())];
+				BufferedImage imagem = World.PegarSprite(
+						TelaSprites.instance.nomeSpritesheet.get(i)
+								.get(sprite_selecionado_index % TelaSprites.instance.nomeSpritesheet.get(i).size()),
+						TelaSprites.instance.PosicaoSprite.get(i)
+								.get(sprite_selecionado_index % TelaSprites.instance.PosicaoSprite.get(i).size()));
 				if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) {
 					quadradinho_teste[0] -= quadrado.width * ((imagem.getWidth() / quadrado.width) - 1);
 					quadradinho_teste[1] -= quadrado.height * ((imagem.getWidth() / quadrado.height) - 1);

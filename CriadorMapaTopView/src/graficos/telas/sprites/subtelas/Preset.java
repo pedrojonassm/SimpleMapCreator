@@ -2,16 +2,16 @@ package graficos.telas.sprites.subtelas;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import graficos.telas.Sprite;
 import graficos.telas.sprites.TelaSprites;
 import graficos.telas.sprites.TelaSprites.kdModoColocar;
 import world.World;
 
 public class Preset {
-	private ArrayList<ArrayList<int[]>> sprites;
-	private ArrayList<ArrayList<int[]>> spritesOld;
+	private ArrayList<ArrayList<Sprite>> sprites;
+	private ArrayList<ArrayList<Sprite>> spritesOld;
 	private Rectangle rectangle;
 	private Rectangle rectangleOld;
 
@@ -29,11 +29,11 @@ public class Preset {
 		rectangleOld.y = rectangle.y;
 	}
 
-	public ArrayList<ArrayList<int[]>> getSprites() {
+	public ArrayList<ArrayList<Sprite>> getSprites() {
 		return sprites;
 	}
 
-	public void setSprites(ArrayList<ArrayList<int[]>> sprites) {
+	public void setSprites(ArrayList<ArrayList<Sprite>> sprites) {
 		this.sprites = sprites;
 	}
 
@@ -47,7 +47,7 @@ public class Preset {
 
 	public void render(Graphics prGraphics) {
 		prGraphics.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-		ArrayList<int[]> imagens;
+		ArrayList<Sprite> imagens;
 		for (int i = 0; i < sprites.size() && i < spritesOld.size(); i++) {
 			if ((TelaSprites.kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
 					&& i != TelaSprites.tilesLayer))
@@ -55,17 +55,16 @@ public class Preset {
 			imagens = sprites.get(i);
 
 			if (imagens != null && imagens.size() > 0) {
-				int[] sprite = imagens.get(World.tiles_index % imagens.size());
-				BufferedImage image = World.sprites_do_mundo.get(sprite[0])[sprite[1]];
-				prGraphics.drawImage(image, rectangle.x, rectangle.y, rectangle.width, rectangle.height, null);
+				Sprite sprite = imagens.get(World.tiles_index % imagens.size());
+				prGraphics.drawImage(sprite.pegarImagem(), rectangle.x, rectangle.y, rectangle.width, rectangle.height,
+						null);
 			}
 
 			imagens = spritesOld.get(i);
 			if (imagens != null && imagens.size() > 0) {
-				int[] sprite = imagens.get(World.tiles_index % imagens.size());
-				BufferedImage image = World.sprites_do_mundo.get(sprite[0])[sprite[1]];
-				prGraphics.drawImage(image, rectangleOld.x, rectangleOld.y, rectangleOld.width, rectangleOld.height,
-						null);
+				Sprite sprite = imagens.get(World.tiles_index % imagens.size());
+				prGraphics.drawImage(sprite.pegarImagem(), rectangleOld.x, rectangleOld.y, rectangleOld.width,
+						rectangleOld.height, null);
 			}
 
 		}
@@ -75,7 +74,7 @@ public class Preset {
 		colar(sprites);
 	}
 
-	private void colar(ArrayList<ArrayList<int[]>> prSprites) {
+	private void colar(ArrayList<ArrayList<Sprite>> prSprites) {
 		// Do selecionado traz pra cá
 
 		if (!TelaSprites.instance.contemSpritesSelecionados()) {
@@ -84,22 +83,21 @@ public class Preset {
 				if (prSprites.size() > TelaSprites.tilesLayer)
 					prSprites.get(TelaSprites.tilesLayer).clear();
 			} else if (kdModoColocar.kdFullTile.equals(TelaSprites.instance.getModoColocar())) {
-				for (ArrayList<int[]> iSprites : sprites)
+				for (ArrayList<Sprite> iSprites : sprites)
 					iSprites.clear();
 
 			}
 			return;
 		}
-		ArrayList<int[]> novo;
+		ArrayList<Sprite> novo;
 		for (int iLayerTile = 0; iLayerTile < TelaSprites.instance.sprite_selecionado.size(); iLayerTile++) {
 			if (kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
 					&& TelaSprites.tilesLayer != iLayerTile)
 				continue;
-			novo = new ArrayList<int[]>();
+			novo = new ArrayList<Sprite>();
 			for (int i = 0; i < TelaSprites.instance.sprite_selecionado.get(iLayerTile).size(); i++) {
-				int[] a = { TelaSprites.instance.nomeSpritesheet.get(iLayerTile).get(i),
-						TelaSprites.instance.PosicaoSprite.get(iLayerTile).get(i) };
-				novo.add(a);
+				novo.add(new Sprite(TelaSprites.instance.nomeSpritesheet.get(iLayerTile).get(i),
+						TelaSprites.instance.PosicaoSprite.get(iLayerTile).get(i)));
 			}
 			if (prSprites.size() > iLayerTile || (prSprites.size() > iLayerTile && prSprites.get(iLayerTile) == null)) {
 				if (spritesOld.size() > iLayerTile
@@ -118,7 +116,7 @@ public class Preset {
 		copiar(sprites);
 	}
 
-	private void copiar(ArrayList<ArrayList<int[]>> prSprites) {
+	private void copiar(ArrayList<ArrayList<Sprite>> prSprites) {
 		TelaSprites.instance.pegar_tile_ja_colocado(prSprites);
 	}
 

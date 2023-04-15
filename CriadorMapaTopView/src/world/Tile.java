@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import graficos.ConjuntoSprites;
 import graficos.Ui;
+import graficos.telas.Sprite;
 import graficos.telas.configuracao.subtelas.SubTelaPropriedade;
 import graficos.telas.configuracao.subtelas.SubTelaTransporte;
 import graficos.telas.sprites.TelaSprites;
@@ -70,11 +71,11 @@ public class Tile {
 	@SuppressWarnings("unchecked")
 	public void render(Graphics g) {
 		if (posicao_Conjunto < CoConjuntoSprites.size() && CoConjuntoSprites.get(posicao_Conjunto) != null)
-			for (ArrayList<int[]> imagens : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
+			for (ArrayList<Sprite> imagens : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
 				if (imagens != null && imagens.size() > 0) {
-					int[] sprite = imagens.get(World.tiles_index % imagens.size());
+					Sprite sprite = imagens.get(World.tiles_index % imagens.size());
 					int dx, dy;
-					BufferedImage image = World.sprites_do_mundo.get(sprite[0])[sprite[1]];
+					BufferedImage image = sprite.pegarImagem();
 					if (image.getWidth() > Gerador.quadrado.width || image.getHeight() > Gerador.quadrado.height) {
 						dx = x - Camera.x - Gerador.quadrado.width;
 						dy = y - Camera.y - Gerador.quadrado.height;
@@ -186,7 +187,7 @@ public class Tile {
 	}
 
 	public boolean existe() {
-		for (ArrayList<int[]> spr : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
+		for (ArrayList<Sprite> spr : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
 			if (spr.size() > 0) {
 				return true;
 			}
@@ -224,7 +225,7 @@ public class Tile {
 	}
 
 	public boolean tem_sprites() {
-		for (ArrayList<int[]> spr : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
+		for (ArrayList<Sprite> spr : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
 			if (spr.size() > 0) {
 				return true;
 			}
