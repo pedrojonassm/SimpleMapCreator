@@ -321,7 +321,11 @@ public class World {
 		Gerador.aFileDialog.setDirectory(SalvarCarregar.localWorlds);
 		Gerador.aFileDialog.setVisible(true);
 		if (Gerador.aFileDialog.getFiles() != null && Gerador.aFileDialog.getFiles().length > 0)
-			novo_mundo(Gerador.aFileDialog.getFiles()[0]);
+			if (!Gerador.aFileDialog.getFiles()[0].getName().contentEquals(SalvarCarregar.name_file_world)) {
+				JOptionPane.showMessageDialog(null, "arquivo selecionado não bate com o esperado");
+				return;
+			}
+		novo_mundo(Gerador.aFileDialog.getFiles()[0]);
 	}
 
 	public static void adicionarSpriteSheet(String nome, BufferedImage[] imagens) {

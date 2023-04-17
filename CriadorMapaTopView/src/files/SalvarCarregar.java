@@ -364,6 +364,10 @@ public class SalvarCarregar {
 		Gerador.aFileDialog.setFile(nomeDataSpritesExternos);
 		Gerador.aFileDialog.setVisible(true);
 		if (Gerador.aFileDialog.getFiles() != null && Gerador.aFileDialog.getFiles().length > 0) {
+			if (!Gerador.aFileDialog.getFiles()[0].getName().contentEquals(nomeDataSpritesExternos)) {
+				JOptionPane.showMessageDialog(null, "arquivo selecionado não bate com o esperado");
+				return;
+			}
 
 			carregarImagemExterna(Gerador.aFileDialog.getFiles()[0]);
 			Gerador.aConfig.getSpriteSheetExternos().add(Gerador.aFileDialog.getFiles()[0].getParentFile().getName());

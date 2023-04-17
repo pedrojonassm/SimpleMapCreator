@@ -518,9 +518,13 @@ public class Gerador extends Canvas
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Ajustas setFile para filter
-				Gerador.aFileDialog.setFile(SalvarCarregar.name_file_config);
+				aFileDialog.setFile(SalvarCarregar.name_file_config);
 				aFileDialog.setVisible(true);
 				if (Gerador.aFileDialog.getFiles() != null && Gerador.aFileDialog.getFiles().length > 0) {
+					if (!Gerador.aFileDialog.getFiles()[0].getName().contentEquals(SalvarCarregar.name_file_config)) {
+						JOptionPane.showMessageDialog(null, "arquivo selecionado não bate com o esperado");
+						return;
+					}
 					try {
 						ExConfig lConfig = SalvarCarregar.carregarConfiguracoesMundo(Gerador.aFileDialog.getFiles()[0]);
 						if (lConfig != null) {
