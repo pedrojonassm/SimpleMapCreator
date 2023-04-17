@@ -6,15 +6,17 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class Spritesheet {
+import main.configs.ExSpriteSheet;
+
+public class Spritesheet extends ExSpriteSheet {
 
 	private BufferedImage spritesheet;
-	private int tamanho, quadradosX, quadradosY;
-	String arquivo;
+	private int quadradosX, quadradosY;
 
-	public Spritesheet(File prArquivo, int prSize) {
+	public Spritesheet(File prArquivo, int prSize, int prSprites) {
+		totalSprites = prSprites;
 		tamanho = prSize;
-		arquivo = prArquivo.getName();
+		nome = prArquivo.getName();
 		try {
 			spritesheet = ImageIO.read(prArquivo);
 			quadradosX = spritesheet.getWidth() / tamanho;
@@ -25,9 +27,10 @@ public class Spritesheet {
 
 	}
 
-	public Spritesheet(String prCaminhho, int t) {
+	public Spritesheet(String prCaminhho, int t, int prSprites) {
+		totalSprites = prSprites;
 		tamanho = t;
-		arquivo = prCaminhho;
+		nome = prCaminhho;
 		try {
 			spritesheet = ImageIO.read(getClass().getResource(prCaminhho));
 			quadradosX = spritesheet.getWidth() / tamanho;
@@ -67,8 +70,8 @@ public class Spritesheet {
 		return tamanho;
 	}
 
-	public String getArquivo() {
-		return arquivo;
+	public String getNome() {
+		return nome;
 	}
 
 }

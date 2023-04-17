@@ -6,7 +6,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import files.salvarCarregar;
+import files.SalvarCarregar;
 import graficos.telas.Tela;
 import graficos.telas.configuracao.TelaConfiguracao;
 import graficos.telas.construcao.TelaConstrucoes;
@@ -20,7 +20,7 @@ public class Ui implements Tela {
 	public static boolean mostrar, substituir;
 	public static Rectangle caixinha_dos_sprites, local_altura, preencher_tudo, fazer_caixa, limpar_selecao,
 			salvar_construcao, substitui, caixa_das_opcoes;
-	private static String altura, limpar, caixa, preencher, substituira, interactive_sprite, salva_construcao;
+	private static String altura, limpar, caixa, preencher, substituira, salva_construcao;
 
 	private int opcao;
 	public static ArrayList<Tela> telas;
@@ -36,7 +36,6 @@ public class Ui implements Tela {
 		caixa = Gerador.aConfig.getNomeCaixaUi();
 		preencher = Gerador.aConfig.getNomePreencherUi();
 		substituira = Gerador.aConfig.getNomeSubstituirUi();
-		interactive_sprite = Gerador.aConfig.getNomeSpriteInteragivelUi();
 		salva_construcao = Gerador.aConfig.getNomeSalva_construcaoUi();
 		telas = new ArrayList<>();
 		carregar_sprites();
@@ -85,13 +84,13 @@ public class Ui implements Tela {
 	}
 
 	private void carregar_sprites() {
-		Spritesheet spr = new Spritesheet("/setas.png", 32);
+		Spritesheet spr = new Spritesheet("/setas.png", 32, 4);
 		setas = new BufferedImage[spr.getQuadradosX() * spr.getQuadradosY()];
 		for (int i = 0; i < setas.length; i++) {
 			setas[i] = spr.getAsset(i);
 		}
 
-		spr = new Spritesheet("/opcoes.png", 64);
+		spr = new Spritesheet("/opcoes.png", 64, 0);
 		sprite_opcoes = new BufferedImage[spr.getQuadradosX() * spr.getQuadradosY()];
 		for (int i = 0; i < sprite_opcoes.length; i++) {
 			sprite_opcoes[i] = spr.getAsset(i);
@@ -232,7 +231,7 @@ public class Ui implements Tela {
 				World.empty(aTilesSelecionados);
 				return true;
 			} else if (salvar_construcao.contains(x, y)) {
-				salvarCarregar.salvar_construcao(aTilesSelecionados);
+				SalvarCarregar.salvar_construcao(aTilesSelecionados);
 				return true;
 			}
 		}

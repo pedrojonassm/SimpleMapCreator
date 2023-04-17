@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import files.salvarCarregar;
+import files.SalvarCarregar;
 
 public class Build {
 	int horizontal, vertical, high;
@@ -19,7 +19,7 @@ public class Build {
 		high = hi;
 		pasta = f;
 		try {
-			image = ImageIO.read(new File(f, salvarCarregar.name_foto_builds));
+			image = ImageIO.read(new File(f, SalvarCarregar.name_foto_builds));
 		} catch (IOException e) {
 			image = null;
 			e.printStackTrace();

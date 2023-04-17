@@ -2,11 +2,13 @@ package main.configs;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import files.SalvarCarregar;
 import graficos.telas.configuracao.subtelas.SubTelaPropriedade;
 import main.Gerador;
 import world.World;
@@ -14,9 +16,9 @@ import world.World;
 public class ExConfig {
 	private int worldWidth, worldHeight, worldHigh, amountOfTicks, TileSize, playerX, playerY, tamanhoPreSets,
 			totalLayers;
-	private ArrayList<String> propriedades, transportes, nomeModosSprites;
-	private String nomeAlturaUi, nomeLimparUi, nomeCaixaUi, nomePreencherUi, nomeSubstituirUi, nomeSpriteInteragivelUi,
-			nomeSalva_construcaoUi, nomeTilesNivel, nomeModo, nomeTrocar;
+	private ArrayList<String> propriedades, transportes, nomeModosSprites, spriteSheetExternos;
+	private String nomeAlturaUi, nomeLimparUi, nomeCaixaUi, nomePreencherUi, nomeSubstituirUi, nomeSalva_construcaoUi,
+			nomeTilesNivel, nomeModo, nomeTrocar;
 
 	public ExConfig() {
 		worldWidth = 20;
@@ -28,6 +30,7 @@ public class ExConfig {
 		propriedades = new ArrayList<>();
 		transportes = new ArrayList<>();
 		nomeModosSprites = new ArrayList<>();
+		spriteSheetExternos = new ArrayList<>();
 		listasPadrao();
 
 		tamanhoPreSets = 32;
@@ -37,7 +40,6 @@ public class ExConfig {
 		nomeCaixaUi = "caixa";
 		nomePreencherUi = "preencher";
 		nomeSubstituirUi = "substituir?";
-		nomeSpriteInteragivelUi = "Adicionar sprite reajível";
 		nomeSalva_construcaoUi = "salvar construção";
 		nomeTilesNivel = "layer dos tiles: ";
 		nomeModo = "Modo e colocação dos Sprites";
@@ -91,7 +93,7 @@ public class ExConfig {
 		width.addKeyListener(l);
 		height.addKeyListener(l);
 		high.addKeyListener(l);
-		Object[] message = { "Width (>= 20):", width, "Height (>= 20):", height, "High:", high };
+		Object[] message = { "Width:", width, "Height:", height, "High:", high };
 
 		int option = JOptionPane.showConfirmDialog(null, message, "Tamanho do mundo", JOptionPane.OK_CANCEL_OPTION);
 		if (option == JOptionPane.OK_OPTION) {
@@ -256,14 +258,6 @@ public class ExConfig {
 		this.nomeSubstituirUi = nomeSubstituirUi;
 	}
 
-	public String getNomeSpriteInteragivelUi() {
-		return nomeSpriteInteragivelUi;
-	}
-
-	public void setNomeSpriteInteragivelUi(String nomeSpriteInteragivelUi) {
-		this.nomeSpriteInteragivelUi = nomeSpriteInteragivelUi;
-	}
-
 	public String getNomeSalva_construcaoUi() {
 		return nomeSalva_construcaoUi;
 	}
@@ -302,5 +296,46 @@ public class ExConfig {
 
 	public void setNomeTrocar(String nomeTrocar) {
 		this.nomeTrocar = nomeTrocar;
+	}
+
+	public ArrayList<String> getSpriteSheetExternos() {
+		return spriteSheetExternos;
+	}
+
+	public void setSpriteSheetExternos(ArrayList<String> spriteSheetExternos) {
+		this.spriteSheetExternos = spriteSheetExternos;
+	}
+
+	public void importarPropriedades(ArrayList<String> prPropriedades) {
+		if (propriedades == null)
+			propriedades = prPropriedades;
+		else
+			for (String iPropriedade : prPropriedades)
+				if (!propriedades.contains(iPropriedade))
+					propriedades.add(iPropriedade);
+
+	}
+
+	public void importarTransportes(ArrayList<String> prTransportes) {
+		if (transportes == null)
+			propriedades = prTransportes;
+		else
+			for (String iTransporte : prTransportes)
+				if (!transportes.contains(iTransporte))
+					transportes.add(iTransporte);
+	}
+
+	public void importarSpriteSheetExternos(ArrayList<String> prSpriteSheet) {
+		if (spriteSheetExternos == null)
+			spriteSheetExternos = prSpriteSheet;
+		else
+			for (String iSpriteSheet : prSpriteSheet)
+				if (!spriteSheetExternos.contains(iSpriteSheet)) {
+					File lFile = new File(SalvarCarregar.arquivoLocalSpritesExternos, iSpriteSheet);
+					if (lFile.exists()) {
+						spriteSheetExternos.add(iSpriteSheet);
+						SalvarCarregar.carregarImagemExterna(new File(lFile, SalvarCarregar.nomeDataSpritesExternos));
+					}
+				}
 	}
 }

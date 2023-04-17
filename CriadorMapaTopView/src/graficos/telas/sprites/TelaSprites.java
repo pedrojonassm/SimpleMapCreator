@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
 
-import files.salvarCarregar;
+import files.SalvarCarregar;
 import graficos.ConjuntoSprites;
 import graficos.Ui;
 import graficos.telas.Sprite;
@@ -37,13 +37,6 @@ public class TelaSprites implements Tela {
 	public ArrayList<ArrayList<String>> nomeSpritesheet;
 
 	private String[] aModosColocar;
-	// esses dois pegam a imagem na lista de imagens estáticas
-	// World.sprites.get(array)[lista]
-	// TODO mudar array e lista para ArrayList<ArrayList<Integer>> onde tera o
-	// get(Ui.tilesNivel) desssa forma dará pra montar o sprite completo antes de
-	// colocá-lo
-	// Aqui addicionar uma checkbox ddo metodo também, onde se metodo = layer será
-	// get(Ui.tilesNivel) e caso seja tile ele colocará todos os layers;
 	private ArrayList<Tela> subTelas;
 	private String tile_nivel;
 
@@ -179,7 +172,7 @@ public class TelaSprites implements Tela {
 	public void max_pagina_por_total_de_sprites(int total_sprites) {
 		int divisao = ((Ui.caixinha_dos_sprites.width / Gerador.VariavelX)
 				* (Ui.caixinha_dos_sprites.height / Gerador.VariavelY));
-		max_pagina.set(0, (int) (total_sprites / divisao));
+		max_pagina.set(0, max_pagina.get(0) + ((int) (total_sprites / divisao)));
 	}
 
 	public static ArrayList<ConjuntoSprites> pegar_livro(int index) {
@@ -448,7 +441,7 @@ public class TelaSprites implements Tela {
 		if (conjuntos_salvos.get(livro2 - 1).size() >= max_sprites_por_pagina) {
 			max_pagina.set(livro2, max_pagina.get(livro2) + 1);
 		}
-		salvarCarregar.salvar_livro(livro - 1);
+		SalvarCarregar.salvar_livro(livro - 1);
 	}
 
 	@Override
@@ -560,7 +553,7 @@ public class TelaSprites implements Tela {
 					if (conjuntos_salvos.get(livro - 1).size() > aux) {
 						if (JOptionPane.showConfirmDialog(null, "tem certeza que deseja apagar esse sprite?") == 0) {
 							conjuntos_salvos.get(livro - 1).remove(aux);
-							salvarCarregar.salvar_livro(livro - 1);
+							SalvarCarregar.salvar_livro(livro - 1);
 						}
 					}
 				}

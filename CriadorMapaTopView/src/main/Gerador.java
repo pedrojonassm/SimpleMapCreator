@@ -5,7 +5,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Graphics;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.MenuShortcut;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -17,12 +23,20 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.text.NumberFormat;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
+import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.text.NumberFormatter;
 
 import entities.Player;
-import files.salvarCarregar;
+import files.SalvarCarregar;
 import graficos.Ui;
 import graficos.telas.cidadescasas.TelaCidadeCasa;
 import graficos.telas.configuracao.TelaConfiguracao;
@@ -32,6 +46,7 @@ import graficos.telas.sprites.TelaSprites;
 import graficos.telas.sprites.subtelas.SubTelaMultiplosSprites;
 import graficos.telas.sprites.subtelas.SubTelaPreSets;
 import main.configs.ExConfig;
+import main.configs.ExSpriteSheet;
 import world.Camera;
 import world.Tile;
 import world.World;
@@ -41,7 +56,7 @@ public class Gerador extends Canvas
 
 	private static final long serialVersionUID = 1L;
 	public static JFrame frame;
-	public static FileDialog fd;
+	public static FileDialog aFileDialog;
 	private Thread thread;
 	private boolean isRunning = true;
 	public static int windowWidth = 1240, windowHEIGHT = 720, TS, VariavelX, VariavelY, sprite_selecionado_index, FPS;
@@ -55,7 +70,7 @@ public class Gerador extends Canvas
 	public static World world;
 
 	public static Player player;
-	salvarCarregar memoria;
+	SalvarCarregar memoria;
 
 	public static Rectangle quadrado;
 	private int aPos, aPosOld, aCliqueMouse;
@@ -72,7 +87,7 @@ public class Gerador extends Canvas
 	public Gerador() {
 		instance = this;
 		aConfig = new ExConfig();
-		memoria = new salvarCarregar();
+		memoria = new SalvarCarregar();
 		world = new World(null);
 		if (World.ok) {
 			startGerador();
@@ -94,10 +109,8 @@ public class Gerador extends Canvas
 		random = new Random();
 		memoria.carregar_livros();
 		memoria.carregar_construcoes();
-		fd = new FileDialog(Gerador.frame, "Choose a file", FileDialog.LOAD);
-		fd.setDirectory(Gerador.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-		fd.setFile("*.world");
-
+		aFileDialog = new FileDialog(Gerador.frame, "Choose a file", FileDialog.LOAD);
+		Gerador.aFileDialog.setDirectory(Gerador.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 		image = new BufferedImage(windowWidth, windowHEIGHT, BufferedImage.TYPE_INT_RGB);
 		sprite_selecionado_index = 0;
 		sprite_selecionado_animation_time = 0;
@@ -125,8 +138,9 @@ public class Gerador extends Canvas
 				super.componentResized(e);
 			}
 		});
-		setPreferredSize(new Dimension(windowWidth, windowHEIGHT));
 		frame = new JFrame("Gerador de mundo");
+		frame.setMenuBar(createMenuBar());
+		setPreferredSize(new Dimension(windowWidth, windowHEIGHT));
 		frame.add(this);
 		frame.setResizable(false);
 		frame.pack();
@@ -313,13 +327,7 @@ public class Gerador extends Canvas
 			return;
 		}
 		if (control) {
-			if (e.getKeyCode() == KeyEvent.VK_S)
-				World.salvar();
-			else if (e.getKeyCode() == KeyEvent.VK_N)
-				World.novo_mundo(null);
-			else if (e.getKeyCode() == KeyEvent.VK_O)
-				World.carregar_mundo();
-			else if (e.getKeyCode() == KeyEvent.VK_C)
+			if (e.getKeyCode() == KeyEvent.VK_C)
 				if (World.tiles[aPos] != null)
 					World.tiles[aPos].copiarPraTela();
 
@@ -446,4 +454,183 @@ public class Gerador extends Canvas
 		}
 	}
 
+	private MenuBar createMenuBar() {
+		MenuBar lMenuBar = new MenuBar();
+
+		lMenuBar.add(createMenuFile());
+
+		lMenuBar.add(createMenuImportar());
+
+		return lMenuBar;
+	}
+
+	private Menu createMenuFile() {
+		Menu lMenuFile = new Menu("File");
+		MenuItem lMenuItem;
+
+		lMenuItem = new MenuItem("new World", new MenuShortcut(KeyEvent.VK_N));
+
+		lMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				World.novo_mundo(null);
+			}
+		});
+
+		lMenuFile.add(lMenuItem);
+
+		lMenuItem = new MenuItem("Open World", new MenuShortcut(KeyEvent.VK_O));
+
+		lMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				World.carregar_mundo();
+			}
+		});
+
+		lMenuFile.add(lMenuItem);
+
+		lMenuItem = new MenuItem("Save", new MenuShortcut(KeyEvent.VK_S));
+
+		lMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				World.salvar();
+			}
+		});
+
+		lMenuFile.add(lMenuItem);
+		return lMenuFile;
+	}
+
+	private Menu createMenuImportar() {
+		Menu lMenuImport = new Menu("Import");
+		MenuItem lMenuItem;
+
+		lMenuItem = new MenuItem("Import Config");
+
+		lMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Ajustas setFile para filter
+				Gerador.aFileDialog.setFile(SalvarCarregar.name_file_config);
+				aFileDialog.setVisible(true);
+				if (Gerador.aFileDialog.getFiles() != null && Gerador.aFileDialog.getFiles().length > 0) {
+					try {
+						ExConfig lConfig = SalvarCarregar.carregarConfiguracoesMundo(Gerador.aFileDialog.getFiles()[0]);
+						if (lConfig != null) {
+							JCheckBox lPropriedades = new JCheckBox("Importar Propriedades", true),
+									lTransportes = new JCheckBox("Importar Transportes", true),
+									lSpritesImportados = new JCheckBox("Sprites Externos", false);
+							Object[] message = { lPropriedades, lTransportes, lSpritesImportados };
+
+							int option = JOptionPane.showConfirmDialog(null, message, "Tamanho do mundo",
+									JOptionPane.OK_CANCEL_OPTION);
+
+							if (option == JOptionPane.OK_OPTION) {
+								if (lPropriedades.isSelected())
+									aConfig.importarPropriedades(lConfig.getPropriedades());
+								if (lTransportes.isSelected())
+									aConfig.importarTransportes(lConfig.getTransportes());
+								if (lSpritesImportados.isSelected())
+									aConfig.importarSpriteSheetExternos(lConfig.getSpriteSheetExternos());
+
+							}
+						}
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(null, "Não foi possível carregar essas Configurações");
+					}
+				}
+
+			}
+		});
+
+		lMenuImport.add(lMenuItem);
+
+		lMenuItem = new MenuItem("Import new SpriteSheet");
+
+		lMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Gerador.aFileDialog.setFile("*");
+				aFileDialog.setVisible(true);
+				if (Gerador.aFileDialog.getFiles() != null && Gerador.aFileDialog.getFiles().length > 0) {
+					try {
+						BufferedImage lBufferedImage = ImageIO.read(Gerador.aFileDialog.getFiles()[0]);
+						JTextField lNomeSpriteSheet = new JTextField(Gerador.aFileDialog.getFiles()[0].getName());
+						NumberFormatter formatter = new NumberFormatter(NumberFormat.getInstance());
+						formatter.setValueClass(Integer.class);
+						formatter.setMinimum(0);
+						formatter.setMaximum(Integer.MAX_VALUE);
+						formatter.setAllowsInvalid(false);
+						formatter.setCommitsOnValidEdit(true);
+						JFormattedTextField lTamanhoSprite = new JFormattedTextField(formatter),
+								lTotalSprites = new JFormattedTextField(formatter);
+						lTamanhoSprite.setText("" + TS);
+						lTotalSprites.setText(
+								"" + (int) ((lBufferedImage.getWidth() / TS) * (lBufferedImage.getHeight() / TS)));
+
+						Object[] message = { "Nome Sprite Sheet: ", lNomeSpriteSheet, "total de Sprites na Imagem:",
+								lTotalSprites, "tamanho de cada Sprite (pixels):", lTamanhoSprite };
+						boolean lDadosOk = false;
+						while (!lDadosOk) {
+							int option = JOptionPane.showConfirmDialog(null, message, "Dados SpriteSheet",
+									JOptionPane.OK_CANCEL_OPTION);
+							if (option == JOptionPane.OK_OPTION) {
+								if (World.spritesCarregados.containsKey(lNomeSpriteSheet.getText())) {
+									JOptionPane.showMessageDialog(null, "Existe um SpriteSheetImportado com esse nome");
+									continue;
+								} else {
+									File lFile = new File(SalvarCarregar.arquivoLocalSpritesExternos,
+											lNomeSpriteSheet.getText());
+									if (lFile.exists()) {
+										JOptionPane.showMessageDialog(null,
+												"Já existe um SpriteSheet externo com esse nome");
+										continue;
+									} else {
+										SalvarCarregar.adicionarImagemExterna(
+												new ExSpriteSheet(lNomeSpriteSheet.getText(),
+														Integer.parseInt(lTamanhoSprite.getText()),
+														Integer.parseInt(lTotalSprites.getText())),
+												lFile, lBufferedImage);
+
+										lDadosOk = true;
+
+									}
+								}
+
+							} else {
+								lDadosOk = true;
+							}
+						}
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(null, "Não foi possível Importar esse SpriteSheet");
+					}
+				}
+			}
+		});
+
+		lMenuImport.add(lMenuItem);
+
+		lMenuItem = new MenuItem("Add Imported SpriteSheet");
+
+		lMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				SalvarCarregar.carregarImagemExterna();
+			}
+		});
+
+		lMenuImport.add(lMenuItem);
+
+		return lMenuImport;
+	}
 }

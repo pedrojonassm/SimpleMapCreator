@@ -22,17 +22,19 @@ import graficos.telas.construcao.TelaConstrucoes;
 import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
 import main.configs.ExConfig;
+import main.configs.ExSpriteSheet;
 import world.Build;
 import world.Tile;
 import world.World;
 
-public class salvarCarregar {
+public class SalvarCarregar {
 	public static File arquivoBooks, arquivoWorlds, arquivoConstrucoes, arquivoLocalSpritesExternos;
 	public static final String localBooks = "books", localWorlds = "worlds", localBuilds = "construcoes",
 			localSpritesExternos = "externalSprites", name_file_builds = "build.bld", name_foto_builds = "image.png",
-			end_file_book = ".book", name_file_world = "world.world", name_file_config = "world.config";
+			end_file_book = ".book", name_file_world = "world.world", name_file_config = "world.config",
+			nomeDataSpritesExternos = "data.config";
 
-	public salvarCarregar() {
+	public SalvarCarregar() {
 		arquivoBooks = new File(localBooks);
 		if (!arquivoBooks.exists()) {
 			arquivoBooks.mkdir();
@@ -143,7 +145,7 @@ public class salvarCarregar {
 			while ((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
 				lLinhas.add(singleLine);
 			}
-			tiles = (Tile[]) salvarCarregar.fromJson(lLinhas.get(0), World.tiles.getClass());
+			tiles = (Tile[]) SalvarCarregar.fromJson(lLinhas.get(0), World.tiles.getClass());
 			int pX = tiles[0].getX(), pY = tiles[0].getY(), pZ = tiles[0].getZ();
 			BufferedImage image = new BufferedImage((WIDTH + HIGH) * Gerador.TS, (HEIGHT + HIGH) * Gerador.TS,
 					BufferedImage.TYPE_INT_RGB);
@@ -235,7 +237,8 @@ public class salvarCarregar {
 
 	}
 
-	public static void carregarConfiguracoesMundo(File lFileConfig) throws Exception {
+	public static ExConfig carregarConfiguracoesMundo(File lFileConfig) throws Exception {
+		ExConfig lExConfig = new ExConfig();
 		if (lFileConfig.exists()) {
 			BufferedReader reader = new BufferedReader(new FileReader(lFileConfig));
 			String singleLine = null;
@@ -243,10 +246,9 @@ public class salvarCarregar {
 			while ((singleLine = reader.readLine()) != null) {
 				lFile += singleLine;
 			}
-			Gerador.aConfig = (ExConfig) fromJson(lFile, ExConfig.class);
-		} else {
-			Gerador.aConfig = new ExConfig();
+			lExConfig = (ExConfig) fromJson(lFile, ExConfig.class);
 		}
+		return lExConfig;
 	}
 
 	public static void salvar_mundo(File pastaDoMundo) {
@@ -261,16 +263,16 @@ public class salvarCarregar {
 							return;
 					}
 				} while (nome == null || nome.isBlank()
-						|| (pastaDoMundo = new File(salvarCarregar.arquivoWorlds, nome)).exists());
+						|| (pastaDoMundo = new File(SalvarCarregar.arquivoWorlds, nome)).exists());
 				pastaDoMundo.mkdir();
-				new File(pastaDoMundo, salvarCarregar.name_file_world).createNewFile();
+				new File(pastaDoMundo, SalvarCarregar.name_file_world).createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 
 		}
 		String salvar = "";
-		salvar += salvarCarregar.toJSON(World.tiles);
+		salvar += SalvarCarregar.toJSON(World.tiles);
 		try {
 			salvarConfiguracoesMundo(pastaDoMundo);
 			File lFileworld = new File(pastaDoMundo, name_file_world);
@@ -286,13 +288,15 @@ public class salvarCarregar {
 	}
 
 	public static Tile[] carregarMundo(File prfile) throws Exception {
-		carregarConfiguracoesMundo(new File(prfile.getParentFile().getAbsolutePath() + "/" + name_file_config));
+		Gerador.aConfig = carregarConfiguracoesMundo(
+				new File(prfile.getParentFile().getAbsolutePath() + "/" + name_file_config));
 		@SuppressWarnings("resource")
 		BufferedReader reader = new BufferedReader(new FileReader(prfile));
-		String singleLine = null;
-		while ((singleLine = reader.readLine()) == null || singleLine.isBlank()) {
+		String singleLine = null, lFile = "";
+		while ((singleLine = reader.readLine()) != null) {
+			lFile += singleLine;
 		}
-		return (Tile[]) salvarCarregar.fromJson(singleLine, Tile[].class);
+		return (Tile[]) SalvarCarregar.fromJson(lFile, Tile[].class);
 
 	}
 
@@ -330,11 +334,62 @@ public class salvarCarregar {
 			reader.readLine(); // pula a linha das dimensões
 			String singleLine;
 			while ((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
-				return (Tile[]) salvarCarregar.fromJson(singleLine, World.tiles.getClass());
+				return (Tile[]) SalvarCarregar.fromJson(singleLine, World.tiles.getClass());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public static void adicionarImagemExterna(ExSpriteSheet prExSpriteSheet, File prFile, BufferedImage prBufferedImage)
+			throws Exception {
+		prFile.mkdir();
+		File lFileImagem = new File(prFile, "image.png"),
+				lFileData = new File(prFile, SalvarCarregar.nomeDataSpritesExternos);
+		lFileData.createNewFile();
+		BufferedWriter lBufferedWriter = new BufferedWriter(new FileWriter(lFileData));
+		lBufferedWriter.write(SalvarCarregar.toJSON(prExSpriteSheet));
+		lBufferedWriter.flush();
+		lBufferedWriter.close();
+		ImageIO.write(prBufferedImage, "png", lFileImagem);
+		World.adicionarSpritesExterno(lFileImagem, prExSpriteSheet.getTamanho(), prExSpriteSheet.getTotalSprites());
+		Gerador.aConfig.getSpriteSheetExternos().add(prExSpriteSheet.getNome());
+		TelaSprites.instance.max_pagina_por_total_de_sprites(prExSpriteSheet.getTotalSprites());
+
+	}
+
+	public static void carregarImagemExterna() {
+		Gerador.aFileDialog.setDirectory(localSpritesExternos);
+		Gerador.aFileDialog.setFile(nomeDataSpritesExternos);
+		Gerador.aFileDialog.setVisible(true);
+		if (Gerador.aFileDialog.getFiles() != null && Gerador.aFileDialog.getFiles().length > 0) {
+
+			carregarImagemExterna(Gerador.aFileDialog.getFiles()[0]);
+			Gerador.aConfig.getSpriteSheetExternos().add(Gerador.aFileDialog.getFiles()[0].getParentFile().getName());
+		}
+	}
+
+	public static void carregarImagemExterna(File prFileData) {
+
+		try {
+			if (Gerador.aConfig.getSpriteSheetExternos().contains(prFileData.getParentFile().getName())) {
+				JOptionPane.showMessageDialog(null, "Já existe um SpriteSheet importado com esse nome");
+				return;
+			}
+
+			BufferedReader reader = new BufferedReader(new FileReader(prFileData));
+			String singleLine, lFile = "";
+			while ((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
+				lFile += singleLine;
+			}
+			ExSpriteSheet lExSpriteSheet = (ExSpriteSheet) fromJson(lFile, ExSpriteSheet.class);
+			File lFileImagem = new File(prFileData.getParentFile(), "image.png");
+			World.adicionarSpritesExterno(lFileImagem, lExSpriteSheet.getTamanho(), lExSpriteSheet.getTotalSprites());
+			TelaSprites.instance.max_pagina_por_total_de_sprites(lExSpriteSheet.getTotalSprites());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

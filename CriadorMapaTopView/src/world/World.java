@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
-import files.salvarCarregar;
+import files.SalvarCarregar;
 import graficos.Spritesheet;
 import graficos.Ui;
 import graficos.telas.sprites.TelaSprites;
@@ -70,7 +70,7 @@ public class World {
 
 			} else {
 				arquivo = file.getParentFile();
-				tiles = salvarCarregar.carregarMundo(file);
+				tiles = SalvarCarregar.carregarMundo(file);
 			}
 
 		} catch (Exception e) {
@@ -84,25 +84,41 @@ public class World {
 		nomeSprites = new ArrayList<>();
 		int maxPagina = carregarSpritesPadroes();
 		TelaSprites.instance.max_pagina_por_total_de_sprites(maxPagina);
+		carregarSpritesExternos();
+
+	}
+
+	private static void carregarSpritesExternos() {
+		for (String iExSpriteSheet : Gerador.aConfig.getSpriteSheetExternos()) {
+			File lFile = new File(SalvarCarregar.arquivoLocalSpritesExternos, iExSpriteSheet);
+			if (lFile.exists()) {
+				SalvarCarregar.carregarImagemExterna(new File(lFile, SalvarCarregar.nomeDataSpritesExternos));
+
+			}
+		}
+	}
+
+	public static void adicionarSpritesExterno(File lFile, int tamanho, int totalSprites) {
+		Spritesheet lSpritesheet = new Spritesheet(lFile, tamanho, totalSprites);
+		adicionarSpriteSheet(lSpritesheet.getNome(), lSpritesheet.get_x_sprites(lSpritesheet.getTotalSprites()));
 	}
 
 	public static int carregarSpritesPadroes() {
 
 		Spritesheet[] sprites = new Spritesheet[8];
-		int[] total_de_sprites = { 36 * 40 + 16, 9, 27 * 20 - 3, 40 * 32 - 11, 40 * 23 - 16, 20 * 16 + 2, 35, 40 };
-		sprites[0] = new Spritesheet("/chaos64.png", 64); // total de sprites: 36*40 + 16
-		sprites[1] = new Spritesheet("/chaos128.png", 128); // total de sprites: 9
-		sprites[2] = new Spritesheet("/paredes64.png", 64); // total de sprites: 27*20 - 3
-		sprites[3] = new Spritesheet("/paredes128.png", 128); // total de sprites: 40*32 - 11
-		sprites[4] = new Spritesheet("/itens64.png", 64); // total de sprites: 40*23 - 16
-		sprites[5] = new Spritesheet("/itens128.png", 128); // total de sprites: 20*16 + 2
-		sprites[6] = new Spritesheet("/escadas64.png", 64); // total de sprites: 35
-		sprites[7] = new Spritesheet("/escadas128.png", 128); // total de sprites: 40
+		sprites[0] = new Spritesheet("/chaos64.png", 64, 36 * 40 + 16);
+		sprites[1] = new Spritesheet("/chaos128.png", 128, 9);
+		sprites[2] = new Spritesheet("/paredes64.png", 64, 27 * 20 - 3);
+		sprites[3] = new Spritesheet("/paredes128.png", 128, 40 * 32 - 11);
+		sprites[4] = new Spritesheet("/itens64.png", 64, 40 * 23 - 16);
+		sprites[5] = new Spritesheet("/itens128.png", 128, 20 * 16 + 2);
+		sprites[6] = new Spritesheet("/escadas64.png", 64, 35);
+		sprites[7] = new Spritesheet("/escadas128.png", 128, 40);
 
 		int max_pagina = 0;
 		for (int i = 0; i < 8; i++) {
-			adicionarSpriteSheet(sprites[i].getArquivo(), sprites[i].get_x_sprites(total_de_sprites[i]));
-			max_pagina += total_de_sprites[i];
+			adicionarSpriteSheet(sprites[i].getNome(), sprites[i].get_x_sprites(sprites[i].getTotalSprites()));
+			max_pagina += sprites[i].getTotalSprites();
 		}
 		return max_pagina;
 
@@ -233,7 +249,7 @@ public class World {
 		if (prConstrucao == null)
 			return;
 		int[] lPosXY = calcularPosicaoSemAltura(prPOS);
-		Tile[] tiles_construcao = salvarCarregar.carregar_construcao(prConstrucao);
+		Tile[] tiles_construcao = SalvarCarregar.carregar_construcao(prConstrucao);
 		if ((lPosXY[0] >> log_ts) + prConstrucao.getHorizontal() >= WIDTH
 				|| (lPosXY[1] >> log_ts) + prConstrucao.getVertical() >= HEIGHT) {
 			JOptionPane.showMessageDialog(null, "A construção não poderá ser feita aqui pois sairá do mapa");
@@ -296,14 +312,16 @@ public class World {
 	}
 
 	public static void salvar() {
-		salvarCarregar.salvar_mundo(arquivo);
+		SalvarCarregar.salvar_mundo(arquivo);
 
 	}
 
 	public static void carregar_mundo() {
-		Gerador.fd.setVisible(true);
-		if (Gerador.fd.getFiles() != null && Gerador.fd.getFiles().length > 0)
-			novo_mundo(Gerador.fd.getFiles()[0]);
+		Gerador.aFileDialog.setFile(SalvarCarregar.name_file_world);
+		Gerador.aFileDialog.setDirectory(SalvarCarregar.localWorlds);
+		Gerador.aFileDialog.setVisible(true);
+		if (Gerador.aFileDialog.getFiles() != null && Gerador.aFileDialog.getFiles().length > 0)
+			novo_mundo(Gerador.aFileDialog.getFiles()[0]);
 	}
 
 	public static void adicionarSpriteSheet(String nome, BufferedImage[] imagens) {
