@@ -210,21 +210,25 @@ public class Gerador extends Canvas
 					if (control || aTileCliqueDireitoInicial.getaPos() == aPos) {
 						ui.selecionarTile(aPos);
 					} else {
-						int posMenor, posMaior;
-						if (aPos > aTileCliqueDireitoInicial.getaPos()) {
-							posMenor = aTileCliqueDireitoInicial.getaPos();
-							posMaior = aPos;
-						} else {
-							posMenor = aPos;
-							posMaior = aTileCliqueDireitoInicial.getaPos();
+
+						int[] menorXYZ = Uteis.calcularPosicaoSemAltura(aTileCliqueDireitoInicial.getaPos()),
+								maiorXYZ = Uteis.calcularPosicaoSemAltura(aPos), atualXYZ;
+						int aux;
+						for (int i = 0; i < 3; i++) {
+							if (menorXYZ[i] > maiorXYZ[i]) {
+								aux = maiorXYZ[i];
+								maiorXYZ[i] = menorXYZ[i];
+								menorXYZ[i] = aux;
+							}
 						}
-						int[] menor = Uteis.calcularPosicaoSemAltura(posMenor),
-								maior = Uteis.calcularPosicaoSemAltura(posMaior), atual;
+						int posMenor = World.calcular_pos(menorXYZ[0], menorXYZ[1], menorXYZ[2]),
+								posMaior = World.calcular_pos(maiorXYZ[0], maiorXYZ[1], maiorXYZ[2]);
 
 						for (int pos = posMenor; pos <= posMaior; pos++) {
-							atual = Uteis.calcularPosicaoSemAltura(pos);
-							if (menor[0] > atual[0] || menor[1] > atual[1] || menor[2] > atual[2] || maior[0] < atual[0]
-									|| maior[1] < atual[1] || maior[2] < atual[2])
+							atualXYZ = Uteis.calcularPosicaoSemAltura(pos);
+							if (menorXYZ[0] > atualXYZ[0] || menorXYZ[1] > atualXYZ[1] || menorXYZ[2] > atualXYZ[2]
+									|| maiorXYZ[0] < atualXYZ[0] || maiorXYZ[1] < atualXYZ[1]
+									|| maiorXYZ[2] < atualXYZ[2])
 								continue;
 							// Experimenta comentar as proximas 2 linhas e se liga que top
 							lAdicionar = (Tile.tileExisteLista(pos, Ui.aTilesSelecionados) >= 0);
