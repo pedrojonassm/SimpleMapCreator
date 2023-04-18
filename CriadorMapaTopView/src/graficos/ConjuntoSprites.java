@@ -84,4 +84,11 @@ public class ConjuntoSprites {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public ConjuntoSprites clone() {
+		ConjuntoSprites lConjuntoSprites = new ConjuntoSprites();
+		lConjuntoSprites.setSprites((ArrayList<ArrayList<Sprite>>) getSprites().clone());
+		return lConjuntoSprites;
+	}
+
 }

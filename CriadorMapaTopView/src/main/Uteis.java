@@ -1,5 +1,8 @@
 package main;
 
+import world.Camera;
+import world.World;
+
 public class Uteis {
 
 	public static double distancia(int x1, int x2, int y1, int y2) {
@@ -20,6 +23,22 @@ public class Uteis {
 			prValor = prValor / prLogaritmo;
 		}
 		return k;
+	}
+
+	public static int[] calcularPosicaoSemAltura(int prPos) {
+		int[] retorno = { 0, 0, 0 };
+		retorno[0] = (int) ((prPos % (World.WIDTH * World.HIGH)) / World.HIGH) * Gerador.TS - Camera.x;
+		retorno[1] = (int) (prPos / World.HEIGHT / World.HIGH) * Gerador.TS - Camera.y;
+		retorno[2] = (prPos % World.HIGH);
+		return retorno;
+	}
+
+	public static int[] calcularPosicaoComAltura(int prPos) {
+		int[] retorno = calcularPosicaoSemAltura(prPos);
+		int lSubtract = (prPos % World.HIGH) * Gerador.TS;
+		retorno[0] -= lSubtract;
+		retorno[1] -= lSubtract;
+		return retorno;
 	}
 
 }

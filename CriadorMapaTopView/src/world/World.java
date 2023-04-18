@@ -13,6 +13,7 @@ import graficos.Spritesheet;
 import graficos.Ui;
 import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
+import main.Uteis;
 import main.configs.ExConfig;
 
 public class World {
@@ -29,22 +30,6 @@ public class World {
 	public static int tiles_index, tiles_animation_time, max_tiles_animation_time;
 	private static File arquivo;
 	public static boolean ready, ok;
-
-	public static int[] calcularPosicaoSemAltura(int prPos) {
-		int[] retorno = { 0, 0, 0 };
-		retorno[0] = (int) ((prPos % (WIDTH * HIGH)) / HIGH) * Gerador.TS - Camera.x;
-		retorno[1] = (int) (prPos / HEIGHT / HIGH) * Gerador.TS - Camera.y;
-		retorno[2] = (prPos % HIGH);
-		return retorno;
-	}
-
-	public static int[] calcularPosicaoComAltura(int prPos) {
-		int[] retorno = calcularPosicaoSemAltura(prPos);
-		int lSubtract = (prPos % HIGH) * Gerador.TS;
-		retorno[0] -= lSubtract;
-		retorno[1] -= lSubtract;
-		return retorno;
-	}
 
 	public World(File file) {
 		ready = false;
@@ -227,7 +212,7 @@ public class World {
 	public static Tile pegarAdicionarTileMundo(int prPos) {
 		Tile lRetorno = World.pegar_chao(prPos);
 		if (lRetorno == null && prPos >= 0 && prPos < tiles.length) {
-			int[] lPosXY = World.calcularPosicaoSemAltura(prPos);
+			int[] lPosXY = Uteis.calcularPosicaoSemAltura(prPos);
 			lRetorno = new Tile(lPosXY[0] + Camera.x, lPosXY[1] + Camera.y, lPosXY[2]);
 			tiles[prPos] = lRetorno;
 		}
@@ -238,7 +223,7 @@ public class World {
 		int lPos = World.calcular_pos(x, y, z);
 		Tile lRetorno = World.pegar_chao(lPos);
 		if (lRetorno == null && lPos >= 0 && lPos < tiles.length) {
-			int[] lPosXY = World.calcularPosicaoSemAltura(lPos);
+			int[] lPosXY = Uteis.calcularPosicaoSemAltura(lPos);
 			lRetorno = new Tile(lPosXY[0] + Camera.x, lPosXY[1] + Camera.y, z);
 			tiles[lPos] = lRetorno;
 		}
@@ -248,7 +233,7 @@ public class World {
 	public static void colocar_construcao(int prPOS, Build prConstrucao) {
 		if (prConstrucao == null)
 			return;
-		int[] lPosXY = calcularPosicaoSemAltura(prPOS);
+		int[] lPosXY = Uteis.calcularPosicaoSemAltura(prPOS);
 		Tile[] tiles_construcao = SalvarCarregar.carregar_construcao(prConstrucao);
 		if ((lPosXY[0] >> log_ts) + prConstrucao.getHorizontal() >= WIDTH
 				|| (lPosXY[1] >> log_ts) + prConstrucao.getVertical() >= HEIGHT) {

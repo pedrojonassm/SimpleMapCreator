@@ -74,6 +74,7 @@ public class Gerador extends Canvas
 
 	public static Rectangle quadrado;
 	private int aPos, aPosOld, aCliqueMouse;
+	private Tile aTileCliqueDireitoInicial;
 	private boolean clique_no_mapa, aTrocouPosicao;
 	public static boolean control, shift;
 	public static Random random;
@@ -173,10 +174,10 @@ public class Gerador extends Canvas
 	public void tick() {
 		if (clique_no_mapa && aTrocouPosicao) {
 			aTrocouPosicao = false;
-			if (!control) {
-				clique_no_mapa = false;
-			}
 			if (aCliqueMouse == 1) {
+				if (!control) {
+					clique_no_mapa = false;
+				}
 				if (shift) {
 					if (World.tiles[aPos] != null)
 						World.tiles[aPos].copiarPraTela();
@@ -205,8 +206,31 @@ public class Gerador extends Canvas
 			} else if (aCliqueMouse == 3) {
 				boolean lAdicionar = (Tile.tileExisteLista(aPos, Ui.aTilesSelecionados) >= 0);
 				if ((ui.getTela() instanceof TelaSprites || ui.getTela() instanceof TelaConfiguracao)
-						&& (lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1))
-					ui.selecionarTile(aPos);
+						&& ((lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1)))
+					if (control || aTileCliqueDireitoInicial.getaPos() == aPos) {
+						ui.selecionarTile(aPos);
+					} else {
+						int posMenor, posMaior;
+						if (aPos > aTileCliqueDireitoInicial.getaPos()) {
+							posMenor = aTileCliqueDireitoInicial.getaPos();
+							posMaior = aPos;
+						} else {
+							posMenor = aPos;
+							posMaior = aTileCliqueDireitoInicial.getaPos();
+						}
+						int[] menor = Uteis.calcularPosicaoSemAltura(posMenor),
+								maior = Uteis.calcularPosicaoSemAltura(posMaior), atual;
+
+						for (int pos = posMenor; pos <= posMaior; pos++) {
+							atual = Uteis.calcularPosicaoSemAltura(pos);
+							if (menor[0] > atual[0] || menor[1] > atual[1] || menor[2] > atual[2] || maior[0] < atual[0]
+									|| maior[1] < atual[1] || maior[2] < atual[2])
+								continue;
+							lAdicionar = (Tile.tileExisteLista(pos, Ui.aTilesSelecionados) >= 0);
+							if ((lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1))
+								ui.selecionarTile(pos);
+						}
+					}
 			}
 		}
 		player.tick();
@@ -227,7 +251,7 @@ public class Gerador extends Canvas
 		world.render(g);
 
 		g.setColor(Color.red);
-		int[] quadradinho_teste = World.calcularPosicaoSemAltura(aPos);
+		int[] quadradinho_teste = Uteis.calcularPosicaoSemAltura(aPos);
 		g.drawRect(quadradinho_teste[0], quadradinho_teste[1], quadrado.width, quadrado.height);
 		if (TelaSprites.instance.contemSpritesSelecionados()
 				&& (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar)) {
@@ -395,7 +419,7 @@ public class Gerador extends Canvas
 				ui.cliqueUi = true;
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON2) {
-			int[] teste = World.calcularPosicaoSemAltura(aPos);
+			int[] teste = Uteis.calcularPosicaoSemAltura(aPos);
 			System.out.println("mx: " + quadrado.x + " my: " + quadrado.y);
 			System.out.println("cx: " + Camera.x + " cy: " + Camera.y);
 			System.out.println("pos: " + aPos);
@@ -410,6 +434,7 @@ public class Gerador extends Canvas
 				clique_no_mapa = true;
 				aTrocouPosicao = true;
 				aCliqueMouse = 3;
+				aTileCliqueDireitoInicial = World.pegarAdicionarTileMundo(aPos);
 			}
 		}
 	}

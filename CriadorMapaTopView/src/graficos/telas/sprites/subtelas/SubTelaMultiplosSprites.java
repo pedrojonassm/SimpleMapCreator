@@ -4,7 +4,6 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.List;
 
 import graficos.ConjuntoSprites;
 import graficos.telas.Tela;
@@ -121,8 +120,10 @@ public class SubTelaMultiplosSprites implements Tela {
 		return aCoConjuntoSprites;
 	}
 
-	public void addSpritesConjunto(List<ConjuntoSprites> prCoConjuntoSprites) {
-		aCoConjuntoSprites.addAll(prCoConjuntoSprites);
+	public void addSpritesConjunto(ArrayList<ConjuntoSprites> prCoConjuntoSprites) {
+		for (ConjuntoSprites iConjuntoSprites : prCoConjuntoSprites) {
+			aCoConjuntoSprites.add(iConjuntoSprites.clone());
+		}
 	}
 
 	@Override

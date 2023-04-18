@@ -20,7 +20,7 @@ import main.Gerador;
 import main.Uteis;
 
 public class Tile {
-	private List<ConjuntoSprites> CoConjuntoSprites;
+	private ArrayList<ConjuntoSprites> CoConjuntoSprites;
 	private int x, y, z, aPos, posicao_Conjunto, aux;
 
 	private HashMap<String, Object> aPropriedades;
@@ -157,7 +157,8 @@ public class Tile {
 	@SuppressWarnings("unchecked")
 	public void adicionarMultiplosSprites() {
 		if (SubTelaMultiplosSprites.instance.getConjuntoSprites() != null) {
-			CoConjuntoSprites = (List<ConjuntoSprites>) SubTelaMultiplosSprites.instance.getConjuntoSprites().clone();
+			CoConjuntoSprites = (ArrayList<ConjuntoSprites>) SubTelaMultiplosSprites.instance.getConjuntoSprites()
+					.clone();
 		}
 
 	}
@@ -268,7 +269,7 @@ public class Tile {
 		return CoConjuntoSprites;
 	}
 
-	public void setCoConjuntoSprites(List<ConjuntoSprites> aCoConjuntoSprites) {
+	public void setCoConjuntoSprites(ArrayList<ConjuntoSprites> aCoConjuntoSprites) {
 		this.CoConjuntoSprites = aCoConjuntoSprites;
 	}
 

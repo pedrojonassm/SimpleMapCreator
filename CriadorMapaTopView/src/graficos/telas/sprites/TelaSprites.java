@@ -140,9 +140,9 @@ public class TelaSprites implements Tela {
 				nomeSpritesheet.get(tilesLayer).clear();
 				PosicaoSprite.get(tilesLayer).clear();
 				int k = 1;
-				if (posicaoAtual < posicaoCliqueInicial)
+				if (posicaoAtual < posicaoCliqueInicial) // posicaoCliqueInicial
 					k = -1;
-				aux = posicaoCliqueInicial;
+				aux = posicaoCliqueInicial; //
 				while (aux != posicaoAtual + k) {
 					pegar_ou_retirar_sprite_selecionado(aux);
 					aux += k;
@@ -378,6 +378,19 @@ public class TelaSprites implements Tela {
 	private void pegar_ou_retirar_sprite_selecionado(int posicaoCalculada) {
 		if (livro == 0) {
 			int posicao = posicaoCalculada - max_sprites_por_pagina * paginaCliqueInicial;
+			int posicaoVerificar = minPosicaoCliqueInicial, spristesWorld = sprites.get(livro);
+			if (posicao < 0) {
+				int pagesToSubtract = ((posicao * -1) / max_sprites_por_pagina) + 1;
+				posicaoVerificar -= pagesToSubtract * max_sprites_por_pagina;
+				if (posicaoVerificar < 0) {
+					spristesWorld--;
+					if (spristesWorld < 0)
+						spristesWorld = World.nomeSprites.size() - 1;
+					posicaoVerificar = World.spritesCarregados.get(World.nomeSprites.get(spristesWorld)).length
+							+ posicaoVerificar;
+				}
+				posicao = posicaoCalculada - max_sprites_por_pagina * (paginaCliqueInicial - pagesToSubtract);
+			}
 			boolean lContem = false;
 			if (!Gerador.control) {
 				for (int iTileNivel = 0; iTileNivel < sprite_selecionado.size(); iTileNivel++) {
@@ -387,7 +400,7 @@ public class TelaSprites implements Tela {
 					if (iSprites.contains(posicaoCalculada)) {
 						lContem = true;
 						iSprites.remove((Integer) (posicaoCalculada));
-						int k = minPosicaoCliqueInicial, spr = sprites.get(livro), desenhando = 0;
+						int k = posicaoVerificar, spr = spristesWorld, desenhando = 0;
 						while (spr < World.nomeSprites.size()) {
 							if (desenhando == posicao) {
 								nomeSpritesheet.get(iTileNivel).remove(World.nomeSprites.get(spr));
@@ -407,7 +420,7 @@ public class TelaSprites implements Tela {
 			}
 			if (Gerador.control || !lContem) {
 				sprite_selecionado.get(tilesLayer).add(posicaoCalculada);
-				int k = minPosicaoCliqueInicial, spr = sprites.get(livro), desenhando = 0;
+				int k = posicaoVerificar, spr = spristesWorld, desenhando = 0;
 				while (spr < World.nomeSprites.size()) {
 					if (desenhando == posicao) {
 						nomeSpritesheet.get(tilesLayer).add(World.nomeSprites.get(spr));
