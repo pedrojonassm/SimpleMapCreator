@@ -226,6 +226,7 @@ public class Gerador extends Canvas
 							if (menor[0] > atual[0] || menor[1] > atual[1] || menor[2] > atual[2] || maior[0] < atual[0]
 									|| maior[1] < atual[1] || maior[2] < atual[2])
 								continue;
+							// Experimenta comentar as proximas 2 linhas e se liga que top
 							lAdicionar = (Tile.tileExisteLista(pos, Ui.aTilesSelecionados) >= 0);
 							if ((lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1))
 								ui.selecionarTile(pos);
