@@ -51,7 +51,13 @@ public class Sprite {
 				File lFile = new File(SalvarCarregar.arquivoLocalSpritesExternos, nome);
 				if (lFile.exists()) {
 					SalvarCarregar.carregarImagemExterna(new File(lFile, SalvarCarregar.nomeDataSpritesExternos));
-
+					if (!Gerador.aConfig.getSpritesIgnorados().contains(nome) && JOptionPane.showConfirmDialog(null,
+							"Não foi possível encontrar a pasta atualmente, deseja carregar a imagem manualmente?",
+							"Aviso", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+						SalvarCarregar.carregarImagemExterna();
+					} else {
+						Gerador.aConfig.getSpritesIgnorados().add(nome);
+					}
 				}
 			} else {
 				Gerador.aConfig.getSpritesIgnorados().add(nome);
