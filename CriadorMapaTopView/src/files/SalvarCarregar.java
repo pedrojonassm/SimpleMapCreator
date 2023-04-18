@@ -377,7 +377,7 @@ public class SalvarCarregar {
 	public static void carregarImagemExterna(File prFileData) {
 
 		try {
-			if (Gerador.aConfig.getSpriteSheetExternos().contains(prFileData.getParentFile().getName())) {
+			if (World.spritesCarregados.containsKey(prFileData.getParentFile().getName())) {
 				JOptionPane.showMessageDialog(null, "Já existe um SpriteSheet importado com esse nome");
 				return;
 			}

@@ -16,7 +16,7 @@ public class Spritesheet extends ExSpriteSheet {
 	public Spritesheet(File prArquivo, int prSize, int prSprites) {
 		totalSprites = prSprites;
 		tamanho = prSize;
-		nome = prArquivo.getName();
+		nome = prArquivo.getParentFile().getName();
 		try {
 			spritesheet = ImageIO.read(prArquivo);
 			quadradosX = spritesheet.getWidth() / tamanho;

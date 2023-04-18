@@ -16,7 +16,7 @@ import world.World;
 public class ExConfig {
 	private int worldWidth, worldHeight, worldHigh, amountOfTicks, TileSize, playerX, playerY, tamanhoPreSets,
 			totalLayers;
-	private ArrayList<String> propriedades, transportes, nomeModosSprites, spriteSheetExternos;
+	private ArrayList<String> propriedades, transportes, nomeModosSprites, spriteSheetExternos, spritesIgnorados;
 	private String nomeAlturaUi, nomeLimparUi, nomeCaixaUi, nomePreencherUi, nomeSubstituirUi, nomeSalva_construcaoUi,
 			nomeTilesNivel, nomeModo, nomeTrocar;
 
@@ -31,6 +31,7 @@ public class ExConfig {
 		transportes = new ArrayList<>();
 		nomeModosSprites = new ArrayList<>();
 		spriteSheetExternos = new ArrayList<>();
+		spritesIgnorados = new ArrayList<>();
 		listasPadrao();
 
 		tamanhoPreSets = 32;
@@ -314,6 +315,14 @@ public class ExConfig {
 				if (!propriedades.contains(iPropriedade))
 					propriedades.add(iPropriedade);
 
+	}
+
+	public ArrayList<String> getSpritesIgnorados() {
+		return spritesIgnorados;
+	}
+
+	public void setSpritesIgnorados(ArrayList<String> spritesIgnorados) {
+		this.spritesIgnorados = spritesIgnorados;
 	}
 
 	public void importarTransportes(ArrayList<String> prTransportes) {

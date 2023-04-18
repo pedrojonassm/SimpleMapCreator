@@ -307,6 +307,7 @@ public class World {
 			salvar();
 
 		ready = false;
+		Gerador.aConfig = new ExConfig();
 		Gerador.world = new World(file);
 		Gerador.instance.startGerador();
 	}
