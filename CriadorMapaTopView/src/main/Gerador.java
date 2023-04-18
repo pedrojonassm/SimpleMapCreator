@@ -226,6 +226,7 @@ public class Gerador extends Canvas
 
 						for (int pos = posMenor; pos <= posMaior; pos++) {
 							atualXYZ = Uteis.calcularPosicaoSemAltura(pos);
+
 							if (menorXYZ[0] > atualXYZ[0] || menorXYZ[1] > atualXYZ[1] || menorXYZ[2] > atualXYZ[2]
 									|| maiorXYZ[0] < atualXYZ[0] || maiorXYZ[1] < atualXYZ[1]
 									|| maiorXYZ[2] < atualXYZ[2])
