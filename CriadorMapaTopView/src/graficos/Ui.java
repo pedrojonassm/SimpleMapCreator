@@ -30,7 +30,10 @@ public class Ui implements Tela {
 
 	public static ArrayList<Runnable> renderizarDepois;
 
+	public boolean cliqueUi;
+
 	public Ui() {
+		cliqueUi = false;
 		altura = Gerador.aConfig.getNomeAlturaUi();
 		limpar = Gerador.aConfig.getNomeLimparUi();
 		caixa = Gerador.aConfig.getNomeCaixaUi();
@@ -115,6 +118,7 @@ public class Ui implements Tela {
 				caixa_das_opcoes.y--;
 			}
 		}
+		telas.get(opcao).tick();
 	}
 
 	public void render(Graphics g) {

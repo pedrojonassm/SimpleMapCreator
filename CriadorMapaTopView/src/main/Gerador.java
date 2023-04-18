@@ -98,8 +98,8 @@ public class Gerador extends Canvas
 
 	public void startGerador() {
 		TS = aConfig.getTileSize();
-		VariavelX = windowWidth / 19;
-		VariavelY = windowHEIGHT / 11;
+		VariavelX = 64;
+		VariavelY = 64;
 		player = new Player(aConfig.getPlayerX(), aConfig.getPlayerY(), 0);
 		World.log_ts = Uteis.log(Gerador.TS, 2);
 		quadrado = new Rectangle(Gerador.TS, Gerador.TS);
@@ -391,6 +391,8 @@ public class Gerador extends Canvas
 				aTrocouPosicao = true;
 				aCliqueMouse = 1;
 				return;
+			} else {
+				ui.cliqueUi = true;
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON2) {
 			int[] teste = World.calcularPosicaoSemAltura(aPos);
@@ -413,8 +415,10 @@ public class Gerador extends Canvas
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent arg0) {
+	public void mouseReleased(MouseEvent e) {
 		clique_no_mapa = false;
+		if (e.getButton() == MouseEvent.BUTTON1)
+			ui.cliqueUi = false;
 	}
 
 	@Override

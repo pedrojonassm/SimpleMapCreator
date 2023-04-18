@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
 
@@ -30,7 +29,8 @@ public class TelaSprites implements Tela {
 	private Rectangle caixinha_dos_livros, trocarSubTela, trocarModoColocar;
 	private static ArrayList<String> nome_livros;
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego,
-			index_tile_pego, salvar_nesse_livro, aTela, aModoColocar;
+			index_tile_pego, salvar_nesse_livro, aTela, aModoColocar, posicaoCliqueInicial, minPosicaoCliqueInicial,
+			paginaCliqueInicial, posicaoCliqueAtual;
 	public static int tilesLayer, max_tiles_nivel;
 	private static ArrayList<ArrayList<ConjuntoSprites>> conjuntos_salvos;
 	public ArrayList<ArrayList<Integer>> sprite_selecionado, PosicaoSprite;
@@ -127,7 +127,29 @@ public class TelaSprites implements Tela {
 
 	@Override
 	public void tick() {
+		if (Gerador.ui.cliqueUi && livro == 0
+				&& Ui.caixinha_dos_sprites.contains(Gerador.quadrado.x, Gerador.quadrado.y)) {
+			int px = Gerador.quadrado.x / Gerador.VariavelX,
+					py = (Gerador.quadrado.y - Ui.caixinha_dos_sprites.y) / Gerador.VariavelY;
+			int aux = px + py * (Ui.caixinha_dos_sprites.width / Gerador.VariavelX);
+			int posicaoAtual = aux + max_sprites_por_pagina * pagina.get(0);
 
+			if (posicaoCliqueAtual != posicaoAtual) {
+				posicaoCliqueAtual = posicaoAtual;
+				sprite_selecionado.get(tilesLayer).clear();
+				nomeSpritesheet.get(tilesLayer).clear();
+				PosicaoSprite.get(tilesLayer).clear();
+				int k = 1;
+				if (posicaoAtual < posicaoCliqueInicial)
+					k = -1;
+				aux = posicaoCliqueInicial;
+				while (aux != posicaoAtual + k) {
+					pegar_ou_retirar_sprite_selecionado(aux);
+					aux += k;
+				}
+			}
+
+		}
 	}
 
 	@Override
@@ -244,7 +266,7 @@ public class TelaSprites implements Tela {
 	private void desenhar_sprites_a_selecionar(Graphics g) {
 		int lDesenhando = 0, lAtual = atual.get(livro), spr = sprites.get(livro);
 		if (livro == 0)
-			while (spr < World.nomeSprites.size()) {
+			while (spr < World.nomeSprites.size() && World.spritesCarregados.get(World.nomeSprites.get(spr)) != null) {
 				desenhar_no_quadrado(World.spritesCarregados.get(World.nomeSprites.get(spr))[lAtual], lDesenhando, g);
 				lAtual++;
 				lDesenhando++;
@@ -344,20 +366,30 @@ public class TelaSprites implements Tela {
 
 	private void pegar_ou_retirar_sprite_selecionado(int x, int y) {
 		int px = x / Gerador.VariavelX, py = (y - Ui.caixinha_dos_sprites.y) / Gerador.VariavelY;
-		int aux = px + py * (Ui.caixinha_dos_sprites.width / Gerador.VariavelX);
+		int posicaoAuxiliar = px + py * (Ui.caixinha_dos_sprites.width / Gerador.VariavelX);
+		posicaoCliqueInicial = posicaoAuxiliar + max_sprites_por_pagina * pagina.get(livro);
+		paginaCliqueInicial = pagina.get(livro);
+		posicaoCliqueAtual = posicaoCliqueInicial;
+		minPosicaoCliqueInicial = atual.get(livro);
+		pegar_ou_retirar_sprite_selecionado(posicaoAuxiliar + max_sprites_por_pagina * pagina.get(livro));
+
+	}
+
+	private void pegar_ou_retirar_sprite_selecionado(int posicaoCalculada) {
 		if (livro == 0) {
+			int posicao = posicaoCalculada - max_sprites_por_pagina * paginaCliqueInicial;
 			boolean lContem = false;
 			if (!Gerador.control) {
 				for (int iTileNivel = 0; iTileNivel < sprite_selecionado.size(); iTileNivel++) {
 					if (kdModoColocar.kdLayerToLayer.equals(getModoColocar()) && iTileNivel != tilesLayer)
 						continue;
 					ArrayList<Integer> iSprites = sprite_selecionado.get(iTileNivel);
-					if (iSprites.contains(aux + max_sprites_por_pagina * pagina.get(livro))) {
+					if (iSprites.contains(posicaoCalculada)) {
 						lContem = true;
-						iSprites.remove((Integer) (aux + max_sprites_por_pagina * pagina.get(livro)));
-						int k = atual.get(livro), spr = sprites.get(livro), desenhando = 0;
+						iSprites.remove((Integer) (posicaoCalculada));
+						int k = minPosicaoCliqueInicial, spr = sprites.get(livro), desenhando = 0;
 						while (spr < World.nomeSprites.size()) {
-							if (desenhando == aux) {
+							if (desenhando == posicao) {
 								nomeSpritesheet.get(iTileNivel).remove(World.nomeSprites.get(spr));
 								PosicaoSprite.get(iTileNivel).remove((Integer) k);
 
@@ -374,10 +406,10 @@ public class TelaSprites implements Tela {
 				}
 			}
 			if (Gerador.control || !lContem) {
-				sprite_selecionado.get(tilesLayer).add(aux + max_sprites_por_pagina * pagina.get(livro));
-				int k = atual.get(livro), spr = sprites.get(livro), desenhando = 0;
+				sprite_selecionado.get(tilesLayer).add(posicaoCalculada);
+				int k = minPosicaoCliqueInicial, spr = sprites.get(livro), desenhando = 0;
 				while (spr < World.nomeSprites.size()) {
-					if (desenhando == aux) {
+					if (desenhando == posicao) {
 						nomeSpritesheet.get(tilesLayer).add(World.nomeSprites.get(spr));
 						PosicaoSprite.get(tilesLayer).add(k);
 						break;
@@ -392,16 +424,15 @@ public class TelaSprites implements Tela {
 			}
 
 		} else {
-			aux = aux + (max_sprites_por_pagina * pagina.get(livro));
-			if (aux == conjuntos_salvos.get(livro - 1).size()) {
+			if (posicaoCalculada == conjuntos_salvos.get(livro - 1).size()) {
 				// clicou no "+"
 				if (contemSpritesSelecionados())
 					adicionar_novo_tile_ao_livro(livro);
 
-			} else if (aux < conjuntos_salvos.get(livro - 1).size()) {
+			} else if (posicaoCalculada < conjuntos_salvos.get(livro - 1).size()) {
 				livro_tile_pego = livro;
-				index_tile_pego = aux;
-				conjuntos_salvos.get(livro - 1).get(aux).pegarsprites();
+				index_tile_pego = posicaoCalculada;
+				conjuntos_salvos.get(livro - 1).get(posicaoCalculada).pegarsprites();
 			}
 		}
 		Gerador.sprite_selecionado_index = 0;
@@ -495,16 +526,19 @@ public class TelaSprites implements Tela {
 		int[] lProximo = { 0, 0 };
 		for (int i = 0; i < max_sprites_por_pagina; i++) {
 			int lPos = pagina.get(0) * max_sprites_por_pagina + i;
-			for (int j = 0; j < sprite_selecionado.size(); j++) {
-				ArrayList<Integer> iSprites = sprite_selecionado.get(j);
+			for (int iTilesLayer = 0; iTilesLayer < sprite_selecionado.size(); iTilesLayer++) {
+				if (kdModoColocar.kdLayerToLayer.equals(getModoColocar()) && iTilesLayer != tilesLayer)
+					continue;
+				ArrayList<Integer> iSprites = sprite_selecionado.get(iTilesLayer);
 				if (iSprites.contains(lPos)) {
-					lProximo[0] = j;
-					lProximo[1] = i + 1;
+					lProximo[0] = iTilesLayer;
+					lProximo[1] = sprite_selecionado.get(iTilesLayer).indexOf(lPos) + 1;
 				}
 			}
+
 		}
 
-		if (lProximo[1] >= sprite_selecionado.get(lProximo[0]).size()) {
+		while (lProximo[1] >= sprite_selecionado.get(lProximo[0]).size()) {
 			lProximo[0] = lProximo[0] + 1;
 			lProximo[1] = 0;
 			if (lProximo[0] >= sprite_selecionado.size()) {
@@ -587,14 +621,12 @@ public class TelaSprites implements Tela {
 			nomeSpritesheet.get(i).clear();
 			PosicaoSprite.get(i).clear();
 			ArrayList<Sprite> lSprites = prSprites.get(i);
-			for (Sprite iSprite : lSprites) { // Talvez não seja necesssário o for aqui, este
+			for (Sprite iSprite : lSprites) {
 				nomeSpritesheet.get(i).add(iSprite.getNome());
 				PosicaoSprite.get(i).add(iSprite.getPosicao());
-				int k = 0;
-				for (Entry<String, BufferedImage[]> iEntrySet : World.spritesCarregados.entrySet()) {
-					if (iEntrySet.getKey().contentEquals(iSprite.getNome()))
-						k += iEntrySet.getValue().length;
-				}
+				int k = (World.spritesCarregados.get(iSprite.getNome()) != null)
+						? World.spritesCarregados.get(iSprite.getNome()).length
+						: 0;
 				k += iSprite.getPosicao();
 				sprite_selecionado.get(i).add(k);
 			}
