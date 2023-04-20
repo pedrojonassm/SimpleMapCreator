@@ -131,11 +131,11 @@ public class Ui implements Tela {
 			for (Tile iTile : aTilesSelecionados) {
 				if (iTile == null || iTile.getZ() != Gerador.player.getZ())
 					continue;
-				dx = iTile.getX() - Camera.x - (iTile.getZ() - Gerador.player.getZ()) * Gerador.VariavelX;
-				dy = iTile.getY() - Camera.y - (iTile.getZ() - Gerador.player.getZ()) * Gerador.VariavelY;
-				if (dx + Gerador.VariavelX >= 0 && dx < Gerador.windowWidth && dy + Gerador.VariavelY >= 0
+				dx = iTile.getX() - Camera.x - (iTile.getZ() - Gerador.player.getZ()) * Gerador.quadrado.width;
+				dy = iTile.getY() - Camera.y - (iTile.getZ() - Gerador.player.getZ()) * Gerador.quadrado.height;
+				if (dx + Gerador.quadrado.width >= 0 && dx < Gerador.windowWidth && dy + Gerador.quadrado.height >= 0
 						&& dy < Gerador.windowHEIGHT)
-					g.fillRect(dx, dy, Gerador.VariavelX, Gerador.VariavelY);
+					g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
 			}
 
 		g.setColor(Color.white);

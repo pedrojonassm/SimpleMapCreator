@@ -257,8 +257,9 @@ public class Gerador extends Canvas
 		world.render(g);
 
 		g.setColor(Color.red);
-		int[] quadradinho_teste = Uteis.calcularPosicaoSemAltura(aPos);
-		g.drawRect(quadradinho_teste[0], quadradinho_teste[1], quadrado.width, quadrado.height);
+		int[] localDesenho = Uteis.calcularPosicaoSemAltura(aPos);
+		int desenharX, desenharY;
+		g.drawRect(localDesenho[0], localDesenho[1], quadrado.width, quadrado.height);
 		if (TelaSprites.instance.contemSpritesSelecionados()
 				&& (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar)) {
 			if (++sprite_selecionado_animation_time >= World.max_tiles_animation_time) {
@@ -273,16 +274,19 @@ public class Gerador extends Canvas
 								&& i != TelaSprites.tilesLayer))
 					continue;
 
+				desenharX = localDesenho[0];
+				desenharY = localDesenho[1];
+
 				BufferedImage imagem = World.PegarSprite(
 						TelaSprites.instance.nomeSpritesheet.get(i)
 								.get(sprite_selecionado_index % TelaSprites.instance.nomeSpritesheet.get(i).size()),
 						TelaSprites.instance.PosicaoSprite.get(i)
 								.get(sprite_selecionado_index % TelaSprites.instance.PosicaoSprite.get(i).size()));
 				if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) {
-					quadradinho_teste[0] -= quadrado.width * ((imagem.getWidth() / quadrado.width) - 1);
-					quadradinho_teste[1] -= quadrado.height * ((imagem.getWidth() / quadrado.height) - 1);
+					desenharX -= quadrado.width * ((imagem.getWidth() / quadrado.width) - 1);
+					desenharY -= quadrado.height * ((imagem.getWidth() / quadrado.height) - 1);
 				}
-				g.drawImage(imagem, quadradinho_teste[0], quadradinho_teste[1], null);
+				g.drawImage(imagem, desenharX, desenharY, null);
 
 			}
 		}

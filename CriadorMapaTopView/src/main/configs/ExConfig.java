@@ -72,8 +72,10 @@ public class ExConfig {
 		propriedades = SubTelaPropriedade.instance.getaCoPropriedades();
 	}
 
-	public static Integer[] determinarTmanhoMundo() {
-		JTextField width = new JTextField(), height = new JTextField(), high = new JTextField();
+	public static Integer[] determinarConfiguraçõesMundo() {
+		JTextField lWorldWidth = new JTextField(), lWorldHeight = new JTextField(), lWorldHigh = new JTextField(),
+				lTileSize = new JTextField(Gerador.aConfig.TileSize + ""),
+				lTotalLayerTiles = new JTextField(Gerador.aConfig.getTotalLayers() + "");
 		KeyListener l = new KeyListener() {
 
 			@Override
@@ -91,18 +93,27 @@ public class ExConfig {
 			public void keyReleased(KeyEvent e) {
 			}
 		};
-		width.addKeyListener(l);
-		height.addKeyListener(l);
-		high.addKeyListener(l);
-		Object[] message = { "Width:", width, "Height:", height, "High:", high };
+		lTileSize.addKeyListener(l);
+		lTotalLayerTiles.addKeyListener(l);
+		lWorldWidth.addKeyListener(l);
+		lWorldHeight.addKeyListener(l);
+		lWorldHigh.addKeyListener(l);
+		// TODO adicionar outras configurações (MaxTiles e Tamanho do Tile)
+		Object[] message = { "Width:", lWorldWidth, "Height:", lWorldHeight, "High:", lWorldHigh,
+				"Total de Layers por Tile: ", lTotalLayerTiles, "Tamanho de cada Tile (pixels)", lTileSize };
 
 		int option = JOptionPane.showConfirmDialog(null, message, "Tamanho do mundo", JOptionPane.OK_CANCEL_OPTION);
 		if (option == JOptionPane.OK_OPTION) {
 			Integer[] lValores = new Integer[3];
 			try {
-				lValores[0] = Integer.parseInt(width.getText());
-				lValores[1] = Integer.parseInt(height.getText());
-				lValores[2] = Integer.parseInt(high.getText());
+				if (Integer.parseInt(lTotalLayerTiles.getText()) > 0)
+					Gerador.aConfig.setTotalLayers(Integer.parseInt(lTotalLayerTiles.getText()));
+				if (Integer.parseInt(lTileSize.getText()) >= 64)
+					Gerador.aConfig.setTileSize(Integer.parseInt(lTileSize.getText()));
+
+				lValores[0] = Integer.parseInt(lWorldWidth.getText());
+				lValores[1] = Integer.parseInt(lWorldHeight.getText());
+				lValores[2] = Integer.parseInt(lWorldHigh.getText());
 
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null,

@@ -283,20 +283,20 @@ public class TelaSprites implements Tela {
 			int x, y;
 			for (int i = 0; i < max_sprites_por_pagina
 					&& i + (max_sprites_por_pagina * pagina.get(livro)) < tiles.size(); i++) {
-				x = lDesenhando % (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width);
-				y = lDesenhando / (Ui.caixinha_dos_sprites.width / Gerador.quadrado.height);
+				x = lDesenhando % (Ui.caixinha_dos_sprites.width / Gerador.VariavelX);
+				y = lDesenhando / (Ui.caixinha_dos_sprites.width / Gerador.VariavelY);
 				ArrayList<BufferedImage> lDesenhoAtual = tiles.get(i + (max_sprites_por_pagina * pagina.get(livro)))
 						.obterSprite_atual();
 				for (BufferedImage iBufferedImage : lDesenhoAtual)
-					g.drawImage(iBufferedImage, x * Gerador.quadrado.width + Ui.caixinha_dos_sprites.x,
-							y * Gerador.quadrado.height + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
-							Gerador.quadrado.height, null);
+					g.drawImage(iBufferedImage, x * Gerador.VariavelX + Ui.caixinha_dos_sprites.x,
+							y * Gerador.VariavelY + Ui.caixinha_dos_sprites.y, Gerador.VariavelX,
+							Gerador.VariavelY, null);
 
 				if (i + (max_sprites_por_pagina * pagina.get(livro)) == index_tile_pego && livro == livro_tile_pego) {
 					g.setColor(new Color(0, 255, 0, 50));
-					g.fillRect(x * Gerador.quadrado.width + Ui.caixinha_dos_sprites.x,
-							y * Gerador.quadrado.height + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
-							Gerador.quadrado.height);
+					g.fillRect(x * Gerador.VariavelX + Ui.caixinha_dos_sprites.x,
+							y * Gerador.VariavelY + Ui.caixinha_dos_sprites.y, Gerador.VariavelX,
+							Gerador.VariavelY);
 				}
 
 				lAtual++;
@@ -304,35 +304,35 @@ public class TelaSprites implements Tela {
 			}
 			if (lDesenhando < max_sprites_por_pagina) {
 				// desenhar o "+" para adicionar um novo sprite
-				x = (lDesenhando % (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width)) * Gerador.quadrado.width
+				x = (lDesenhando % (Ui.caixinha_dos_sprites.width / Gerador.VariavelX)) * Gerador.VariavelX
 						+ Ui.caixinha_dos_sprites.x;
-				y = (lDesenhando / (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width)) * Gerador.quadrado.width
+				y = (lDesenhando / (Ui.caixinha_dos_sprites.width / Gerador.VariavelX)) * Gerador.VariavelX
 						+ Ui.caixinha_dos_sprites.y;
 				g.setColor(Color.green);
-				g.drawRect(x, y, Gerador.quadrado.width, Gerador.quadrado.height);
-				g.drawLine(x + Gerador.quadrado.width / 2, y + Gerador.quadrado.height / 5,
-						x + Gerador.quadrado.width / 2, y + Gerador.quadrado.height - Gerador.quadrado.height / 5);
-				g.drawLine(x + Gerador.quadrado.width / 5, y + Gerador.quadrado.height / 2,
-						x + Gerador.quadrado.width - Gerador.quadrado.height / 5, y + Gerador.quadrado.height / 2);
+				g.drawRect(x, y, Gerador.VariavelX, Gerador.VariavelY);
+				g.drawLine(x + Gerador.VariavelX / 2, y + Gerador.VariavelY / 5,
+						x + Gerador.VariavelX / 2, y + Gerador.VariavelY - Gerador.VariavelY / 5);
+				g.drawLine(x + Gerador.VariavelX / 5, y + Gerador.VariavelY / 2,
+						x + Gerador.VariavelX - Gerador.VariavelY / 5, y + Gerador.VariavelY / 2);
 			}
 		}
 	}
 
 	private void desenhar_no_quadrado(BufferedImage bufferedImage, int desenhando, Graphics g) {
-		int x = desenhando % (Ui.caixinha_dos_sprites.width / Gerador.quadrado.width),
-				y = desenhando / (Ui.caixinha_dos_sprites.width / Gerador.quadrado.height);
-		g.drawImage(bufferedImage, x * Gerador.quadrado.width + Ui.caixinha_dos_sprites.x,
-				y * Gerador.quadrado.height + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
-				Gerador.quadrado.height, null);
+		int x = desenhando % (Ui.caixinha_dos_sprites.width / Gerador.VariavelX),
+				y = desenhando / (Ui.caixinha_dos_sprites.width / Gerador.VariavelY);
+		g.drawImage(bufferedImage, x * Gerador.VariavelX + Ui.caixinha_dos_sprites.x,
+				y * Gerador.VariavelY + Ui.caixinha_dos_sprites.y, Gerador.VariavelX,
+				Gerador.VariavelY, null);
 		for (int iTilesLayer = 0; iTilesLayer < sprite_selecionado.size(); iTilesLayer++) {
 			if (kdModoColocar.kdLayerToLayer.equals(getModoColocar()) && iTilesLayer != tilesLayer)
 				continue;
 			ArrayList<Integer> iSprites = sprite_selecionado.get(iTilesLayer);
 			if (iSprites.contains(desenhando + max_sprites_por_pagina * pagina.get(livro))) {
 				g.setColor(new Color(0, 255, 0, 50));
-				g.fillRect(x * Gerador.quadrado.width + Ui.caixinha_dos_sprites.x,
-						y * Gerador.quadrado.height + Ui.caixinha_dos_sprites.y, Gerador.quadrado.width,
-						Gerador.quadrado.height);
+				g.fillRect(x * Gerador.VariavelX + Ui.caixinha_dos_sprites.x,
+						y * Gerador.VariavelY + Ui.caixinha_dos_sprites.y, Gerador.VariavelX,
+						Gerador.VariavelY);
 			}
 		}
 	}
@@ -570,13 +570,13 @@ public class TelaSprites implements Tela {
 	public void trocar_Nivel(int prWheelRotation) {
 		if (prWheelRotation > 0) {
 			tilesLayer++;
-			if (tilesLayer > max_tiles_nivel) {
+			if (tilesLayer >= max_tiles_nivel) {
 				tilesLayer = 0;
 			}
 		} else if (prWheelRotation < 0) {
 			tilesLayer--;
 			if (tilesLayer < 0) {
-				tilesLayer = max_tiles_nivel;
+				tilesLayer = max_tiles_nivel - 1;
 			}
 		}
 	}

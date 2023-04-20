@@ -42,7 +42,7 @@ public class World {
 				arquivo = null;
 				Integer[] lTamanho = ExConfig.loadValoresPadrao();
 				if (Gerador.player != null)
-					lTamanho = ExConfig.determinarTmanhoMundo();
+					lTamanho = ExConfig.determinarConfiguraçõesMundo();
 				if (lTamanho == null)
 					ok = false;
 				else {
