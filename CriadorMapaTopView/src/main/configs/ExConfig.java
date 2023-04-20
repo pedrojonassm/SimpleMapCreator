@@ -98,7 +98,6 @@ public class ExConfig {
 		lWorldWidth.addKeyListener(l);
 		lWorldHeight.addKeyListener(l);
 		lWorldHigh.addKeyListener(l);
-		// TODO adicionar outras configurações (MaxTiles e Tamanho do Tile)
 		Object[] message = { "Width:", lWorldWidth, "Height:", lWorldHeight, "High:", lWorldHigh,
 				"Total de Layers por Tile: ", lTotalLayerTiles, "Tamanho de cada Tile (pixels)", lTileSize };
 
