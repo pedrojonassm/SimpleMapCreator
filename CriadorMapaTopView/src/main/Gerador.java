@@ -271,7 +271,7 @@ public class Gerador extends Canvas
 			for (int i = 0; i < TelaSprites.instance.sprite_selecionado.size(); i++) {
 				if (TelaSprites.instance.sprite_selecionado.get(i).size() == 0
 						|| (TelaSprites.kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
-								&& i != TelaSprites.tilesLayer))
+								&& i != TelaSprites.LayerLevel))
 					continue;
 
 				desenharX = localDesenho[0];

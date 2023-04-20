@@ -31,7 +31,7 @@ public class TelaSprites implements Tela {
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego,
 			index_tile_pego, salvar_nesse_livro, aTela, aModoColocar, posicaoCliqueInicial, minPosicaoCliqueInicial,
 			paginaCliqueInicial, posicaoCliqueAtual;
-	public static int tilesLayer, max_tiles_nivel;
+	public static int LayerLevel, max_tiles_nivel;
 	private static ArrayList<ArrayList<ConjuntoSprites>> conjuntos_salvos;
 	public ArrayList<ArrayList<Integer>> sprite_selecionado, PosicaoSprite;
 	public ArrayList<ArrayList<String>> nomeSpritesheet;
@@ -47,7 +47,7 @@ public class TelaSprites implements Tela {
 		instance = this;
 		livro = 0;
 		pagina_livros = 0;
-		tilesLayer = 0;
+		LayerLevel = 0;
 		max_tiles_nivel = Gerador.aConfig.getTotalLayers();
 		aModosColocar = new String[2];
 		aModoColocar = 0;
@@ -136,9 +136,9 @@ public class TelaSprites implements Tela {
 
 			if (posicaoCliqueAtual != posicaoAtual) {
 				posicaoCliqueAtual = posicaoAtual;
-				sprite_selecionado.get(tilesLayer).clear();
-				nomeSpritesheet.get(tilesLayer).clear();
-				PosicaoSprite.get(tilesLayer).clear();
+				sprite_selecionado.get(LayerLevel).clear();
+				nomeSpritesheet.get(LayerLevel).clear();
+				PosicaoSprite.get(LayerLevel).clear();
 				int k = 1;
 				if (posicaoAtual < posicaoCliqueInicial) // posicaoCliqueInicial
 					k = -1;
@@ -172,8 +172,8 @@ public class TelaSprites implements Tela {
 					trocarModoColocar.y + trocarModoColocar.height * 2);
 		}
 
-		w1 = prGraphics.getFontMetrics().stringWidth(tile_nivel + (tilesLayer + 1));
-		prGraphics.drawString(tile_nivel + (tilesLayer + 1), Ui.local_altura.x - w1 + Ui.local_altura.width,
+		w1 = prGraphics.getFontMetrics().stringWidth(tile_nivel + (LayerLevel + 1));
+		prGraphics.drawString(tile_nivel + (LayerLevel + 1), Ui.local_altura.x - w1 + Ui.local_altura.width,
 				Ui.local_altura.y + (Ui.local_altura.height * 2) / 3);
 		w1 = prGraphics.getFontMetrics().stringWidth(Gerador.aConfig.getNomeTrocar());
 		prGraphics.drawRect(trocarSubTela.x, trocarSubTela.y, trocarSubTela.width, trocarSubTela.height);
@@ -289,14 +289,13 @@ public class TelaSprites implements Tela {
 						.obterSprite_atual();
 				for (BufferedImage iBufferedImage : lDesenhoAtual)
 					g.drawImage(iBufferedImage, x * Gerador.VariavelX + Ui.caixinha_dos_sprites.x,
-							y * Gerador.VariavelY + Ui.caixinha_dos_sprites.y, Gerador.VariavelX,
-							Gerador.VariavelY, null);
+							y * Gerador.VariavelY + Ui.caixinha_dos_sprites.y, Gerador.VariavelX, Gerador.VariavelY,
+							null);
 
 				if (i + (max_sprites_por_pagina * pagina.get(livro)) == index_tile_pego && livro == livro_tile_pego) {
 					g.setColor(new Color(0, 255, 0, 50));
 					g.fillRect(x * Gerador.VariavelX + Ui.caixinha_dos_sprites.x,
-							y * Gerador.VariavelY + Ui.caixinha_dos_sprites.y, Gerador.VariavelX,
-							Gerador.VariavelY);
+							y * Gerador.VariavelY + Ui.caixinha_dos_sprites.y, Gerador.VariavelX, Gerador.VariavelY);
 				}
 
 				lAtual++;
@@ -310,8 +309,8 @@ public class TelaSprites implements Tela {
 						+ Ui.caixinha_dos_sprites.y;
 				g.setColor(Color.green);
 				g.drawRect(x, y, Gerador.VariavelX, Gerador.VariavelY);
-				g.drawLine(x + Gerador.VariavelX / 2, y + Gerador.VariavelY / 5,
-						x + Gerador.VariavelX / 2, y + Gerador.VariavelY - Gerador.VariavelY / 5);
+				g.drawLine(x + Gerador.VariavelX / 2, y + Gerador.VariavelY / 5, x + Gerador.VariavelX / 2,
+						y + Gerador.VariavelY - Gerador.VariavelY / 5);
 				g.drawLine(x + Gerador.VariavelX / 5, y + Gerador.VariavelY / 2,
 						x + Gerador.VariavelX - Gerador.VariavelY / 5, y + Gerador.VariavelY / 2);
 			}
@@ -322,17 +321,15 @@ public class TelaSprites implements Tela {
 		int x = desenhando % (Ui.caixinha_dos_sprites.width / Gerador.VariavelX),
 				y = desenhando / (Ui.caixinha_dos_sprites.width / Gerador.VariavelY);
 		g.drawImage(bufferedImage, x * Gerador.VariavelX + Ui.caixinha_dos_sprites.x,
-				y * Gerador.VariavelY + Ui.caixinha_dos_sprites.y, Gerador.VariavelX,
-				Gerador.VariavelY, null);
+				y * Gerador.VariavelY + Ui.caixinha_dos_sprites.y, Gerador.VariavelX, Gerador.VariavelY, null);
 		for (int iTilesLayer = 0; iTilesLayer < sprite_selecionado.size(); iTilesLayer++) {
-			if (kdModoColocar.kdLayerToLayer.equals(getModoColocar()) && iTilesLayer != tilesLayer)
+			if (kdModoColocar.kdLayerToLayer.equals(getModoColocar()) && iTilesLayer != LayerLevel)
 				continue;
 			ArrayList<Integer> iSprites = sprite_selecionado.get(iTilesLayer);
 			if (iSprites.contains(desenhando + max_sprites_por_pagina * pagina.get(livro))) {
 				g.setColor(new Color(0, 255, 0, 50));
 				g.fillRect(x * Gerador.VariavelX + Ui.caixinha_dos_sprites.x,
-						y * Gerador.VariavelY + Ui.caixinha_dos_sprites.y, Gerador.VariavelX,
-						Gerador.VariavelY);
+						y * Gerador.VariavelY + Ui.caixinha_dos_sprites.y, Gerador.VariavelX, Gerador.VariavelY);
 			}
 		}
 	}
@@ -394,7 +391,7 @@ public class TelaSprites implements Tela {
 			boolean lContem = false;
 			if (!Gerador.control) {
 				for (int iTileNivel = 0; iTileNivel < sprite_selecionado.size(); iTileNivel++) {
-					if (kdModoColocar.kdLayerToLayer.equals(getModoColocar()) && iTileNivel != tilesLayer)
+					if (kdModoColocar.kdLayerToLayer.equals(getModoColocar()) && iTileNivel != LayerLevel)
 						continue;
 					ArrayList<Integer> iSprites = sprite_selecionado.get(iTileNivel);
 					if (iSprites.contains(posicaoCalculada)) {
@@ -419,12 +416,12 @@ public class TelaSprites implements Tela {
 				}
 			}
 			if (Gerador.control || !lContem) {
-				sprite_selecionado.get(tilesLayer).add(posicaoCalculada);
+				sprite_selecionado.get(LayerLevel).add(posicaoCalculada);
 				int k = posicaoVerificar, spr = spristesWorld, desenhando = 0;
 				while (spr < World.nomeSprites.size()) {
 					if (desenhando == posicao) {
-						nomeSpritesheet.get(tilesLayer).add(World.nomeSprites.get(spr));
-						PosicaoSprite.get(tilesLayer).add(k);
+						nomeSpritesheet.get(LayerLevel).add(World.nomeSprites.get(spr));
+						PosicaoSprite.get(LayerLevel).add(k);
 						break;
 					}
 					k++;
@@ -498,6 +495,11 @@ public class TelaSprites implements Tela {
 					return true;
 				}
 			}
+			if (Gerador.shift) {
+				trocarLayerTiles(prRodinha);
+				return true;
+			}
+
 			pagina.set(livro, pagina.get(livro) + prRodinha);
 			if (pagina.get(livro) < 0) {
 				pagina.set(livro, max_pagina.get(livro));
@@ -505,6 +507,7 @@ public class TelaSprites implements Tela {
 				pagina.set(livro, 0);
 			}
 			atualizar_caixinha();
+
 			return true;
 		} else if (caixinha_dos_livros.contains(x, y)) {
 			pagina_livros += prRodinha;
@@ -528,7 +531,7 @@ public class TelaSprites implements Tela {
 				return true;
 
 			if (!Gerador.control && !Gerador.shift) {
-				trocar_Nivel(prRodinha);
+				trocarLayerTiles(prRodinha);
 				return true;
 			}
 		}
@@ -540,7 +543,7 @@ public class TelaSprites implements Tela {
 		for (int i = 0; i < max_sprites_por_pagina; i++) {
 			int lPos = pagina.get(0) * max_sprites_por_pagina + i;
 			for (int iTilesLayer = 0; iTilesLayer < sprite_selecionado.size(); iTilesLayer++) {
-				if (kdModoColocar.kdLayerToLayer.equals(getModoColocar()) && iTilesLayer != tilesLayer)
+				if (kdModoColocar.kdLayerToLayer.equals(getModoColocar()) && iTilesLayer != LayerLevel)
 					continue;
 				ArrayList<Integer> iSprites = sprite_selecionado.get(iTilesLayer);
 				if (iSprites.contains(lPos)) {
@@ -567,16 +570,16 @@ public class TelaSprites implements Tela {
 		return true;
 	}
 
-	public void trocar_Nivel(int prWheelRotation) {
+	public void trocarLayerTiles(int prWheelRotation) {
 		if (prWheelRotation > 0) {
-			tilesLayer++;
-			if (tilesLayer >= max_tiles_nivel) {
-				tilesLayer = 0;
+			LayerLevel++;
+			if (LayerLevel >= max_tiles_nivel) {
+				LayerLevel = 0;
 			}
 		} else if (prWheelRotation < 0) {
-			tilesLayer--;
-			if (tilesLayer < 0) {
-				tilesLayer = max_tiles_nivel - 1;
+			LayerLevel--;
+			if (LayerLevel < 0) {
+				LayerLevel = max_tiles_nivel - 1;
 			}
 		}
 	}
@@ -587,6 +590,8 @@ public class TelaSprites implements Tela {
 			if (Ui.caixinha_dos_sprites.contains(x, y)) {
 				if (contemSpritesSelecionados()) {
 					for (int i = 0; i < sprite_selecionado.size(); i++) {
+						if (getModoColocar().equals(kdModoColocar.kdLayerToLayer) && i != LayerLevel)
+							continue;
 						sprite_selecionado.get(i).clear();
 						nomeSpritesheet.get(i).clear();
 						PosicaoSprite.get(i).clear();
@@ -628,7 +633,7 @@ public class TelaSprites implements Tela {
 
 	public void pegar_tile_ja_colocado(ArrayList<ArrayList<Sprite>> prSprites) {
 		for (int i = 0; i < prSprites.size(); i++) {
-			if (kdModoColocar.kdLayerToLayer.equals(kdModoColocar.values()[aModoColocar]) && i != tilesLayer)
+			if (kdModoColocar.kdLayerToLayer.equals(kdModoColocar.values()[aModoColocar]) && i != LayerLevel)
 				continue;
 			sprite_selecionado.get(i).clear();
 			nomeSpritesheet.get(i).clear();

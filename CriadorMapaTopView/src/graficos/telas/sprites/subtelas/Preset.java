@@ -50,7 +50,7 @@ public class Preset {
 		ArrayList<Sprite> imagens;
 		for (int i = 0; i < sprites.size() || i < spritesOld.size(); i++) {
 			if ((TelaSprites.kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
-					&& i != TelaSprites.tilesLayer))
+					&& i != TelaSprites.LayerLevel))
 				continue;
 			if (i < sprites.size()) {
 				imagens = sprites.get(i);
@@ -84,8 +84,8 @@ public class Preset {
 		if (!TelaSprites.instance.contemSpritesSelecionados()) {
 
 			if (kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())) {
-				if (prSprites.size() > TelaSprites.tilesLayer)
-					prSprites.get(TelaSprites.tilesLayer).clear();
+				if (prSprites.size() > TelaSprites.LayerLevel)
+					prSprites.get(TelaSprites.LayerLevel).clear();
 			} else if (kdModoColocar.kdFullTile.equals(TelaSprites.instance.getModoColocar())) {
 				for (ArrayList<Sprite> iSprites : sprites)
 					iSprites.clear();
@@ -96,7 +96,7 @@ public class Preset {
 		ArrayList<Sprite> novo;
 		for (int iLayerTile = 0; iLayerTile < TelaSprites.instance.sprite_selecionado.size(); iLayerTile++) {
 			if (kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
-					&& TelaSprites.tilesLayer != iLayerTile)
+					&& TelaSprites.LayerLevel != iLayerTile)
 				continue;
 			novo = new ArrayList<Sprite>();
 			for (int i = 0; i < TelaSprites.instance.sprite_selecionado.get(iLayerTile).size(); i++) {

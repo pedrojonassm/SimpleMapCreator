@@ -52,8 +52,8 @@ public class ConjuntoSprites {
 		if (!TelaSprites.instance.contemSpritesSelecionados()) {
 
 			if (kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())) {
-				if (sprites.size() > TelaSprites.tilesLayer)
-					sprites.get(TelaSprites.tilesLayer).clear();
+				if (sprites.size() > TelaSprites.LayerLevel)
+					sprites.get(TelaSprites.LayerLevel).clear();
 			} else if (kdModoColocar.kdFullTile.equals(TelaSprites.instance.getModoColocar())) {
 				for (ArrayList<Sprite> iSprites : sprites)
 					iSprites.clear();
@@ -64,7 +64,7 @@ public class ConjuntoSprites {
 
 		for (int iLayerTile = 0; iLayerTile < TelaSprites.instance.sprite_selecionado.size(); iLayerTile++) {
 			if (kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
-					&& TelaSprites.tilesLayer != iLayerTile)
+					&& TelaSprites.LayerLevel != iLayerTile)
 				continue;
 
 			if (TelaSprites.instance.nomeSpritesheet.get(iLayerTile).size() == 0 && sprites.size() < iLayerTile
