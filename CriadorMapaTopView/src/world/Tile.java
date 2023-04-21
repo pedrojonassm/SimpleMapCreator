@@ -157,8 +157,10 @@ public class Tile {
 	@SuppressWarnings("unchecked")
 	public void adicionarMultiplosSprites() {
 		if (SubTelaMultiplosSprites.instance.getConjuntoSprites() != null) {
-			CoConjuntoSprites = (ArrayList<ConjuntoSprites>) SubTelaMultiplosSprites.instance.getConjuntoSprites()
-					.clone();
+			CoConjuntoSprites.clear();
+			for (ConjuntoSprites iConjuntoSprites : SubTelaMultiplosSprites.instance.getConjuntoSprites())
+				CoConjuntoSprites.add(iConjuntoSprites.clone());
+
 		}
 
 	}

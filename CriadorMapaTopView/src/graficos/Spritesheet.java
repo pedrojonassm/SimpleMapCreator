@@ -27,12 +27,12 @@ public class Spritesheet extends ExSpriteSheet {
 
 	}
 
-	public Spritesheet(String prCaminhho, int t, int prSprites) {
+	public Spritesheet(String prCaminho, int t, int prSprites) {
 		totalSprites = prSprites;
 		tamanho = t;
-		nome = prCaminhho;
+		nome = (prCaminho.startsWith("/")) ? prCaminho.substring(1) : prCaminho;
 		try {
-			spritesheet = ImageIO.read(getClass().getResource(prCaminhho));
+			spritesheet = ImageIO.read(getClass().getResource(prCaminho));
 			quadradosX = spritesheet.getWidth() / tamanho;
 			quadradosY = spritesheet.getHeight() / tamanho;
 		} catch (IOException e) {

@@ -1,5 +1,6 @@
 package files;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -8,7 +9,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -18,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import graficos.ConjuntoSprites;
+import graficos.telas.Sprite;
 import graficos.telas.construcao.TelaConstrucoes;
 import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
@@ -28,11 +34,12 @@ import world.Tile;
 import world.World;
 
 public class SalvarCarregar {
-	public static File arquivoBooks, arquivoWorlds, arquivoConstrucoes, arquivoLocalSpritesExternos;
+	public static File arquivoBooks, arquivoWorlds, arquivoConstrucoes, arquivoLocalSpritesExternos,
+			arquivoLocalExportacoes;
 	public static final String localBooks = "books", localWorlds = "worlds", localBuilds = "construcoes",
-			localSpritesExternos = "externalSprites", name_file_builds = "build.bld", name_foto_builds = "image.png",
-			end_file_book = ".book", name_file_world = "world.world", name_file_config = "world.config",
-			nomeDataSpritesExternos = "data.config";
+			localSpritesExternos = "externalSprites", localExportacoes = "Exports", name_file_builds = "build.bld",
+			name_foto_builds = "image.png", end_file_book = ".book", name_file_world = "world.world",
+			name_file_config = "world.config", nomeDataSpritesExternos = "data.config";
 
 	public SalvarCarregar() {
 		arquivoBooks = new File(localBooks);
@@ -51,6 +58,10 @@ public class SalvarCarregar {
 		arquivoLocalSpritesExternos = new File(localSpritesExternos);
 		if (!arquivoLocalSpritesExternos.exists()) {
 			arquivoLocalSpritesExternos.mkdir();
+		}
+		arquivoLocalExportacoes = new File(localExportacoes);
+		if (!arquivoLocalExportacoes.exists()) {
+			arquivoLocalExportacoes.mkdir();
 		}
 	}
 
@@ -395,5 +406,111 @@ public class SalvarCarregar {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void exportarMundoJson() {
+		String lNome = JOptionPane.showInputDialog("Insira um nome para a pasta a ser salvo o Mundo Exportado");
+		File lFileExportacao = new File(arquivoLocalExportacoes, lNome), lFileImagens, lFileMundoExportado, lFileImagem;
+		if (lFileExportacao.exists())
+			lFileExportacao = new File(arquivoLocalExportacoes,
+					lNome + "-" + new SimpleDateFormat("yyyy-MM-dd HH.mm").format(new Date()));
+
+		lFileImagens = new File(lFileExportacao, "imagens");
+		lFileMundoExportado = new File(lFileExportacao, name_file_world);
+		lFileExportacao.mkdir();
+		lFileImagens.mkdir();
+		try {
+			lFileMundoExportado.createNewFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro ao criar o arquivo de exportação, cancelando");
+			return;
+		}
+
+		ArrayList<Tile> lExport = new ArrayList<>();
+		HashMap<String, ArrayList<BufferedImage>> lImagensToExport = new HashMap<>();
+		HashMap<String, ArrayList<Integer>> lFrom = new HashMap<>(), lTo = new HashMap<>();
+		Tile lTile;
+		ConjuntoSprites lConjuntoSprites;
+		for (Tile iTile : World.tiles) {
+			if (iTile == null) {
+				lExport.add(null);
+				continue;
+			}
+			lTile = new Tile(iTile.getX(), iTile.getY(), iTile.getZ());
+			for (ConjuntoSprites iConjuntoSprites : iTile.getCoConjuntoSprites()) {
+				lConjuntoSprites = iConjuntoSprites.clone();
+				for (ArrayList<Sprite> iList : lConjuntoSprites.getSprites()) {
+					for (Sprite iSprite : iList) {
+						if (!lImagensToExport.containsKey(iSprite.getNome())) {
+							lImagensToExport.put(iSprite.getNome(), new ArrayList<BufferedImage>());
+							lFrom.put(iSprite.getNome(), new ArrayList<Integer>());
+							lTo.put(iSprite.getNome(), new ArrayList<Integer>());
+						}
+
+						if (!lFrom.get(iSprite.getNome()).contains(iSprite.getPosicao())) {
+							// Se o Sprite ainda não foi adicionado na exportação
+							lFrom.get(iSprite.getNome()).add(iSprite.getPosicao());
+							lTo.get(iSprite.getNome()).add(lTo.get(iSprite.getNome()).size());
+							lImagensToExport.get(iSprite.getNome())
+									.add(World.spritesCarregados.get(iSprite.getNome())[iSprite.getPosicao()]);
+						}
+						iSprite.setPosicao(lTo.get(iSprite.getNome())
+								.get(lFrom.get(iSprite.getNome()).indexOf(iSprite.getPosicao())));
+					}
+				}
+				lTile.getCoConjuntoSprites().add(lConjuntoSprites);
+			}
+
+			lExport.add(lTile);
+		}
+
+		// Exporttar as imagens
+		int lTamanho, lLinhas, lColunas;
+		BufferedImage iBufferedImage;
+		Graphics iGraphics;
+		for (Entry<String, ArrayList<BufferedImage>> iImagens : lImagensToExport.entrySet()) {
+			lTamanho = iImagens.getValue().get(0).getHeight();
+			lLinhas = (int) Math.sqrt(iImagens.getValue().size());
+			lColunas = lLinhas;
+			while (lLinhas * lColunas < iImagens.getValue().size())
+				lLinhas++;
+
+			iBufferedImage = new BufferedImage(lTamanho * lLinhas, lTamanho * lColunas, BufferedImage.TYPE_INT_RGB);
+
+			iGraphics = iBufferedImage.getGraphics();
+			iGraphics.setColor(Color.black);
+			iGraphics.fillRect(0, 0, iBufferedImage.getWidth(), iBufferedImage.getHeight());
+			for (int i = 0; i < iImagens.getValue().size(); i++) {
+				iGraphics.drawImage(iImagens.getValue().get(i), (i % lLinhas) * lTamanho, (i / lLinhas) * lTamanho,
+						null);
+			}
+			iGraphics.drawImage(iBufferedImage, 0, 0, iBufferedImage.getWidth(), iBufferedImage.getHeight(), null);
+			iGraphics.dispose();
+			lFileImagem = new File(lFileImagens,
+					(iImagens.getKey().endsWith(".png")) ? iImagens.getKey() : iImagens.getKey() + ".png");
+			try {
+				lFileImagem.createNewFile();
+				ImageIO.write(iBufferedImage, "PNG", lFileImagem);
+			} catch (IOException e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, "Ocorreu um erro ao criar o arquivo de exportação, cancelando");
+				return;
+			}
+
+		}
+
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(lFileMundoExportado));
+			String lConteudo = toJSON(lExport);
+			writer.write(lConteudo);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Ocorreu um erro ao criar o arquivo de exportação, cancelando");
+			return;
+		}
+
 	}
 }

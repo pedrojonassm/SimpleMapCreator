@@ -87,7 +87,20 @@ public class ConjuntoSprites {
 	@SuppressWarnings("unchecked")
 	public ConjuntoSprites clone() {
 		ConjuntoSprites lConjuntoSprites = new ConjuntoSprites();
-		lConjuntoSprites.setSprites((ArrayList<ArrayList<Sprite>>) getSprites().clone());
+		ArrayList<ArrayList<Sprite>> lSpritesConjunto = new ArrayList<>();
+		ArrayList<Sprite> lCoSprites;
+		Sprite lSprite;
+		for (int i = 0; i < getSprites().size(); i++) {
+			lCoSprites = new ArrayList<>();
+			for (int j = 0; j < getSprites().get(i).size(); j++) {
+				lSprite = new Sprite();
+				lSprite.setNome(getSprites().get(i).get(j).getNome());
+				lSprite.setPosicao(getSprites().get(i).get(j).getPosicao());
+				lCoSprites.add(lSprite);
+			}
+			lSpritesConjunto.add(lCoSprites);
+		}
+		lConjuntoSprites.setSprites(lSpritesConjunto);
 		return lConjuntoSprites;
 	}
 

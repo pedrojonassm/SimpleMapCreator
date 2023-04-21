@@ -500,6 +500,8 @@ public class Gerador extends Canvas
 
 		lMenuBar.add(createMenuImportar());
 
+		lMenuBar.add(createMenuExportar());
+
 		return lMenuBar;
 	}
 
@@ -675,5 +677,25 @@ public class Gerador extends Canvas
 		lMenuImport.add(lMenuItem);
 
 		return lMenuImport;
+	}
+
+	private Menu createMenuExportar() {
+		Menu lMenuExportar = new Menu("Export");
+		MenuItem lMenuItem;
+
+		lMenuItem = new MenuItem("JSON");
+
+		lMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				SalvarCarregar.exportarMundoJson();
+			}
+		});
+
+		lMenuExportar.add(lMenuItem);
+
+		return lMenuExportar;
 	}
 }
