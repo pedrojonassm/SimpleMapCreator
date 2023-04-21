@@ -45,7 +45,7 @@ import graficos.telas.construcao.TelaConstrucoes;
 import graficos.telas.sprites.TelaSprites;
 import graficos.telas.sprites.subtelas.SubTelaMultiplosSprites;
 import graficos.telas.sprites.subtelas.SubTelaPreSets;
-import main.configs.ExConfig;
+import main.configs.Configs;
 import main.configs.ExSpriteSheet;
 import world.Camera;
 import world.Tile;
@@ -66,7 +66,6 @@ public class Gerador extends Canvas
 	// era 64 e 64
 	private BufferedImage image;
 
-	public static int nivel;
 	public static World world;
 
 	public static Player player;
@@ -81,13 +80,13 @@ public class Gerador extends Canvas
 	public static Ui ui;
 	private int sprite_selecionado_animation_time, aEstadoTile;
 
-	public static ExConfig aConfig;
+	public static Configs aConfig;
 
 	public static Gerador instance;
 
 	public Gerador() {
 		instance = this;
-		aConfig = new ExConfig();
+		aConfig = new Configs();
 		memoria = new SalvarCarregar();
 		world = new World(null);
 		if (World.ok) {
@@ -567,7 +566,7 @@ public class Gerador extends Canvas
 						return;
 					}
 					try {
-						ExConfig lConfig = SalvarCarregar.carregarConfiguracoesMundo(Gerador.aFileDialog.getFiles()[0]);
+						Configs lConfig = SalvarCarregar.carregarConfiguracoesMundo(Gerador.aFileDialog.getFiles()[0]);
 						if (lConfig != null) {
 							JCheckBox lPropriedades = new JCheckBox("Importar Propriedades", true),
 									lTransportes = new JCheckBox("Importar Transportes", true),

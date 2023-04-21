@@ -14,7 +14,7 @@ import graficos.Ui;
 import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
 import main.Uteis;
-import main.configs.ExConfig;
+import main.configs.Configs;
 
 public class World {
 
@@ -40,9 +40,9 @@ public class World {
 			ok = true;
 			if (file == null) {
 				arquivo = null;
-				Integer[] lTamanho = ExConfig.loadValoresPadrao();
+				Integer[] lTamanho = Configs.loadValoresPadrao();
 				if (Gerador.player != null)
-					lTamanho = ExConfig.determinarConfiguraçõesMundo();
+					lTamanho = Configs.determinarConfiguraçõesMundo();
 				if (lTamanho == null)
 					ok = false;
 				else {
@@ -185,7 +185,7 @@ public class World {
 			t = pegar_chao(((Gerador.player.getX() >> log_ts) + (i + 1) + (i + 1) * WIDTH
 					+ (Gerador.player.getY() >> log_ts) * WIDTH) * HIGH + Gerador.player.getZ() + 1);
 
-			if (t != null && t.existe()) {
+			if (t != null && t.tem_sprites()) {
 				maxZ = t.getZ();
 				break;
 			}
@@ -292,7 +292,7 @@ public class World {
 			salvar();
 
 		ready = false;
-		Gerador.aConfig = new ExConfig();
+		Gerador.aConfig = new Configs();
 		Gerador.world = new World(file);
 		Gerador.instance.startGerador();
 	}

@@ -27,6 +27,7 @@ import graficos.telas.Sprite;
 import graficos.telas.construcao.TelaConstrucoes;
 import graficos.telas.sprites.TelaSprites;
 import main.Gerador;
+import main.configs.Configs;
 import main.configs.ExConfig;
 import main.configs.ExSpriteSheet;
 import world.Build;
@@ -248,8 +249,8 @@ public class SalvarCarregar {
 
 	}
 
-	public static ExConfig carregarConfiguracoesMundo(File lFileConfig) throws Exception {
-		ExConfig lExConfig = new ExConfig();
+	public static Configs carregarConfiguracoesMundo(File lFileConfig) throws Exception {
+		Configs lExConfig = new Configs();
 		if (lFileConfig.exists()) {
 			BufferedReader reader = new BufferedReader(new FileReader(lFileConfig));
 			String singleLine = null;
@@ -257,7 +258,7 @@ public class SalvarCarregar {
 			while ((singleLine = reader.readLine()) != null) {
 				lFile += singleLine;
 			}
-			lExConfig = (ExConfig) fromJson(lFile, ExConfig.class);
+			lExConfig = (Configs) fromJson(lFile, Configs.class);
 		}
 		return lExConfig;
 	}
@@ -410,17 +411,20 @@ public class SalvarCarregar {
 
 	public static void exportarMundoJson() {
 		String lNome = JOptionPane.showInputDialog("Insira um nome para a pasta a ser salvo o Mundo Exportado");
-		File lFileExportacao = new File(arquivoLocalExportacoes, lNome), lFileImagens, lFileMundoExportado, lFileImagem;
+		File lFileExportacao = new File(arquivoLocalExportacoes, lNome), lFileImagens, lFileMundoExportado, lFileImagem,
+				lFileConfig;
 		if (lFileExportacao.exists())
 			lFileExportacao = new File(arquivoLocalExportacoes,
 					lNome + "-" + new SimpleDateFormat("yyyy-MM-dd HH.mm").format(new Date()));
 
 		lFileImagens = new File(lFileExportacao, "imagens");
 		lFileMundoExportado = new File(lFileExportacao, name_file_world);
+		lFileConfig = new File(lFileExportacao, name_file_config);
 		lFileExportacao.mkdir();
 		lFileImagens.mkdir();
 		try {
 			lFileMundoExportado.createNewFile();
+			lFileConfig.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Ocorreu um erro ao criar o arquivo de exportação, cancelando");
@@ -504,6 +508,12 @@ public class SalvarCarregar {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(lFileMundoExportado));
 			String lConteudo = toJSON(lExport);
 			writer.write(lConteudo);
+			writer.flush();
+			writer.close();
+			writer = new BufferedWriter(new FileWriter(lFileConfig));
+			ExConfig lConfig = new ExConfig();
+			lConfig.fromConfig(Gerador.aConfig);
+			writer.write(toJSON(lConfig));
 			writer.flush();
 			writer.close();
 		} catch (IOException e) {

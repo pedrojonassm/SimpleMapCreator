@@ -189,15 +189,6 @@ public class Tile {
 		this.z = z;
 	}
 
-	public boolean existe() {
-		for (ArrayList<Sprite> spr : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
-			if (spr.size() > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public void addPropriedades(HashMap<String, Object> prPropriedades) {
 		if (aPropriedades == null)
 			aPropriedades = new HashMap<>();
