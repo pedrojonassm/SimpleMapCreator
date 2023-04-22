@@ -306,12 +306,12 @@ public class SalvarCarregar {
 	public static Tile[] carregarMundo(File prfile) throws Exception {
 		Gerador.aConfig = carregarConfiguracoesMundo(
 				new File(prfile.getParentFile().getAbsolutePath() + "/" + name_file_config));
-		@SuppressWarnings("resource")
 		BufferedReader reader = new BufferedReader(new FileReader(prfile));
 		String singleLine = null, lFile = "";
 		while ((singleLine = reader.readLine()) != null) {
 			lFile += singleLine;
 		}
+		reader.close();
 		return (Tile[]) SalvarCarregar.fromJson(lFile, Tile[].class);
 
 	}
@@ -447,6 +447,7 @@ public class SalvarCarregar {
 				continue;
 			}
 			lTile = new Tile(iTile.getX(), iTile.getY(), iTile.getZ());
+			lTile.getCoConjuntoSprites().remove(0);
 			for (ConjuntoSprites iConjuntoSprites : iTile.getCoConjuntoSprites()) {
 				lConjuntoSprites = iConjuntoSprites.clone();
 				for (ArrayList<Sprite> iList : lConjuntoSprites.getSprites()) {
@@ -532,6 +533,9 @@ public class SalvarCarregar {
 			writer = new BufferedWriter(new FileWriter(lFileConfig));
 			ExConfig lConfig = new ExConfig();
 			lConfig.fromConfig(Gerador.aConfig);
+			lConfig.setPlayerX(Gerador.player.getX());
+			lConfig.setPlayerY(Gerador.player.getY());
+			lConfig.setPlayerZ(Gerador.player.getZ());
 			writer.write(toJSON(lConfig));
 			writer.flush();
 			writer.close();

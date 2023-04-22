@@ -49,26 +49,32 @@ public class Player implements tickRender {
 				tile_speed--;
 			sqm_alvo = null;
 		} else if (sqm_alvo == null) {
-			boolean mover = false;
 			if (left) {
-				horizontal = -1;
-				mover = true;
+				if (x - Gerador.TS >= 0)
+					horizontal = -1;
+
 			} else if (right) {
-				horizontal = 1;
-				mover = true;
+
+				if (x + Gerador.TS < World.WIDTH * Gerador.TS)
+					horizontal = 1;
+
 			} else {
 				horizontal = 0;
 			}
 			if (up) {
-				vertical = -1;
-				mover = true;
+
+				if (y - Gerador.TS >= 0)
+					vertical = -1;
+
 			} else if (down) {
-				vertical = 1;
-				mover = true;
+
+				if (y + Gerador.TS < World.HEIGHT * Gerador.TS)
+					vertical = 1;
+
 			} else {
 				vertical = 0;
 			}
-			if (mover && !aBloqueadoMovimentacao) {
+			if ((horizontal != 0 || vertical != 0) && !aBloqueadoMovimentacao) {
 				boolean lInverteuVelocidade = false;
 				if (speed + tile_speed < 0) {
 					lInverteuVelocidade = true;

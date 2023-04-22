@@ -421,6 +421,7 @@ public class Gerador extends Canvas
 		} else if (e.getButton() == MouseEvent.BUTTON2) {
 			int[] teste = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(aPos);
 			System.out.println("mx: " + quadrado.x + " my: " + quadrado.y);
+			System.out.println("ex: " + e.getX() + " ey: " + e.getY());
 			System.out.println("cx: " + Camera.x + " cy: " + Camera.y);
 			System.out.println("pos: " + aPos);
 			System.out.println("tem tile: " + (lEscolhido != null));
@@ -448,6 +449,8 @@ public class Gerador extends Canvas
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		if (e.getX() < 0 || e.getY() < 0 || e.getX() > windowWidth || e.getY() > windowHEIGHT)
+			return;
 		aPos = World.calcular_pos(e.getX() + Camera.x, e.getY() + Camera.y, player.getZ());
 		if (aPosOld != aPos) {
 			aPosOld = aPos;
@@ -459,6 +462,8 @@ public class Gerador extends Canvas
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		if (e.getX() < 0 || e.getY() < 0 || e.getX() > windowWidth || e.getY() > windowHEIGHT)
+			return;
 		aPos = World.calcular_pos(e.getX() + Camera.x, e.getY() + Camera.y, player.getZ());
 		if (aPosOld != aPos) {
 			aPosOld = aPos;
