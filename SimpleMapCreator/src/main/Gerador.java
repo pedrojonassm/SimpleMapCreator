@@ -165,7 +165,7 @@ public class Gerador extends Canvas
 
 	public static void main(String args[]) {
 		Gerador gerador = new Gerador();
-		if (world.ok)
+		if (World.ok)
 			gerador.start();
 	}
 
@@ -208,7 +208,7 @@ public class Gerador extends Canvas
 					} else {
 
 						int[] menorXYZ = Uteis.calcularPosicaoSemAltura(aTileCliqueDireitoInicial.getaPos()),
-								maiorXYZ = Uteis.calcularPosicaoSemAltura(aPos), atualXYZ;
+								maiorXYZ = Uteis.calcularPosicaoSemAltura(aPos);
 						int aux;
 						for (int i = 0; i < 3; i++) {
 							if (menorXYZ[i] > maiorXYZ[i]) {

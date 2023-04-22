@@ -261,6 +261,7 @@ public class SalvarCarregar {
 			while ((singleLine = reader.readLine()) != null) {
 				lFile += singleLine;
 			}
+			reader.close();
 			lExConfig = (Configs) fromJson(lFile, Configs.class);
 		}
 		return lExConfig;
@@ -402,6 +403,7 @@ public class SalvarCarregar {
 			while ((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
 				lFile += singleLine;
 			}
+			reader.close();
 			ExSpriteSheet lExSpriteSheet = (ExSpriteSheet) fromJson(lFile, ExSpriteSheet.class);
 			File lFileImagem = new File(prFileData.getParentFile(), nameImagem);
 			World.adicionarSpritesExterno(lFileImagem, lExSpriteSheet.getTamanho(), lExSpriteSheet.getTotalSprites());

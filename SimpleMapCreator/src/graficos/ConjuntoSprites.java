@@ -84,7 +84,6 @@ public class ConjuntoSprites {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public ConjuntoSprites clone() {
 		ConjuntoSprites lConjuntoSprites = new ConjuntoSprites();
 		ArrayList<ArrayList<Sprite>> lSpritesConjunto = new ArrayList<>();

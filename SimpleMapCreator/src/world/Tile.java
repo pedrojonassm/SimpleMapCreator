@@ -158,7 +158,6 @@ public class Tile {
 		CoConjuntoSprites.get(posicao_Conjunto).adicionar_sprite_selecionado();
 	}
 
-	@SuppressWarnings("unchecked")
 	public void adicionarMultiplosSprites() {
 		if (SubTelaMultiplosSprites.instance.getConjuntoSprites() != null) {
 			CoConjuntoSprites.clear();
