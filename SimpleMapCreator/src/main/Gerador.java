@@ -38,7 +38,6 @@ import javax.swing.text.NumberFormatter;
 import entities.Player;
 import files.SalvarCarregar;
 import graficos.Ui;
-import graficos.telas.cidadescasas.TelaCidadeCasa;
 import graficos.telas.configuracao.TelaConfiguracao;
 import graficos.telas.configuracao.subtelas.SubTelaPropriedade;
 import graficos.telas.construcao.TelaConstrucoes;
@@ -199,8 +198,6 @@ public class Gerador extends Canvas
 					}
 				} else if (ui.getTela() instanceof TelaConstrucoes) {
 					World.colocar_construcao(aPos, TelaConstrucoes.instance.pegar_construcao_selecionada());
-				} else if (ui.getTela() instanceof TelaCidadeCasa) {
-					// Cidades e casas
 				}
 			} else if (aCliqueMouse == 3) {
 				boolean lAdicionar = (Tile.tileExisteLista(aPos, Ui.aTilesSelecionados) >= 0);
