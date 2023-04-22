@@ -319,7 +319,7 @@ public class Gerador extends Canvas
 					}
 				}
 				frames++;
-				delta--;
+				delta = 0;
 			}
 
 			if (System.currentTimeMillis() - timer >= 1000) {
