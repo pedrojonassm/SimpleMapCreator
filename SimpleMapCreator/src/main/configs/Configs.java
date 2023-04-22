@@ -26,7 +26,7 @@ public class Configs {
 		worldHigh = 7;
 		amountOfTicks = 60;
 		TileSize = 64;
-		playerX = playerY = 0;
+		playerX = playerY = 12 * TileSize;
 		propriedades = new ArrayList<>();
 		transportes = new ArrayList<>();
 		nomeModosSprites = new ArrayList<>();

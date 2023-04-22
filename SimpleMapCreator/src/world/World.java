@@ -212,7 +212,7 @@ public class World {
 	public static Tile pegarAdicionarTileMundo(int prPos) {
 		Tile lRetorno = World.pegar_chao(prPos);
 		if (lRetorno == null && prPos >= 0 && prPos < tiles.length) {
-			int[] lPosXY = Uteis.calcularPosicaoSemAltura(prPos);
+			int[] lPosXY = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(prPos);
 			lRetorno = new Tile(lPosXY[0] + Camera.x, lPosXY[1] + Camera.y, lPosXY[2]);
 			tiles[prPos] = lRetorno;
 		}
@@ -223,7 +223,7 @@ public class World {
 		int lPos = World.calcular_pos(x, y, z);
 		Tile lRetorno = World.pegar_chao(lPos);
 		if (lRetorno == null && lPos >= 0 && lPos < tiles.length) {
-			int[] lPosXY = Uteis.calcularPosicaoSemAltura(lPos);
+			int[] lPosXY = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(lPos);
 			lRetorno = new Tile(lPosXY[0] + Camera.x, lPosXY[1] + Camera.y, z);
 			tiles[lPos] = lRetorno;
 		}
@@ -233,7 +233,7 @@ public class World {
 	public static void colocar_construcao(int prPOS, Build prConstrucao) {
 		if (prConstrucao == null)
 			return;
-		int[] lPosXY = Uteis.calcularPosicaoSemAltura(prPOS);
+		int[] lPosXY = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(prPOS);
 		Tile[] tiles_construcao = SalvarCarregar.carregar_construcao(prConstrucao);
 		if ((lPosXY[0] >> log_ts) + prConstrucao.getHorizontal() >= WIDTH
 				|| (lPosXY[1] >> log_ts) + prConstrucao.getVertical() >= HEIGHT) {

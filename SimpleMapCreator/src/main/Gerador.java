@@ -220,21 +220,15 @@ public class Gerador extends Canvas
 								menorXYZ[i] = aux;
 							}
 						}
-						int posMenor = World.calcular_pos(menorXYZ[0], menorXYZ[1], menorXYZ[2]),
-								posMaior = World.calcular_pos(maiorXYZ[0], maiorXYZ[1], maiorXYZ[2]);
 
-						for (int pos = posMenor; pos <= posMaior; pos++) {
-							atualXYZ = Uteis.calcularPosicaoSemAltura(pos);
-
-							if (menorXYZ[0] > atualXYZ[0] || menorXYZ[1] > atualXYZ[1] || menorXYZ[2] > atualXYZ[2]
-									|| maiorXYZ[0] < atualXYZ[0] || maiorXYZ[1] < atualXYZ[1]
-									|| maiorXYZ[2] < atualXYZ[2])
-								continue;
-							// Experimenta comentar as proximas 2 linhas e se liga que top
-							lAdicionar = (Tile.tileExisteLista(pos, Ui.aTilesSelecionados) >= 0);
-							if ((lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1))
-								ui.selecionarTile(pos);
-						}
+						for (int xx = menorXYZ[0]; xx <= maiorXYZ[0]; xx += TS)
+							for (int yy = menorXYZ[1]; yy <= maiorXYZ[1]; yy += TS)
+								for (int zz = menorXYZ[2]; zz <= maiorXYZ[2]; zz += TS) {
+									aux = World.calcular_pos(xx, yy, zz);
+									lAdicionar = (Tile.tileExisteLista(aux, Ui.aTilesSelecionados) >= 0);
+									if ((lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1))
+										ui.selecionarTile(aux);
+								}
 					}
 			}
 		}
@@ -256,7 +250,7 @@ public class Gerador extends Canvas
 		world.render(g);
 
 		g.setColor(Color.red);
-		int[] localDesenho = Uteis.calcularPosicaoSemAltura(aPos);
+		int[] localDesenho = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(aPos);
 		int desenharX, desenharY;
 		g.drawRect(localDesenho[0], localDesenho[1], quadrado.width, quadrado.height);
 		if (TelaSprites.instance.contemSpritesSelecionados()
@@ -428,7 +422,7 @@ public class Gerador extends Canvas
 				ui.cliqueUi = true;
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON2) {
-			int[] teste = Uteis.calcularPosicaoSemAltura(aPos);
+			int[] teste = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(aPos);
 			System.out.println("mx: " + quadrado.x + " my: " + quadrado.y);
 			System.out.println("cx: " + Camera.x + " cy: " + Camera.y);
 			System.out.println("pos: " + aPos);
