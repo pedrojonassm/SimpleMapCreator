@@ -39,7 +39,7 @@ public class SalvarCarregar {
 			arquivoLocalExportacoes;
 	public static final String localBooks = "books", localWorlds = "worlds", localBuilds = "construcoes",
 			localSpritesExternos = "externalSprites", localExportacoes = "Exports", name_file_builds = "build.bld",
-			name_foto_builds = "image.png", end_file_book = ".book", name_file_world = "world.world",
+			nameImagem = "image.png", end_file_book = ".book", name_file_world = "world.world",
 			name_file_config = "world.config", nomeDataSpritesExternos = "data.config";
 
 	public SalvarCarregar() {
@@ -171,7 +171,7 @@ public class SalvarCarregar {
 
 			g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
 			g.dispose();
-			ImageIO.write(image, "PNG", new File(pasta, name_foto_builds));
+			ImageIO.write(image, "PNG", new File(pasta, nameImagem));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -360,7 +360,7 @@ public class SalvarCarregar {
 	public static void adicionarImagemExterna(ExSpriteSheet prExSpriteSheet, File prFile, BufferedImage prBufferedImage)
 			throws Exception {
 		prFile.mkdir();
-		File lFileImagem = new File(prFile, name_foto_builds),
+		File lFileImagem = new File(prFile, nameImagem),
 				lFileData = new File(prFile, SalvarCarregar.nomeDataSpritesExternos);
 		lFileData.createNewFile();
 		BufferedWriter lBufferedWriter = new BufferedWriter(new FileWriter(lFileData));
@@ -403,7 +403,7 @@ public class SalvarCarregar {
 				lFile += singleLine;
 			}
 			ExSpriteSheet lExSpriteSheet = (ExSpriteSheet) fromJson(lFile, ExSpriteSheet.class);
-			File lFileImagem = new File(prFileData.getParentFile(), name_foto_builds);
+			File lFileImagem = new File(prFileData.getParentFile(), nameImagem);
 			World.adicionarSpritesExterno(lFileImagem, lExSpriteSheet.getTamanho(), lExSpriteSheet.getTotalSprites());
 			TelaSprites.instance.max_pagina_por_total_de_sprites(lExSpriteSheet.getTotalSprites());
 
@@ -415,7 +415,7 @@ public class SalvarCarregar {
 	public static void exportarMundoJson() {
 		String lNome = JOptionPane.showInputDialog("Insira um nome para a pasta a ser salvo o Mundo Exportado");
 		File lFileExportacao = new File(arquivoLocalExportacoes, lNome), lFileImagens, lFileMundoExportado, lFileImagem,
-				lFileConfig;
+				lFileConfig, lFileImageConfigs;
 		if (lFileExportacao.exists())
 			lFileExportacao = new File(arquivoLocalExportacoes,
 					lNome + "-" + new SimpleDateFormat("yyyy-MM-dd HH.mm").format(new Date()));
@@ -476,6 +476,8 @@ public class SalvarCarregar {
 		int lTamanho, lLinhas, lColunas;
 		BufferedImage iBufferedImage;
 		Graphics iGraphics;
+		BufferedWriter writer;
+		ExSpriteSheet lExSpriteSheet = new ExSpriteSheet();
 		for (Entry<String, ArrayList<BufferedImage>> iImagens : lImagensToExport.entrySet()) {
 			lTamanho = iImagens.getValue().get(0).getHeight();
 			lLinhas = (int) Math.sqrt(iImagens.getValue().size());
@@ -492,13 +494,25 @@ public class SalvarCarregar {
 				iGraphics.drawImage(iImagens.getValue().get(i), (i % lLinhas) * lTamanho, (i / lLinhas) * lTamanho,
 						null);
 			}
+
 			iGraphics.drawImage(iBufferedImage, 0, 0, iBufferedImage.getWidth(), iBufferedImage.getHeight(), null);
 			iGraphics.dispose();
-			lFileImagem = new File(lFileImagens,
-					(iImagens.getKey().endsWith(".png")) ? iImagens.getKey() : iImagens.getKey() + ".png");
+			lFileImagem = new File(lFileImagens, iImagens.getKey());
+
+			lExSpriteSheet.setTotalSprites(iImagens.getValue().size());
+			lExSpriteSheet.setTamanho(iImagens.getValue().get(0).getWidth());
+			lExSpriteSheet.setNome(iImagens.getKey());
 			try {
+				lFileImagem.mkdir();
+				lFileImagem = new File(lFileImagem, nameImagem);
 				lFileImagem.createNewFile();
 				ImageIO.write(iBufferedImage, "PNG", lFileImagem);
+				lFileImageConfigs = new File(lFileImagem.getParentFile(), nomeDataSpritesExternos);
+				lFileImageConfigs.createNewFile();
+				writer = new BufferedWriter(new FileWriter(lFileImageConfigs));
+				writer.write(toJSON(lExSpriteSheet));
+				writer.flush();
+				writer.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(null, "Ocorreu um erro ao criar o arquivo de exportação, cancelando");
@@ -508,7 +522,7 @@ public class SalvarCarregar {
 		}
 
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(lFileMundoExportado));
+			writer = new BufferedWriter(new FileWriter(lFileMundoExportado));
 			String lConteudo = toJSON(lExport);
 			writer.write(lConteudo);
 			writer.flush();

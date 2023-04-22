@@ -19,7 +19,7 @@ public class Build {
 		high = hi;
 		pasta = f;
 		try {
-			image = ImageIO.read(new File(f, SalvarCarregar.name_foto_builds));
+			image = ImageIO.read(new File(f, SalvarCarregar.nameImagem));
 		} catch (IOException e) {
 			image = null;
 			e.printStackTrace();
