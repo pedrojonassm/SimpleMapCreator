@@ -166,11 +166,12 @@ public class SalvarCarregar {
 				t.setX(t.getX() - pX);
 				t.setY(t.getY() - pY);
 				t.setZ(t.getZ() - pZ);
-				t.render(g);
+				t.desenharSprite(g, 0, 0, 0, 0);
 			}
-			g.drawImage(image, 0, 0, null);
+
+			g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
 			g.dispose();
-			ImageIO.write(image, "png", new File(pasta, name_foto_builds));
+			ImageIO.write(image, "PNG", new File(pasta, name_foto_builds));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -491,7 +492,7 @@ public class SalvarCarregar {
 				iGraphics.drawImage(iImagens.getValue().get(i), (i % lLinhas) * lTamanho, (i / lLinhas) * lTamanho,
 						null);
 			}
-			iGraphics.drawImage(iBufferedImage, 0, 0, null);
+			iGraphics.drawImage(iBufferedImage, 0, 0, iBufferedImage.getWidth(), iBufferedImage.getHeight(), null);
 			iGraphics.dispose();
 			lFileImagem = new File(lFileImagens,
 					(iImagens.getKey().endsWith(".png")) ? iImagens.getKey() : iImagens.getKey() + ".png");

@@ -49,7 +49,7 @@ public class Sprite {
 							+ "Caso não, não será mostraddo nadda aqui",
 					"Aviso", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				File lFile = new File(SalvarCarregar.arquivoLocalSpritesExternos, nome);
-				if (lFile.exists()) {
+				if (!lFile.exists()) {
 					SalvarCarregar.carregarImagemExterna(new File(lFile, SalvarCarregar.nomeDataSpritesExternos));
 					if (!Gerador.aConfig.getSpritesIgnorados().contains(nome) && JOptionPane.showConfirmDialog(null,
 							"Não foi possível encontrar a pasta atualmente, deseja carregar a imagem manualmente?",
@@ -58,6 +58,8 @@ public class Sprite {
 					} else {
 						Gerador.aConfig.getSpritesIgnorados().add(nome);
 					}
+				} else {
+					SalvarCarregar.carregarImagemExterna(new File(lFile, SalvarCarregar.nomeDataSpritesExternos));
 				}
 			} else {
 				Gerador.aConfig.getSpritesIgnorados().add(nome);

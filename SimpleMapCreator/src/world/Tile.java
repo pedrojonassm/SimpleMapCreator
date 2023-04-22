@@ -68,45 +68,49 @@ public class Tile {
 		return CoConjuntoSprites.get(posicao_Conjunto).obterSprite_atual();
 	}
 
-	@SuppressWarnings("unchecked")
-	public void render(Graphics g) {
+	public void desenharSprite(Graphics prGraphics, int prCameraX, int prCameraY, int prIndex, int prZ) {
 		if (posicao_Conjunto < CoConjuntoSprites.size() && CoConjuntoSprites.get(posicao_Conjunto) != null)
 			for (ArrayList<Sprite> imagens : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
 				if (imagens != null && imagens.size() > 0) {
-					Sprite sprite = imagens.get(World.tiles_index % imagens.size());
+					Sprite sprite = imagens.get(prIndex % imagens.size());
 					int dx, dy;
 					BufferedImage image = sprite.pegarImagem();
 					if (image.getWidth() > Gerador.quadrado.width || image.getHeight() > Gerador.quadrado.height) {
-						dx = x - Camera.x - Gerador.quadrado.width;
-						dy = y - Camera.y - Gerador.quadrado.height;
+						dx = x - prCameraX - Gerador.quadrado.width;
+						dy = y - prCameraY - Gerador.quadrado.height;
 					} else {
-						dx = x - Camera.x;
-						dy = y - Camera.y;
+						dx = x - prCameraX;
+						dy = y - prCameraY;
 					}
-					dx -= (z - Gerador.player.getZ()) * Gerador.quadrado.width;
-					dy -= (z - Gerador.player.getZ()) * Gerador.quadrado.height;
-					g.drawImage(image, dx, dy, null);
+					dx -= (z - prZ) * Gerador.quadrado.width;
+					dy -= (z - prZ) * Gerador.quadrado.height;
+					prGraphics.drawImage(image, dx, dy, null);
 				}
 			}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void render(Graphics prGraphics) {
+		desenharSprite(prGraphics, Camera.x, Camera.y, World.tiles_index, Gerador.player.getZ());
 
 		if (Gerador.ui.getTela().getSubTela() instanceof SubTelaPropriedade && aPropriedades != null
 				&& aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()) != null) {
-			g.setColor(new Color(255, 255, 255, 50));
-			g.fillRect(x - Camera.x, y - Camera.y, Gerador.TS, Gerador.TS);
-			g.setColor(Color.white);
+			prGraphics.setColor(new Color(255, 255, 255, 50));
+			prGraphics.fillRect(x - Camera.x, y - Camera.y, Gerador.TS, Gerador.TS);
+			prGraphics.setColor(Color.white);
 
-			aux = g.getFontMetrics()
+			aux = prGraphics.getFontMetrics()
 					.stringWidth(aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()).toString());
 			if (aux > Gerador.TS) {
 				String lPropriedadeMostrada = aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada())
 						.toString()
 						.substring(0, aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada())
 								.toString().length() / ((aux / Gerador.TS) + 1));
-				aux = g.getFontMetrics().stringWidth(lPropriedadeMostrada + "...");
-				Ui.renderizarDepois.add(() -> g.drawString(lPropriedadeMostrada + "...",
+				aux = prGraphics.getFontMetrics().stringWidth(lPropriedadeMostrada + "...");
+				Ui.renderizarDepois.add(() -> prGraphics.drawString(lPropriedadeMostrada + "...",
 						x + Gerador.TS / 2 - aux / 2 - Camera.x, y + Gerador.TS / 2 - Camera.y));
 			} else
-				Ui.renderizarDepois.add(() -> g.drawString(
+				Ui.renderizarDepois.add(() -> prGraphics.drawString(
 						aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()).toString(),
 						x + Gerador.TS / 2 - aux / 2 - Camera.x, y + Gerador.TS / 2 - Camera.y));
 
@@ -115,23 +119,23 @@ public class Tile {
 				HashMap<String, Object> lHashMap = (HashMap<String, Object>) aPropriedades.get("TRANSPORT");
 				if (lHashMap.get("TYPE") != null && SubTelaTransporte.instance.opcaoSelecionada != null
 						&& SubTelaTransporte.instance.opcaoSelecionada.contentEquals(lHashMap.get("TYPE").toString())) {
-					g.setColor(new Color(255, 255, 255, 50));
-					g.fillRect(x - Camera.x, y - Camera.y, Gerador.TS, Gerador.TS);
+					prGraphics.setColor(new Color(255, 255, 255, 50));
+					prGraphics.fillRect(x - Camera.x, y - Camera.y, Gerador.TS, Gerador.TS);
 					if (Gerador.player.getZ() == z
 							&& Gerador.quadrado.intersects(x - Camera.x + Gerador.quadrado.x % Gerador.TS,
 									y - Camera.y + Gerador.quadrado.y % Gerador.TS, Gerador.TS, Gerador.TS)
 							&& lHashMap.get("DESTINY") != null) {
-						g.setColor(Color.white);
+						prGraphics.setColor(Color.white);
 						Tile lTile = World.pegarAdicionarTileMundo(
 								Tile.pegarPosicaoRelativa(x, y, z, (List<Integer>) lHashMap.get("DESTINY")));
 						if (lTile != null) {
 							int lDiferencaNivel = lTile.getZ() - z, angulo = (lDiferencaNivel > 0) ? 45 : 225;
-							Ui.renderizarDepois.add(
-									() -> g.drawRect(lTile.getX() - Camera.x - Gerador.quadrado.width * lDiferencaNivel,
-											lTile.getY() - Camera.y - Gerador.quadrado.height * lDiferencaNivel,
-											Gerador.TS, Gerador.TS));
+							Ui.renderizarDepois.add(() -> prGraphics.drawRect(
+									lTile.getX() - Camera.x - Gerador.quadrado.width * lDiferencaNivel,
+									lTile.getY() - Camera.y - Gerador.quadrado.height * lDiferencaNivel, Gerador.TS,
+									Gerador.TS));
 							for (aux = 0; aux < Uteis.modulo(lDiferencaNivel); aux++) {
-								Ui.renderizarDepois.add(() -> g.drawArc(
+								Ui.renderizarDepois.add(() -> prGraphics.drawArc(
 										lTile.getX() - Camera.x + Gerador.quadrado.width / 2
 												- Gerador.quadrado.width * lDiferencaNivel,
 										lTile.getY() - Camera.y + Gerador.quadrado.height / 2
