@@ -281,7 +281,7 @@ public class Tile {
 	public static int tileExisteLista(int prPos, ArrayList<Tile> prTilesList) {
 		for (int i = 0; i < prTilesList.size(); i++) {
 			Tile iTile = prTilesList.get(i);
-			if (prPos == iTile.getaPos()) {
+			if (iTile != null && prPos == iTile.getaPos()) {
 				return i;
 			}
 		}
