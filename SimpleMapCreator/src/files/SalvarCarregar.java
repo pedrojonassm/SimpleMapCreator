@@ -168,6 +168,8 @@ public class SalvarCarregar {
 				t.setZ(t.getZ() - pZ);
 				t.render(g);
 			}
+			g.drawImage(image, 0, 0, null);
+			g.dispose();
 			ImageIO.write(image, "png", new File(pasta, name_foto_builds));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -357,7 +359,7 @@ public class SalvarCarregar {
 	public static void adicionarImagemExterna(ExSpriteSheet prExSpriteSheet, File prFile, BufferedImage prBufferedImage)
 			throws Exception {
 		prFile.mkdir();
-		File lFileImagem = new File(prFile, "image.png"),
+		File lFileImagem = new File(prFile, name_foto_builds),
 				lFileData = new File(prFile, SalvarCarregar.nomeDataSpritesExternos);
 		lFileData.createNewFile();
 		BufferedWriter lBufferedWriter = new BufferedWriter(new FileWriter(lFileData));
@@ -400,7 +402,7 @@ public class SalvarCarregar {
 				lFile += singleLine;
 			}
 			ExSpriteSheet lExSpriteSheet = (ExSpriteSheet) fromJson(lFile, ExSpriteSheet.class);
-			File lFileImagem = new File(prFileData.getParentFile(), "image.png");
+			File lFileImagem = new File(prFileData.getParentFile(), name_foto_builds);
 			World.adicionarSpritesExterno(lFileImagem, lExSpriteSheet.getTamanho(), lExSpriteSheet.getTotalSprites());
 			TelaSprites.instance.max_pagina_por_total_de_sprites(lExSpriteSheet.getTotalSprites());
 
@@ -489,7 +491,7 @@ public class SalvarCarregar {
 				iGraphics.drawImage(iImagens.getValue().get(i), (i % lLinhas) * lTamanho, (i / lLinhas) * lTamanho,
 						null);
 			}
-			iGraphics.drawImage(iBufferedImage, 0, 0, iBufferedImage.getWidth(), iBufferedImage.getHeight(), null);
+			iGraphics.drawImage(iBufferedImage, 0, 0, null);
 			iGraphics.dispose();
 			lFileImagem = new File(lFileImagens,
 					(iImagens.getKey().endsWith(".png")) ? iImagens.getKey() : iImagens.getKey() + ".png");
