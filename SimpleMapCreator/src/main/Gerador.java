@@ -124,7 +124,7 @@ public class Gerador extends Canvas
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				// TODO é bem feito, vai ter que reposicionar alguns quadrados unicamente, e
+				// É bem feito, vai ter que reposicionar alguns quadrados unicamente, e
 				// resto acreito que irá funcionar
 				// mas faça isso depois. E lembre-se do frame.setResizable(false);
 
@@ -493,6 +493,10 @@ public class Gerador extends Canvas
 		}
 	}
 
+	public int getPos() {
+		return aPos;
+	}
+
 	private MenuBar createMenuBar() {
 		MenuBar lMenuBar = new MenuBar();
 
@@ -545,6 +549,19 @@ public class Gerador extends Canvas
 		});
 
 		lMenuFile.add(lMenuItem);
+
+		lMenuItem = new MenuItem("Save World as a Build");
+
+		lMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				World.saveWorldAsBuild();
+
+			}
+		});
+
+		lMenuFile.add(lMenuItem);
 		return lMenuFile;
 	}
 
@@ -558,7 +575,6 @@ public class Gerador extends Canvas
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Ajustas setFile para filter
 				aFileDialog.setFile(SalvarCarregar.name_file_config);
 				aFileDialog.setVisible(true);
 				if (Gerador.aFileDialog.getFiles() != null && Gerador.aFileDialog.getFiles().length > 0) {

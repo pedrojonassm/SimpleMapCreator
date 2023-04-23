@@ -1,7 +1,9 @@
 package files;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -66,7 +68,7 @@ public class SalvarCarregar {
 		}
 	}
 
-	public ArrayList<String> listFilesForFolder(final File folder) {
+	public static ArrayList<String> listFilesForFolder(final File folder) {
 		ArrayList<String> retorno = new ArrayList<String>();
 		for (final File fileEntry : folder.listFiles()) {
 			if (fileEntry.isDirectory()) {
@@ -80,16 +82,16 @@ public class SalvarCarregar {
 		return retorno;
 	}
 
-	public static void salvar_construcao(ArrayList<Tile> prTilesSelecionados) {
+	public static Build salvar_construcao(ArrayList<Tile> prTilesSelecionados) {
 		if (prTilesSelecionados == null || prTilesSelecionados.size() == 0)
-			return;
+			return null;
 		try {
 			String nome = null;
 			File pasta = null;
 			do {
 				nome = JOptionPane.showInputDialog("Insira um nome NOVO para a nova construção");
 				if (nome == null)
-					return;
+					return null;
 				if (!nome.isBlank()) {
 					pasta = new File(localBuilds, nome);
 					if (pasta.exists()) {
@@ -138,10 +140,13 @@ public class SalvarCarregar {
 			writer.flush();
 			writer.close();
 			criar_imagem(pasta);
-			TelaConstrucoes.instance.adicionar_construcao(new Build(horizontal, vertical, high, pasta));
+			Build lBuild = new Build(horizontal, vertical, high, pasta);
+			TelaConstrucoes.instance.adicionar_construcao(lBuild);
+			return lBuild;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	private static void criar_imagem(File pasta) {
@@ -152,16 +157,21 @@ public class SalvarCarregar {
 			String singleLine = null;
 			singleLine = reader.readLine();
 			String[] sla = singleLine.split(";");
-			int WIDTH = Integer.parseInt(sla[0]), HEIGHT = Integer.parseInt(sla[1]), HIGH = Integer.parseInt(sla[2]);
-			ArrayList<String> lLinhas = new ArrayList<>();
-			while ((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
-				lLinhas.add(singleLine);
-			}
-			tiles = (Tile[]) SalvarCarregar.fromJson(lLinhas.get(0), World.tiles.getClass());
+			int WIDTH = Integer.parseInt(sla[0]), HEIGHT = Integer.parseInt(sla[1]),
+					HIGH = Integer.parseInt(sla[2]) - 1;
+			String lConteudo = "";
+			while ((singleLine = reader.readLine()) != null)
+				lConteudo += singleLine;
+
+			tiles = (Tile[]) SalvarCarregar.fromJson(lConteudo, Tile[].class);
 			int pX = tiles[0].getX(), pY = tiles[0].getY(), pZ = tiles[0].getZ();
 			BufferedImage image = new BufferedImage((WIDTH + HIGH) * Gerador.TS, (HEIGHT + HIGH) * Gerador.TS,
-					BufferedImage.TYPE_INT_RGB);
-			Graphics g = image.getGraphics();
+					BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g = (Graphics2D) image.getGraphics();
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
+			g.fillRect(0, 0, image.getWidth(), image.getHeight());
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+
 			for (Tile t : tiles) {
 				t.setX(t.getX() - pX);
 				t.setY(t.getY() - pY);
@@ -187,8 +197,11 @@ public class SalvarCarregar {
 				File f = new File(pasta, name_file_builds);
 				reader = new BufferedReader(new FileReader(f));
 				String[] size = reader.readLine().split(";");
-				construcoes.add(new Build(Integer.parseInt(size[0]), Integer.parseInt(size[1]),
-						Integer.parseInt(size[2]), pasta));
+				reader.close();
+				Build lBuild = new Build(Integer.parseInt(size[0]), Integer.parseInt(size[1]),
+						Integer.parseInt(size[2]), pasta);
+				if (lBuild.getImage() != null)
+					construcoes.add(lBuild);
 			}
 			TelaConstrucoes.instance.adicionar_construcoes_salvas(construcoes);
 		} catch (Exception e) {
@@ -349,9 +362,13 @@ public class SalvarCarregar {
 					new FileReader(new File(construcao.getFile(), name_file_builds)));
 			reader.readLine(); // pula a linha das dimensões
 			String singleLine;
-			while ((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
-				return (Tile[]) SalvarCarregar.fromJson(singleLine, World.tiles.getClass());
+			String lConteuddo = "";
+			while ((singleLine = reader.readLine()) != null) {
+				lConteuddo += singleLine;
+
 			}
+			reader.close();
+			return (Tile[]) SalvarCarregar.fromJson(lConteuddo, World.tiles.getClass());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

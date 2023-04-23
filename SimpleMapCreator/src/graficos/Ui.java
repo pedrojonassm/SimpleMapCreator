@@ -202,6 +202,9 @@ public class Ui implements Tela {
 			g.drawString(altura + (Gerador.player.getZ() + 1), local_altura.x - w1 + local_altura.width,
 					local_altura.y - (local_altura.height * 3) / 2);
 		}
+
+		if (telas.get(opcao) instanceof TelaConstrucoes)
+			telas.get(opcao).render(g);
 	}
 
 	private void desenhar_opcoes(Graphics prGraphics) {

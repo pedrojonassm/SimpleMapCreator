@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import graficos.Ui;
 import graficos.telas.Tela;
 import main.Gerador;
+import main.Uteis;
 import world.Build;
 
 public class TelaConstrucoes implements Tela {
@@ -47,21 +48,30 @@ public class TelaConstrucoes implements Tela {
 
 	@Override
 	public void render(Graphics prGraphics) {
-		prGraphics.drawRect(Ui.caixinha_dos_sprites.x + 50, Ui.caixinha_dos_sprites.y + 10,
-				Ui.caixinha_dos_sprites.width - 100, 150);
+		if (Ui.mostrar)
+			prGraphics.drawRect(Ui.caixinha_dos_sprites.x + 50, Ui.caixinha_dos_sprites.y + 10,
+					Ui.caixinha_dos_sprites.width - 100, 150);
 		for (int i = 0; i < maxItensPagina && (i + pagina * maxItensPagina) < construcoes.size(); i++) {
-			if (index_construcao_selecionada == i) {
-				prGraphics.setColor(Color.blue);
-				prGraphics.drawImage(construcoes.get(i).getImage(), Ui.caixinha_dos_sprites.x + 50,
-						Ui.caixinha_dos_sprites.y + 10, Ui.caixinha_dos_sprites.width - 100 + 1, 150 + 1, null);
-			} else {
-				prGraphics.setColor(Color.red);
+			if (Ui.mostrar) {
+				if (index_construcao_selecionada == i) {
+					prGraphics.setColor(Color.blue);
+					prGraphics.drawImage(construcoes.get(i).getImage(), Ui.caixinha_dos_sprites.x + 50,
+							Ui.caixinha_dos_sprites.y + 10, Ui.caixinha_dos_sprites.width - 100 + 1, 150 + 1, null);
+				} else {
+					prGraphics.setColor(Color.red);
+				}
+				definirQuadradoOpcoesY(i);
+				prGraphics.drawRect(quadradoOpcoes.x, quadradoOpcoes.y, quadradoOpcoes.width, quadradoOpcoes.height);
+				prGraphics.setColor(Color.white);
+				prGraphics.drawString(construcoes.get(i + pagina * maxItensPagina).getFile().getName(),
+						quadradoOpcoes.x + quadradoOpcoes.height, quadradoOpcoes.y + (2 * quadradoOpcoes.height) / 3);
 			}
-			definirQuadradoOpcoesY(i);
-			prGraphics.drawRect(quadradoOpcoes.x, quadradoOpcoes.y, quadradoOpcoes.width, quadradoOpcoes.height);
-			prGraphics.setColor(Color.white);
-			prGraphics.drawString(construcoes.get(i + pagina * maxItensPagina).getFile().getName(),
-					quadradoOpcoes.x + quadradoOpcoes.height, quadradoOpcoes.y + (2 * quadradoOpcoes.height) / 3);
+		}
+		if (index_construcao_selecionada >= 0 && index_construcao_selecionada < construcoes.size()
+				&& (!Ui.caixinha_dos_sprites.contains(Gerador.quadrado.x, Gerador.quadrado.y) || !Ui.mostrar)) {
+			int[] localDesenho = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(Gerador.instance.getPos());
+			Build lBuild = construcoes.get(index_construcao_selecionada);
+			prGraphics.drawImage(lBuild.getImage(), localDesenho[0], localDesenho[1], null);
 		}
 	}
 
@@ -70,7 +80,10 @@ public class TelaConstrucoes implements Tela {
 		for (int i = 0; i < maxItensPagina && (i + pagina * maxItensPagina) < construcoes.size(); i++) {
 			definirQuadradoOpcoesY(i);
 			if (quadradoOpcoes.contains(x, y)) {
-				index_construcao_selecionada = i + pagina * maxItensPagina;
+				if (i + pagina * maxItensPagina == index_construcao_selecionada)
+					index_construcao_selecionada = -1;
+				else
+					index_construcao_selecionada = i + pagina * maxItensPagina;
 
 				return true;
 			}
@@ -80,6 +93,18 @@ public class TelaConstrucoes implements Tela {
 
 	@Override
 	public boolean cliquedireito(int x, int y) {
+		for (int i = 0; i < maxItensPagina && (i + pagina * maxItensPagina) < construcoes.size(); i++) {
+			definirQuadradoOpcoesY(i);
+			if (quadradoOpcoes.contains(x, y)) {
+				Build lBuild = construcoes.get(i + pagina * maxItensPagina);
+				if (lBuild != null) {
+					removerConstrucao(lBuild);
+					lBuild.delete();
+					index_construcao_selecionada = -1;
+				}
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -100,6 +125,10 @@ public class TelaConstrucoes implements Tela {
 
 	public void adicionar_construcao(Build b) {
 		construcoes.add(b);
+	}
+
+	public void removerConstrucao(Build prBuild) {
+		construcoes.remove(prBuild);
 	}
 
 	public Build pegar_construcao_selecionada() {

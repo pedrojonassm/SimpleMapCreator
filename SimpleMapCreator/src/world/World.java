@@ -323,4 +323,14 @@ public class World {
 		return spritesCarregados.get(Key)[posicao];
 	}
 
+	public static void saveWorldAsBuild() {
+		ArrayList<Tile> lMundoAntigo = new ArrayList<>();
+		for (Tile iTile : tiles)
+			if (iTile != null && iTile.tem_sprites())
+				lMundoAntigo.add(iTile);
+
+		SalvarCarregar.salvar_construcao(lMundoAntigo);
+
+	}
+
 }

@@ -12,18 +12,32 @@ public class Build {
 	int horizontal, vertical, high;
 	File pasta;
 	BufferedImage image;
+	private boolean temporaria;
 
 	public Build(int h, int v, int hi, File f) {
+		temporaria = false;
 		horizontal = h;
 		vertical = v;
 		high = hi;
 		pasta = f;
 		try {
-			image = ImageIO.read(new File(f, SalvarCarregar.nameImagem));
+			File lFileImagem = new File(f, SalvarCarregar.nameImagem);
+			if (lFileImagem.exists())
+				image = ImageIO.read(lFileImagem);
+			else
+				delete();
 		} catch (IOException e) {
 			image = null;
 			e.printStackTrace();
 		}
+	}
+
+	public void changeTemporaria(boolean prTemporaria) {
+		temporaria = prTemporaria;
+	}
+
+	public boolean isTemporaria() {
+		return temporaria;
 	}
 
 	public BufferedImage getImage() {
@@ -44,5 +58,20 @@ public class Build {
 
 	public int getHigh() {
 		return high;
+	}
+
+	public void delete() {
+		/*
+		 * try { FileUtils.deleteDirectory(pasta); } catch (IOException e) {
+		 * e.printStackTrace(); }
+		 */
+		File lFile;
+		for (String iFile : SalvarCarregar.listFilesForFolder(pasta)) {
+			lFile = new File(pasta.getParentFile(), iFile);
+			if (lFile.exists())
+				lFile.delete();
+		}
+		pasta.delete();
+
 	}
 }
