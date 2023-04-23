@@ -94,12 +94,12 @@ public class Preset {
 			return;
 		}
 		ArrayList<Sprite> novo;
-		for (int iLayerTile = 0; iLayerTile < TelaSprites.instance.sprite_selecionado.size(); iLayerTile++) {
+		for (int iLayerTile = 0; iLayerTile < TelaSprites.instance.spriteSelecionado.size(); iLayerTile++) {
 			if (kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
 					&& TelaSprites.LayerLevel != iLayerTile)
 				continue;
 			novo = new ArrayList<Sprite>();
-			for (int i = 0; i < TelaSprites.instance.sprite_selecionado.get(iLayerTile).size(); i++) {
+			for (int i = 0; i < TelaSprites.instance.spriteSelecionado.get(iLayerTile).size(); i++) {
 				novo.add(new Sprite(TelaSprites.instance.nomeSpritesheet.get(iLayerTile).get(i),
 						TelaSprites.instance.PosicaoSprite.get(iLayerTile).get(i)));
 			}
