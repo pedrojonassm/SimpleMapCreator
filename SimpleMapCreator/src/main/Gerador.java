@@ -250,36 +250,36 @@ public class Gerador extends Canvas
 		int[] localDesenho = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(aPos);
 		int desenharX, desenharY;
 		g.drawRect(localDesenho[0], localDesenho[1], quadrado.width, quadrado.height);
-		if (TelaSprites.instance.contemSpritesSelecionados()
-				&& (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar)) {
+		if (TelaSprites.instance.contemSpritesSelecionados()) {
 			if (++sprite_selecionado_animation_time >= World.max_tiles_animation_time) {
 				sprite_selecionado_animation_time = 0;
 				if (++sprite_selecionado_index >= TelaSprites.instance.getNumeroMaxSpritesSelecionados()) {
 					sprite_selecionado_index = 0;
 				}
 			}
-			for (int i = 0; i < TelaSprites.instance.spriteSelecionado.size(); i++) {
+			if ((!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar))
+				for (int i = 0; i < TelaSprites.instance.spriteSelecionado.size(); i++) {
 
-				if (TelaSprites.instance.spriteSelecionado.get(i).size() == 0
-						|| (TelaSprites.kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
-								&& i != TelaSprites.LayerLevel))
-					continue;
+					if (TelaSprites.instance.spriteSelecionado.get(i).size() == 0
+							|| (TelaSprites.kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
+									&& i != TelaSprites.LayerLevel))
+						continue;
 
-				desenharX = localDesenho[0];
-				desenharY = localDesenho[1];
+					desenharX = localDesenho[0];
+					desenharY = localDesenho[1];
 
-				BufferedImage imagem = World.PegarSprite(
-						TelaSprites.instance.nomeSpritesheet.get(i)
-								.get(sprite_selecionado_index % TelaSprites.instance.nomeSpritesheet.get(i).size()),
-						TelaSprites.instance.PosicaoSprite.get(i)
-								.get(sprite_selecionado_index % TelaSprites.instance.PosicaoSprite.get(i).size()));
-				if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) {
-					desenharX -= quadrado.width * ((imagem.getWidth() / quadrado.width) - 1);
-					desenharY -= quadrado.height * ((imagem.getWidth() / quadrado.height) - 1);
+					BufferedImage imagem = World.PegarSprite(
+							TelaSprites.instance.nomeSpritesheet.get(i)
+									.get(sprite_selecionado_index % TelaSprites.instance.nomeSpritesheet.get(i).size()),
+							TelaSprites.instance.PosicaoSprite.get(i)
+									.get(sprite_selecionado_index % TelaSprites.instance.PosicaoSprite.get(i).size()));
+					if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) {
+						desenharX -= quadrado.width * ((imagem.getWidth() / quadrado.width) - 1);
+						desenharY -= quadrado.height * ((imagem.getWidth() / quadrado.height) - 1);
+					}
+					g.drawImage(imagem, desenharX, desenharY, null);
+
 				}
-				g.drawImage(imagem, desenharX, desenharY, null);
-
-			}
 		}
 		// */
 		player.render(g);
@@ -416,8 +416,6 @@ public class Gerador extends Canvas
 				aTrocouPosicao = true;
 				aCliqueMouse = 1;
 				return;
-			} else {
-				ui.cliqueUi = true;
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON2) {
 			int[] teste = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(aPos);
