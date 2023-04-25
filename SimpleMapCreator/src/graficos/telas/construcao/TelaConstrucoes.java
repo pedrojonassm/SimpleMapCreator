@@ -48,11 +48,10 @@ public class TelaConstrucoes implements Tela {
 
 	@Override
 	public void render(Graphics prGraphics) {
-		if (Ui.mostrar)
+		if (Ui.mostrar) {
 			prGraphics.drawRect(Ui.caixinha_dos_sprites.x + 50, Ui.caixinha_dos_sprites.y + 10,
 					Ui.caixinha_dos_sprites.width - 100, 150);
-		for (int i = 0; i < maxItensPagina && (i + pagina * maxItensPagina) < construcoes.size(); i++) {
-			if (Ui.mostrar) {
+			for (int i = 0; i < maxItensPagina && (i + pagina * maxItensPagina) < construcoes.size(); i++) {
 				if (index_construcao_selecionada == i) {
 					prGraphics.setColor(Color.blue);
 					prGraphics.drawImage(construcoes.get(i).getImage(), Ui.caixinha_dos_sprites.x + 50,
@@ -68,7 +67,8 @@ public class TelaConstrucoes implements Tela {
 			}
 		}
 		if (index_construcao_selecionada >= 0 && index_construcao_selecionada < construcoes.size()
-				&& (!Ui.caixinha_dos_sprites.contains(Gerador.quadrado.x, Gerador.quadrado.y) || !Ui.mostrar)) {
+				&& (!Ui.mostrar || (!Ui.caixinha_dos_sprites.contains(Gerador.quadrado.x, Gerador.quadrado.y)
+						&& !Ui.caixa_das_opcoes.contains(Gerador.quadrado.x, Gerador.quadrado.y)))) {
 			int[] localDesenho = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(Gerador.instance.getPos());
 			Build lBuild = construcoes.get(index_construcao_selecionada);
 			prGraphics.drawImage(lBuild.getImage(), localDesenho[0], localDesenho[1], null);

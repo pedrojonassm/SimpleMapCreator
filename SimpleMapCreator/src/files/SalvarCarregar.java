@@ -431,6 +431,17 @@ public class SalvarCarregar {
 		}
 	}
 
+	public static void deletarPasta(File prPasta) {
+		File lFile;
+		if (prPasta.isDirectory())
+			for (String iFile : SalvarCarregar.listFilesForFolder(prPasta)) {
+				lFile = new File(prPasta.getParentFile(), iFile);
+				if (lFile.exists())
+					lFile.delete();
+			}
+		prPasta.delete();
+	}
+
 	public static void exportarMundoJson() {
 		String lNome = JOptionPane.showInputDialog("Insira um nome para a pasta a ser salvo o Mundo Exportado");
 		File lFileExportacao = new File(arquivoLocalExportacoes, lNome), lFileImagens, lFileMundoExportado, lFileImagem,

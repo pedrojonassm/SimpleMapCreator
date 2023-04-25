@@ -408,6 +408,31 @@ public class TelaSprites implements Tela {
 		}
 	}
 
+	private void apagarLivro(int x, int y) {
+		// -1 pq 0 é o padrão
+		int py = (y - caixinha_dos_livros.y) / caixinha_dos_livros.width + pagina_livros * max_livros_por_pagina - 1;
+		if (py >= 0 && py < pagina.size()) {
+			if (conjuntos_salvos.get(py).size() > 0) {
+				if (JOptionPane.showConfirmDialog(null,
+						"Tem certeza que ddeseja excluir um livro com Sprites contidos, eles serão perdidos", "Aviso",
+						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+					return;
+			}
+			pagina.remove(py);
+			max_pagina.remove(py);
+			comecar_por.remove(py);
+			atual.remove(py);
+			sprites.remove(py);
+			conjuntos_salvos.remove(py);
+			py++;
+			nome_livros.remove(py);
+			if (py == livro)
+				livro--;
+
+			atualizar_caixinha();
+		}
+	}
+
 	private void adicionar_livro(String nome) {
 		pagina.add(0);
 		max_pagina.add(0);
@@ -680,6 +705,9 @@ public class TelaSprites implements Tela {
 					}
 				}
 				return true;
+			} else if (caixinha_dos_livros.contains(x, y)) {
+				apagarLivro(x, y);
+				return true;
 			} else {
 				for (Tela i : subTelas) {
 					if (i.cliquedireito(x, y))
@@ -705,19 +733,19 @@ public class TelaSprites implements Tela {
 		for (int i = 0; i < prSprites.size(); i++) {
 			if (kdModoColocar.kdLayerToLayer.equals(kdModoColocar.values()[aModoColocar]) && i != LayerLevel)
 				continue;
-			spriteSelecionadoTemp.get(i).clear();
-			nomeSpritesheetTemp.get(i).clear();
-			PosicaoSpriteTemp.get(i).clear();
+			spriteSelecionado.get(i).clear();
+			nomeSpritesheet.get(i).clear();
+			PosicaoSprite.get(i).clear();
 			ArrayList<Sprite> lSprites = prSprites.get(i);
 			for (Sprite iSprite : lSprites) {
-				nomeSpritesheetTemp.get(i).add(iSprite.getNome());
-				PosicaoSpriteTemp.get(i).add(iSprite.getPosicao());
+				nomeSpritesheet.get(i).add(iSprite.getNome());
+				PosicaoSprite.get(i).add(iSprite.getPosicao());
 				int k = 0;
 				for (int j = 0; j < World.nomeSprites.indexOf(iSprite.getNome()); j++) {
 					k += World.spritesCarregados.get(World.nomeSprites.get(j)).length;
 				}
 				k += iSprite.getPosicao();
-				spriteSelecionadoTemp.get(i).add(k);
+				spriteSelecionado.get(i).add(k);
 			}
 		}
 		Gerador.sprite_selecionado_index = 0;

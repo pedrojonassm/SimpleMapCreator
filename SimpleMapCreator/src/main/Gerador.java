@@ -137,7 +137,7 @@ public class Gerador extends Canvas
 				super.componentResized(e);
 			}
 		});
-		frame = new JFrame("Gerador de mundo");
+		frame = new JFrame("Criador de Mundo");
 		frame.setMenuBar(createMenuBar());
 		setPreferredSize(new Dimension(windowWidth, windowHEIGHT));
 		frame.add(this);

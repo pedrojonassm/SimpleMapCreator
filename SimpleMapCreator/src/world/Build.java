@@ -61,17 +61,7 @@ public class Build {
 	}
 
 	public void delete() {
-		/*
-		 * try { FileUtils.deleteDirectory(pasta); } catch (IOException e) {
-		 * e.printStackTrace(); }
-		 */
-		File lFile;
-		for (String iFile : SalvarCarregar.listFilesForFolder(pasta)) {
-			lFile = new File(pasta.getParentFile(), iFile);
-			if (lFile.exists())
-				lFile.delete();
-		}
-		pasta.delete();
+		SalvarCarregar.deletarPasta(pasta);
 
 	}
 }
