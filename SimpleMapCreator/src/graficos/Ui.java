@@ -81,7 +81,7 @@ public class Ui implements Tela {
 		salvar_construcao.x = Gerador.windowWidth - salvar_construcao.width;
 		salvar_construcao.y = fazer_caixa.y + preencher_tudo.height;
 		caixa_das_opcoes.x = Gerador.windowWidth / 2 - (telas.size()) / 2 * Gerador.VariavelX;
-		caixa_das_opcoes.y = -Gerador.VariavelY;
+		caixa_das_opcoes.y = 0;
 		for (Tela iTela : telas)
 			iTela.posicionarRetangulos();
 	}
@@ -156,10 +156,12 @@ public class Ui implements Tela {
 		g.setColor(Color.white);
 		if (mostrar) {
 
-			if (a_selecionar != null) {
-				w1 = g.getFontMetrics().stringWidth(a_selecionar);
-				g.drawString(a_selecionar, caixa_das_opcoes.x + caixa_das_opcoes.width / 2 - w1 / 2,
-						caixa_das_opcoes.y + sprite_opcoes[0].getWidth() + (local_altura.height * 3) / 2);
+			if (caixa_das_opcoes.y > -caixa_das_opcoes.height) {
+				if (a_selecionar != null) {
+					w1 = g.getFontMetrics().stringWidth(a_selecionar);
+					g.drawString(a_selecionar, caixa_das_opcoes.x + caixa_das_opcoes.width / 2 - w1 / 2,
+							caixa_das_opcoes.y + sprite_opcoes[0].getWidth() + (local_altura.height * 3) / 2);
+				}
 				g.drawRect(caixa_das_opcoes.x, caixa_das_opcoes.y, caixa_das_opcoes.width, caixa_das_opcoes.height);
 				for (int i = 0; i < telas.size(); i++) {
 					g.drawImage(sprite_opcoes[i], caixa_das_opcoes.x + i * sprite_opcoes[0].getWidth(),
