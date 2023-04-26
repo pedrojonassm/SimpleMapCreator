@@ -60,9 +60,8 @@ public class Gerador extends Canvas
 	private boolean isRunning = true;
 	public static int windowWidth = 1240, windowHEIGHT = 720, TS, VariavelX, VariavelY, sprite_selecionado_index, FPS;
 	// alguns itens da UI ficaram bem posicionados, mas foram utilizando o TS
-	// constante como = 64 e uma tela fixa
-	// VariavelX e VariavelY, é a variavel onde, quando era 1240/720 a tela, o valor
-	// era 64 e 64
+	// constante como = 64 e uma tela fixa VariavelX e VariavelY, é a variavel onde,
+	// quando era 1240/720 a tela, o valor era 64 e 64
 	private BufferedImage image;
 
 	public static World world;
@@ -509,7 +508,7 @@ public class Gerador extends Canvas
 		Menu lMenuFile = new Menu("File");
 		MenuItem lMenuItem;
 
-		lMenuItem = new MenuItem("new World", new MenuShortcut(KeyEvent.VK_N));
+		lMenuItem = new MenuItem("New World", new MenuShortcut(KeyEvent.VK_N));
 
 		lMenuItem.addActionListener(new ActionListener() {
 
