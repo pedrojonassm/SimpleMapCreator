@@ -32,7 +32,9 @@ public class Spritesheet extends ExSpriteSheet {
 		tamanho = t;
 		nome = (prCaminho.startsWith("/")) ? prCaminho.substring(1) : prCaminho;
 		try {
-			spritesheet = ImageIO.read(getClass().getResource(prCaminho));
+			if (Spritesheet.class.getResourceAsStream(prCaminho) == null) // exportado
+				prCaminho = "/res" + prCaminho;
+			spritesheet = ImageIO.read(Spritesheet.class.getResourceAsStream(prCaminho));
 			quadradosX = spritesheet.getWidth() / tamanho;
 			quadradosY = spritesheet.getHeight() / tamanho;
 		} catch (IOException e) {
