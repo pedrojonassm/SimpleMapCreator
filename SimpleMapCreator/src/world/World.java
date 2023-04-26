@@ -56,6 +56,9 @@ public class World {
 			} else {
 				arquivo = file.getParentFile();
 				tiles = SalvarCarregar.carregarMundo(file);
+				WIDTH = Gerador.aConfig.getWorldWidth();
+				HEIGHT = Gerador.aConfig.getWorldHeight();
+				HIGH = Gerador.aConfig.getWorldHigh();
 			}
 
 		} catch (Exception e) {
