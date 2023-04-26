@@ -418,6 +418,7 @@ public class TelaSprites implements Tela {
 						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
 					return;
 			}
+			SalvarCarregar.deletarLivro(nome_livros.get(py));
 			pagina.remove(py);
 			max_pagina.remove(py);
 			comecar_por.remove(py);

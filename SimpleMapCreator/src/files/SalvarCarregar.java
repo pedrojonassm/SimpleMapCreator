@@ -574,4 +574,8 @@ public class SalvarCarregar {
 		}
 
 	}
+
+	public static void deletarLivro(String prNomeLivro) {
+		deletarPasta(new File(arquivoBooks, prNomeLivro + end_file_book));
+	}
 }

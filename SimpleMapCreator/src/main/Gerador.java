@@ -130,8 +130,6 @@ public class Gerador extends Canvas
 
 				windowWidth = e.getComponent().getWidth();
 				windowHEIGHT = e.getComponent().getHeight();
-				VariavelX = windowWidth / 19;
-				VariavelY = windowHEIGHT / 11;
 				ui.posicionarRetangulos();
 
 				super.componentResized(e);
