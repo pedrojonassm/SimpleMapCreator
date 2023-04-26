@@ -410,9 +410,9 @@ public class TelaSprites implements Tela {
 
 	private void apagarLivro(int x, int y) {
 		// -1 pq 0 é o padrão
-		int py = (y - caixinha_dos_livros.y) / caixinha_dos_livros.width + pagina_livros * max_livros_por_pagina - 1;
-		if (py >= 0 && py < pagina.size()) {
-			if (conjuntos_salvos.get(py).size() > 0) {
+		int py = (y - caixinha_dos_livros.y) / caixinha_dos_livros.width + pagina_livros * max_livros_por_pagina;
+		if (py > 0 && py < pagina.size()) {
+			if (conjuntos_salvos.get(py - 1).size() > 0) {
 				if (JOptionPane.showConfirmDialog(null,
 						"Tem certeza que ddeseja excluir um livro com Sprites contidos, eles serão perdidos", "Aviso",
 						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
@@ -423,8 +423,7 @@ public class TelaSprites implements Tela {
 			comecar_por.remove(py);
 			atual.remove(py);
 			sprites.remove(py);
-			conjuntos_salvos.remove(py);
-			py++;
+			conjuntos_salvos.remove(py - 1);
 			nome_livros.remove(py);
 			if (py == livro)
 				livro--;
