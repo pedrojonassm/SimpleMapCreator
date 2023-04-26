@@ -246,13 +246,17 @@ public class SubTelaTransporte implements Tela {
 	@Override
 	public boolean cliquedireito(int x, int y) {
 		Tile lTile = World.pegarAdicionarTileMundo(x + Camera.x, y + Camera.y, Gerador.player.getZ());
-		if (Gerador.shift && lTile != null && lTile.getPropriedade("TRANSPORT") != null) {
-			@SuppressWarnings("unchecked")
-			HashMap<String, Object> lHashmap = (HashMap<String, Object>) lTile.getPropriedade("TRANSPORT");
-			try {
-				if (lHashmap.get("TYPE") != null && lHashmap.get("TYPE").toString().contentEquals(opcaoSelecionada))
-					Gerador.player.utilizarEscada(lTile);
-			} catch (Exception e) {
+		if (lTile != null && lTile.getPropriedade("TRANSPORT") != null) {
+			if (Gerador.shift) {
+				@SuppressWarnings("unchecked")
+				HashMap<String, Object> lHashmap = (HashMap<String, Object>) lTile.getPropriedade("TRANSPORT");
+				try {
+					if (lHashmap.get("TYPE") != null && lHashmap.get("TYPE").toString().contentEquals(opcaoSelecionada))
+						Gerador.player.utilizarEscada(lTile);
+				} catch (Exception e) {
+				}
+			} else {
+				lTile.removePropriedade("TRANSPORT");
 			}
 
 			return true;
