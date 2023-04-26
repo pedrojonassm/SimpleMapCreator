@@ -93,7 +93,8 @@ public class Tile {
 	public void render(Graphics prGraphics) {
 		desenharSprite(prGraphics, Camera.x, Camera.y, World.tiles_index, Gerador.player.getZ());
 
-		if (Gerador.ui.getTela().getSubTela() instanceof SubTelaPropriedade && aPropriedades != null
+		if (Gerador.player.getZ() == z && Gerador.ui.getTela().getSubTela() instanceof SubTelaPropriedade
+				&& aPropriedades != null
 				&& aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()) != null) {
 			prGraphics.setColor(new Color(255, 255, 255, 50));
 			prGraphics.fillRect(x - Camera.x, y - Camera.y, Gerador.TS, Gerador.TS);
@@ -114,7 +115,8 @@ public class Tile {
 						aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()).toString(),
 						x + Gerador.TS / 2 - aux / 2 - Camera.x, y + Gerador.TS / 2 - Camera.y));
 
-		} else if (Gerador.ui.getTela().getSubTela() instanceof SubTelaTransporte && aPropriedades != null) {
+		} else if (Gerador.player.getZ() == z && Gerador.ui.getTela().getSubTela() instanceof SubTelaTransporte
+				&& aPropriedades != null) {
 			if (aPropriedades.get("TRANSPORT") != null) {
 				HashMap<String, Object> lHashMap = (HashMap<String, Object>) aPropriedades.get("TRANSPORT");
 				if (lHashMap.get("TYPE") != null && SubTelaTransporte.instance.opcaoSelecionada != null
