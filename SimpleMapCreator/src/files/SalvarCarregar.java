@@ -513,6 +513,7 @@ public class SalvarCarregar {
 				}
 
 				lTile.setaPropriedades(iTile.getaPropriedades());
+				lTile.setPosicao_Conjunto(iTile.getPosicao_Conjunto());
 
 				lExport.add(lTile);
 			}

@@ -64,6 +64,14 @@ public class Tile {
 		this.aPos = aPos;
 	}
 
+	public int getPosicao_Conjunto() {
+		return posicao_Conjunto;
+	}
+
+	public void setPosicao_Conjunto(int posicao_Conjunto) {
+		this.posicao_Conjunto = posicao_Conjunto;
+	}
+
 	public ArrayList<BufferedImage> obterSprite_atual() {
 		return CoConjuntoSprites.get(posicao_Conjunto).obterSprite_atual();
 	}
