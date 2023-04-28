@@ -55,6 +55,7 @@ public class Configs {
 	}
 
 	private void propriedadespadrao() {
+		propriedades.add("ToOtherWorld");
 		propriedades.add("Solid");
 		propriedades.add("Speed");
 	}

@@ -68,6 +68,16 @@ public class SalvarCarregar {
 		}
 	}
 
+	public static void toOtherWorld(String prNomeMundo) {
+		File lPastaMundo = new File(arquivoWorlds, prNomeMundo), lConfigs, lArquivoMundo;
+		if (lPastaMundo.exists() && lPastaMundo.isDirectory()) {
+			lConfigs = new File(lPastaMundo, name_file_config);
+			lArquivoMundo = new File(lPastaMundo, name_file_world);
+			if (lConfigs.exists() && lArquivoMundo.exists())
+				World.novo_mundo(lArquivoMundo);
+		}
+	}
+
 	public static ArrayList<String> listFilesForFolder(final File folder) {
 		ArrayList<String> retorno = new ArrayList<String>();
 		for (final File fileEntry : folder.listFiles()) {

@@ -60,7 +60,8 @@ public class Gerador extends Canvas
 	private boolean isRunning = true;
 	public static int windowWidth = 1240, windowHEIGHT = 720, TS, VariavelX, VariavelY, sprite_selecionado_index, FPS;
 	// alguns itens da UI ficaram bem posicionados, mas foram utilizando o TS
-	// constante como = 64 e uma tela fixa VariavelX e VariavelY, é a variavel onde, quando era 1240/720 a tela, o valor era 64 e 64
+	// constante como = 64 e uma tela fixa VariavelX e VariavelY, é a variavel onde,
+	// quando era 1240/720 a tela, o valor era 64 e 64
 	private BufferedImage image;
 
 	public static World world;
@@ -239,47 +240,62 @@ public class Gerador extends Canvas
 
 		Graphics g = image.getGraphics();
 		g.setColor(new Color(0, 0, 0));
-		g.fillRect(0, 0, windowWidth, windowHEIGHT);
-		world.render(g);
+		g.fillRect(0, 0, windowWidth + TS, windowHEIGHT + TS);
+		if (World.ready && ui.getTela() != null) {
+			world.render(g);
 
-		g.setColor(Color.red);
-		int[] localDesenho = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(aPos);
-		int desenharX, desenharY;
-		g.drawRect(localDesenho[0], localDesenho[1], quadrado.width, quadrado.height);
-		if (TelaSprites.instance.contemSpritesSelecionados()) {
-			if (++sprite_selecionado_animation_time >= World.max_tiles_animation_time) {
-				sprite_selecionado_animation_time = 0;
-				if (++sprite_selecionado_index >= TelaSprites.instance.getNumeroMaxSpritesSelecionados()) {
-					sprite_selecionado_index = 0;
-				}
-			}
-			if ((!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar))
-				for (int i = 0; i < TelaSprites.instance.spriteSelecionado.size(); i++) {
-
-					if (TelaSprites.instance.spriteSelecionado.get(i).size() == 0
-							|| (TelaSprites.kdModoColocar.kdLayerToLayer.equals(TelaSprites.instance.getModoColocar())
-									&& i != TelaSprites.LayerLevel))
-						continue;
-
-					desenharX = localDesenho[0];
-					desenharY = localDesenho[1];
-
-					BufferedImage imagem = World.PegarSprite(
-							TelaSprites.instance.nomeSpritesheet.get(i)
-									.get(sprite_selecionado_index % TelaSprites.instance.nomeSpritesheet.get(i).size()),
-							TelaSprites.instance.PosicaoSprite.get(i)
-									.get(sprite_selecionado_index % TelaSprites.instance.PosicaoSprite.get(i).size()));
-					if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) {
-						desenharX -= quadrado.width * ((imagem.getWidth() / quadrado.width) - 1);
-						desenharY -= quadrado.height * ((imagem.getWidth() / quadrado.height) - 1);
+			g.setColor(Color.red);
+			int[] localDesenho = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(aPos);
+			int desenharX, desenharY;
+			g.drawRect(localDesenho[0], localDesenho[1], quadrado.width, quadrado.height);
+			if (TelaSprites.instance.contemSpritesSelecionados()) {
+				if (++sprite_selecionado_animation_time >= World.max_tiles_animation_time) {
+					sprite_selecionado_animation_time = 0;
+					if (++sprite_selecionado_index >= TelaSprites.instance.getNumeroMaxSpritesSelecionados()) {
+						sprite_selecionado_index = 0;
 					}
-					g.drawImage(imagem, desenharX, desenharY, null);
-
 				}
+				if ((!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar))
+					for (int i = 0; i < TelaSprites.instance.spriteSelecionado.size(); i++) {
+
+						if (TelaSprites.instance.spriteSelecionado.get(i).size() == 0
+								|| (TelaSprites.kdModoColocar.kdLayerToLayer
+										.equals(TelaSprites.instance.getModoColocar()) && i != TelaSprites.LayerLevel))
+							continue;
+
+						desenharX = localDesenho[0];
+						desenharY = localDesenho[1];
+
+						BufferedImage imagem = World.PegarSprite(
+								TelaSprites.instance.nomeSpritesheet.get(i).get(
+										sprite_selecionado_index % TelaSprites.instance.nomeSpritesheet.get(i).size()),
+								TelaSprites.instance.PosicaoSprite.get(i).get(
+										sprite_selecionado_index % TelaSprites.instance.PosicaoSprite.get(i).size()));
+						if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) {
+							desenharX -= quadrado.width * ((imagem.getWidth() / quadrado.width) - 1);
+							desenharY -= quadrado.height * ((imagem.getWidth() / quadrado.height) - 1);
+						}
+						g.drawImage(imagem, desenharX, desenharY, null);
+
+					}
+			}
+			// */
+			player.render(g);
+			ui.render(g);
+		} else {
+			g.setColor(Color.white);
+			sprite_selecionado_animation_time += 5;
+			if (sprite_selecionado_animation_time >= 360) {
+				sprite_selecionado_animation_time = 30;
+			}
+
+			sprite_selecionado_index += 3;
+			if (sprite_selecionado_index >= 360)
+				sprite_selecionado_index = 0;
+
+			g.drawArc(windowWidth / 2 - TS / 2, windowHEIGHT / 2 - TS / 2, TS, TS, sprite_selecionado_index,
+					sprite_selecionado_animation_time);
 		}
-		// */
-		player.render(g);
-		ui.render(g);
 		g.dispose();
 		g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, windowWidth, windowHEIGHT, null);
@@ -298,13 +314,13 @@ public class Gerador extends Canvas
 			delta += (now - lastTime) / ns;
 			lastTime = now;
 			if (delta >= 1) {
-				if (World.ready && ui.getTela() != null) {
-					try {
+
+				try {
+					if (World.ready && ui.getTela() != null)
 						tick();
-						render();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					render();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				frames++;
 				delta = 0;

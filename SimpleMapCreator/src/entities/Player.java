@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.util.HashMap;
 import java.util.List;
 
+import files.SalvarCarregar;
+import graficos.telas.configuracao.subtelas.SubTelaPropriedade;
 import graficos.telas.configuracao.subtelas.SubTelaTransporte;
 import main.Gerador;
 import main.Uteis;
@@ -103,7 +105,7 @@ public class Player implements tickRender {
 			y += (speed + tile_speed) * vertical;
 		}
 
-		colidindo_com_escada();
+		colidindoTransporte();
 		updateCamera();
 	}
 
@@ -123,20 +125,27 @@ public class Player implements tickRender {
 
 	}
 
-	private void colidindo_com_escada() {
-		if (!(Gerador.ui.getTela().getSubTela() instanceof SubTelaTransporte))
-			return;
+	private void colidindoTransporte() {
+		if (Gerador.ui.getTela().getSubTela() instanceof SubTelaTransporte) {
 
-		Tile lTile = World.pegar_chao(x + Gerador.TS / 2, y + Gerador.TS / 2, z);
+			Tile lTile = World.pegar_chao(x + Gerador.TS / 2, y + Gerador.TS / 2, z);
 
-		if (lTile != null && lTile.getPropriedade("TRANSPORT") != null) {
-			@SuppressWarnings("unchecked")
-			HashMap<String, Object> lHashmap = (HashMap<String, Object>) lTile.getPropriedade("TRANSPORT");
-			try {
-				if (lHashmap.get("TYPE") != null
-						&& lHashmap.get("TYPE").toString().contentEquals(SubTelaTransporte.instance.opcaoSelecionada))
-					utilizarEscada(lTile);
-			} catch (Exception e) {
+			if (lTile != null && lTile.getPropriedade("TRANSPORT") != null) {
+				@SuppressWarnings("unchecked")
+				HashMap<String, Object> lHashmap = (HashMap<String, Object>) lTile.getPropriedade("TRANSPORT");
+				try {
+					if (lHashmap.get("TYPE") != null && lHashmap.get("TYPE").toString()
+							.contentEquals(SubTelaTransporte.instance.opcaoSelecionada))
+						utilizarEscada(lTile);
+				} catch (Exception e) {
+				}
+			}
+		} else if (Gerador.ui.getTela().getSubTela() instanceof SubTelaPropriedade) {
+			Tile lTile = World.pegar_chao(x + Gerador.TS / 2, y + Gerador.TS / 2, z);
+
+			if (lTile != null && lTile.getPropriedade("ToOtherWorld") != null) {
+				SalvarCarregar.toOtherWorld(lTile.getPropriedade("ToOtherWorld").toString());
+
 			}
 		}
 
