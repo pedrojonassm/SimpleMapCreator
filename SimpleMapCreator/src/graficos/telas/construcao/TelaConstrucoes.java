@@ -22,7 +22,7 @@ public class TelaConstrucoes implements Tela {
 		instance = this;
 		pagina = 0;
 
-		quadradoOpcoes = new Rectangle(Ui.caixinha_dos_sprites.width, Gerador.quadrado.height / 3);
+		quadradoOpcoes = new Rectangle(Ui.caixinha_dos_sprites.width, Gerador.VariavelY / 3);
 
 	}
 
