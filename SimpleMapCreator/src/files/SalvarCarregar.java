@@ -487,6 +487,7 @@ public class SalvarCarregar {
 				}
 				lTile = new Tile(iTile.getX(), iTile.getY(), iTile.getZ());
 				lTile.getCoConjuntoSprites().remove(0);
+
 				for (ConjuntoSprites iConjuntoSprites : iTile.getCoConjuntoSprites()) {
 					lConjuntoSprites = iConjuntoSprites.clone();
 					for (ArrayList<Sprite> iList : lConjuntoSprites.getSprites()) {
@@ -510,6 +511,8 @@ public class SalvarCarregar {
 					}
 					lTile.getCoConjuntoSprites().add(lConjuntoSprites);
 				}
+
+				lTile.setaPropriedades(iTile.getaPropriedades());
 
 				lExport.add(lTile);
 			}
