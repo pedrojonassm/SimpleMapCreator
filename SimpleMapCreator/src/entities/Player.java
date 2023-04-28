@@ -144,6 +144,12 @@ public class Player implements tickRender {
 			Tile lTile = World.pegar_chao(x + Gerador.TS / 2, y + Gerador.TS / 2, z);
 
 			if (lTile != null && lTile.getPropriedade("ToOtherWorld") != null) {
+				Tile lPosicao = World.pegar_chao(lTile.getX() + Gerador.TS * horizontal * -1,
+						lTile.getY() + Gerador.TS * vertical * -1, lTile.getZ());
+				setX(lPosicao.getX());
+				setY(lPosicao.getY());
+				setZ(lPosicao.getZ());
+
 				SalvarCarregar.toOtherWorld(lTile.getPropriedade("ToOtherWorld").toString());
 
 			}
