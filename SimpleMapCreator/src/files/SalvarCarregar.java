@@ -454,104 +454,128 @@ public class SalvarCarregar {
 
 	public static void exportarMundoJson() {
 		String lNome = JOptionPane.showInputDialog("Insira um nome para a pasta a ser salvo o Mundo Exportado");
-		File lFileExportacao = new File(arquivoLocalExportacoes, lNome), lFileImagens, lFileMundoExportado, lFileImagem,
-				lFileConfig, lFileImageConfigs;
-		if (lFileExportacao.exists())
-			lFileExportacao = new File(arquivoLocalExportacoes,
-					lNome + "-" + new SimpleDateFormat("yyyy-MM-dd HH.mm").format(new Date()));
+		if (lNome != null && !lNome.isEmpty()) {
+			File lFileExportacao = new File(arquivoLocalExportacoes, lNome), lFileImagens, lFileMundoExportado,
+					lFileImagem, lFileConfig, lFileImageConfigs;
+			if (lFileExportacao.exists())
+				lFileExportacao = new File(arquivoLocalExportacoes,
+						lNome + "-" + new SimpleDateFormat("yyyy-MM-dd HH.mm").format(new Date()));
 
-		lFileImagens = new File(lFileExportacao, "imagens");
-		lFileMundoExportado = new File(lFileExportacao, name_file_world);
-		lFileConfig = new File(lFileExportacao, name_file_config);
-		lFileExportacao.mkdir();
-		lFileImagens.mkdir();
-		try {
-			lFileMundoExportado.createNewFile();
-			lFileConfig.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Ocorreu um erro ao criar o arquivo de exportação, cancelando");
-			return;
-		}
-
-		ArrayList<Tile> lExport = new ArrayList<>();
-		HashMap<String, ArrayList<BufferedImage>> lImagensToExport = new HashMap<>();
-		HashMap<String, ArrayList<Integer>> lFrom = new HashMap<>(), lTo = new HashMap<>();
-		Tile lTile;
-		ConjuntoSprites lConjuntoSprites;
-		for (Tile iTile : World.tiles) {
-			if (iTile == null) {
-				lExport.add(null);
-				continue;
-			}
-			lTile = new Tile(iTile.getX(), iTile.getY(), iTile.getZ());
-			lTile.getCoConjuntoSprites().remove(0);
-			for (ConjuntoSprites iConjuntoSprites : iTile.getCoConjuntoSprites()) {
-				lConjuntoSprites = iConjuntoSprites.clone();
-				for (ArrayList<Sprite> iList : lConjuntoSprites.getSprites()) {
-					for (Sprite iSprite : iList) {
-						if (!lImagensToExport.containsKey(iSprite.getNome())) {
-							lImagensToExport.put(iSprite.getNome(), new ArrayList<BufferedImage>());
-							lFrom.put(iSprite.getNome(), new ArrayList<Integer>());
-							lTo.put(iSprite.getNome(), new ArrayList<Integer>());
-						}
-
-						if (!lFrom.get(iSprite.getNome()).contains(iSprite.getPosicao())) {
-							// Se o Sprite ainda não foi adicionado na exportação
-							lFrom.get(iSprite.getNome()).add(iSprite.getPosicao());
-							lTo.get(iSprite.getNome()).add(lTo.get(iSprite.getNome()).size());
-							lImagensToExport.get(iSprite.getNome())
-									.add(World.spritesCarregados.get(iSprite.getNome())[iSprite.getPosicao()]);
-						}
-						iSprite.setPosicao(lTo.get(iSprite.getNome())
-								.get(lFrom.get(iSprite.getNome()).indexOf(iSprite.getPosicao())));
-					}
-				}
-				lTile.getCoConjuntoSprites().add(lConjuntoSprites);
-			}
-
-			lExport.add(lTile);
-		}
-
-		// Exporttar as imagens
-		int lTamanho, lLinhas, lColunas;
-		BufferedImage iBufferedImage;
-		Graphics iGraphics;
-		BufferedWriter writer;
-		ExSpriteSheet lExSpriteSheet = new ExSpriteSheet();
-		for (Entry<String, ArrayList<BufferedImage>> iImagens : lImagensToExport.entrySet()) {
-			lTamanho = iImagens.getValue().get(0).getHeight();
-			lLinhas = (int) Math.sqrt(iImagens.getValue().size());
-			lColunas = lLinhas;
-			while (lLinhas * lColunas < iImagens.getValue().size())
-				lLinhas++;
-
-			iBufferedImage = new BufferedImage(lTamanho * lLinhas, lTamanho * lColunas, BufferedImage.TYPE_INT_RGB);
-
-			iGraphics = iBufferedImage.getGraphics();
-			iGraphics.setColor(Color.black);
-			iGraphics.fillRect(0, 0, iBufferedImage.getWidth(), iBufferedImage.getHeight());
-			for (int i = 0; i < iImagens.getValue().size(); i++) {
-				iGraphics.drawImage(iImagens.getValue().get(i), (i % lLinhas) * lTamanho, (i / lLinhas) * lTamanho,
-						null);
-			}
-
-			iGraphics.drawImage(iBufferedImage, 0, 0, iBufferedImage.getWidth(), iBufferedImage.getHeight(), null);
-			iGraphics.dispose();
-			lFileImagem = new File(lFileImagens, iImagens.getKey());
-
-			lExSpriteSheet.setTotalSprites(iImagens.getValue().size());
-			lExSpriteSheet.setTamanho(iImagens.getValue().get(0).getWidth());
-			lExSpriteSheet.setNome(iImagens.getKey());
+			lFileImagens = new File(lFileExportacao, "imagens");
+			lFileMundoExportado = new File(lFileExportacao, name_file_world);
+			lFileConfig = new File(lFileExportacao, name_file_config);
+			lFileExportacao.mkdir();
+			lFileImagens.mkdir();
 			try {
-				lFileImagem.mkdir();
-				lFileImagem = new File(lFileImagem, nameImagem);
-				lFileImagem.createNewFile();
-				ImageIO.write(iBufferedImage, "PNG", lFileImagem);
-				lFileImageConfigs = new File(lFileImagem.getParentFile(), nomeDataSpritesExternos);
-				lFileImageConfigs.createNewFile();
-				writer = new BufferedWriter(new FileWriter(lFileImageConfigs));
-				writer.write(toJSON(lExSpriteSheet));
+				lFileMundoExportado.createNewFile();
+				lFileConfig.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, "Ocorreu um erro ao criar o arquivo de exportação, cancelando");
+				return;
+			}
+
+			ArrayList<Tile> lExport = new ArrayList<>();
+			HashMap<String, ArrayList<BufferedImage>> lImagensToExport = new HashMap<>();
+			HashMap<String, ArrayList<Integer>> lFrom = new HashMap<>(), lTo = new HashMap<>();
+			Tile lTile;
+			ConjuntoSprites lConjuntoSprites;
+			for (Tile iTile : World.tiles) {
+				if (iTile == null) {
+					lExport.add(null);
+					continue;
+				}
+				lTile = new Tile(iTile.getX(), iTile.getY(), iTile.getZ());
+				lTile.getCoConjuntoSprites().remove(0);
+				for (ConjuntoSprites iConjuntoSprites : iTile.getCoConjuntoSprites()) {
+					lConjuntoSprites = iConjuntoSprites.clone();
+					for (ArrayList<Sprite> iList : lConjuntoSprites.getSprites()) {
+						for (Sprite iSprite : iList) {
+							if (!lImagensToExport.containsKey(iSprite.getNome())) {
+								lImagensToExport.put(iSprite.getNome(), new ArrayList<BufferedImage>());
+								lFrom.put(iSprite.getNome(), new ArrayList<Integer>());
+								lTo.put(iSprite.getNome(), new ArrayList<Integer>());
+							}
+
+							if (!lFrom.get(iSprite.getNome()).contains(iSprite.getPosicao())) {
+								// Se o Sprite ainda não foi adicionado na exportação
+								lFrom.get(iSprite.getNome()).add(iSprite.getPosicao());
+								lTo.get(iSprite.getNome()).add(lTo.get(iSprite.getNome()).size());
+								lImagensToExport.get(iSprite.getNome())
+										.add(World.spritesCarregados.get(iSprite.getNome())[iSprite.getPosicao()]);
+							}
+							iSprite.setPosicao(lTo.get(iSprite.getNome())
+									.get(lFrom.get(iSprite.getNome()).indexOf(iSprite.getPosicao())));
+						}
+					}
+					lTile.getCoConjuntoSprites().add(lConjuntoSprites);
+				}
+
+				lExport.add(lTile);
+			}
+
+			// Exporttar as imagens
+			int lTamanho, lLinhas, lColunas;
+			BufferedImage iBufferedImage;
+			Graphics iGraphics;
+			BufferedWriter writer;
+			ExSpriteSheet lExSpriteSheet = new ExSpriteSheet();
+			for (Entry<String, ArrayList<BufferedImage>> iImagens : lImagensToExport.entrySet()) {
+				lTamanho = iImagens.getValue().get(0).getHeight();
+				lLinhas = (int) Math.sqrt(iImagens.getValue().size());
+				lColunas = lLinhas;
+				while (lLinhas * lColunas < iImagens.getValue().size())
+					lLinhas++;
+
+				iBufferedImage = new BufferedImage(lTamanho * lLinhas, lTamanho * lColunas, BufferedImage.TYPE_INT_RGB);
+
+				iGraphics = iBufferedImage.getGraphics();
+				iGraphics.setColor(Color.black);
+				iGraphics.fillRect(0, 0, iBufferedImage.getWidth(), iBufferedImage.getHeight());
+				for (int i = 0; i < iImagens.getValue().size(); i++) {
+					iGraphics.drawImage(iImagens.getValue().get(i), (i % lLinhas) * lTamanho, (i / lLinhas) * lTamanho,
+							null);
+				}
+
+				iGraphics.drawImage(iBufferedImage, 0, 0, iBufferedImage.getWidth(), iBufferedImage.getHeight(), null);
+				iGraphics.dispose();
+				lFileImagem = new File(lFileImagens, iImagens.getKey());
+
+				lExSpriteSheet.setTotalSprites(iImagens.getValue().size());
+				lExSpriteSheet.setTamanho(iImagens.getValue().get(0).getWidth());
+				lExSpriteSheet.setNome(iImagens.getKey());
+				try {
+					lFileImagem.mkdir();
+					lFileImagem = new File(lFileImagem, nameImagem);
+					lFileImagem.createNewFile();
+					ImageIO.write(iBufferedImage, "PNG", lFileImagem);
+					lFileImageConfigs = new File(lFileImagem.getParentFile(), nomeDataSpritesExternos);
+					lFileImageConfigs.createNewFile();
+					writer = new BufferedWriter(new FileWriter(lFileImageConfigs));
+					writer.write(toJSON(lExSpriteSheet));
+					writer.flush();
+					writer.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Ocorreu um erro ao criar o arquivo de exportação, cancelando");
+					return;
+				}
+
+			}
+
+			try {
+				writer = new BufferedWriter(new FileWriter(lFileMundoExportado));
+				String lConteudo = toJSON(lExport);
+				writer.write(lConteudo);
+				writer.flush();
+				writer.close();
+				writer = new BufferedWriter(new FileWriter(lFileConfig));
+				ExConfig lConfig = new ExConfig();
+				lConfig.fromConfig(Gerador.aConfig);
+				lConfig.setPlayerX(Gerador.player.getX());
+				lConfig.setPlayerY(Gerador.player.getY());
+				lConfig.setPlayerZ(Gerador.player.getZ());
+				writer.write(toJSON(lConfig));
 				writer.flush();
 				writer.close();
 			} catch (IOException e) {
@@ -559,28 +583,6 @@ public class SalvarCarregar {
 				JOptionPane.showMessageDialog(null, "Ocorreu um erro ao criar o arquivo de exportação, cancelando");
 				return;
 			}
-
-		}
-
-		try {
-			writer = new BufferedWriter(new FileWriter(lFileMundoExportado));
-			String lConteudo = toJSON(lExport);
-			writer.write(lConteudo);
-			writer.flush();
-			writer.close();
-			writer = new BufferedWriter(new FileWriter(lFileConfig));
-			ExConfig lConfig = new ExConfig();
-			lConfig.fromConfig(Gerador.aConfig);
-			lConfig.setPlayerX(Gerador.player.getX());
-			lConfig.setPlayerY(Gerador.player.getY());
-			lConfig.setPlayerZ(Gerador.player.getZ());
-			writer.write(toJSON(lConfig));
-			writer.flush();
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Ocorreu um erro ao criar o arquivo de exportação, cancelando");
-			return;
 		}
 
 	}
