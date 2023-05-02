@@ -462,30 +462,32 @@ public class Gerador extends Canvas
 
 	}
 
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		if (e.getX() < 0 || e.getY() < 0 || e.getX() > windowWidth || e.getY() > windowHEIGHT)
-			return;
-		aPos = World.calcular_pos(e.getX() + Camera.x, e.getY() + Camera.y, player.getZ());
+	public void calculcarPosMouse() {
+		aPos = World.calcular_pos(quadrado.x + Camera.x, quadrado.y + Camera.y, player.getZ());
 		if (aPosOld != aPos) {
 			aPosOld = aPos;
 			aTrocouPosicao = true;
 		}
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		if (e.getX() < 0 || e.getY() < 0 || e.getX() > windowWidth || e.getY() > windowHEIGHT)
+			return;
 		quadrado.x = e.getX();
 		quadrado.y = e.getY();
+		calculcarPosMouse();
+
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		if (e.getX() < 0 || e.getY() < 0 || e.getX() > windowWidth || e.getY() > windowHEIGHT)
 			return;
-		aPos = World.calcular_pos(e.getX() + Camera.x, e.getY() + Camera.y, player.getZ());
-		if (aPosOld != aPos) {
-			aPosOld = aPos;
-			aTrocouPosicao = true;
-		}
 		quadrado.x = e.getX();
 		quadrado.y = e.getY();
+		calculcarPosMouse();
+
 	}
 
 	@Override
@@ -495,7 +497,7 @@ public class Gerador extends Canvas
 		else {
 			if (control) {
 				player.camada(e.getWheelRotation());
-				aPos = World.calcular_pos(e.getX() + Camera.x, e.getY() + Camera.y, player.getZ());
+				calculcarPosMouse();
 			} else if (shift && ui.getTela().getSubTela() instanceof SubTelaMultiplosSprites) {
 				Tile lEscolhido = World.tiles[aPos];
 				lEscolhido.trocar_pagina(e.getX(), e.getY(), e.getWheelRotation());

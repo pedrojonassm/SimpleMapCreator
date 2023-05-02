@@ -50,6 +50,7 @@ public class Player implements tickRender {
 			if (tile_speed == speed)
 				tile_speed--;
 			sqm_alvo = null;
+			Gerador.instance.calculcarPosMouse();
 		} else if (sqm_alvo == null) {
 			if (left) {
 				if (x - Gerador.TS >= 0)

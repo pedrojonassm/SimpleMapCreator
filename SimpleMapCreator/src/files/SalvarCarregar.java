@@ -175,6 +175,14 @@ public class SalvarCarregar {
 
 			tiles = (Tile[]) SalvarCarregar.fromJson(lConteudo, Tile[].class);
 			int pX = tiles[0].getX(), pY = tiles[0].getY(), pZ = tiles[0].getZ();
+			for (Tile t : tiles) {
+				if (t.getX() < pX)
+					pX = t.getX();
+				if (t.getY() < pY)
+					pY = t.getY();
+				if (t.getZ() < pZ)
+					pZ = t.getZ();
+			}
 			BufferedImage image = new BufferedImage((WIDTH + HIGH) * Gerador.TS, (HEIGHT + HIGH) * Gerador.TS,
 					BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D) image.getGraphics();
