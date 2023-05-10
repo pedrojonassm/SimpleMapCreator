@@ -299,6 +299,7 @@ public class SalvarCarregar {
 	}
 
 	public static void salvar_mundo(File pastaDoMundo) {
+		File lFileworld = null;
 		if (pastaDoMundo == null) {
 
 			try {
@@ -312,7 +313,9 @@ public class SalvarCarregar {
 				} while (nome == null || nome.isBlank()
 						|| (pastaDoMundo = new File(SalvarCarregar.arquivoWorlds, nome)).exists());
 				pastaDoMundo.mkdir();
-				new File(pastaDoMundo, SalvarCarregar.name_file_world).createNewFile();
+				lFileworld = new File(pastaDoMundo, SalvarCarregar.name_file_world);
+				lFileworld.createNewFile();
+				World.definirArquivo(pastaDoMundo);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -322,7 +325,9 @@ public class SalvarCarregar {
 		salvar += SalvarCarregar.toJSON(World.tiles);
 		try {
 			salvarConfiguracoesMundo(pastaDoMundo);
-			File lFileworld = new File(pastaDoMundo, name_file_world);
+			if (lFileworld == null)
+				lFileworld = new File(pastaDoMundo, name_file_world);
+
 			if (!lFileworld.exists())
 				lFileworld.createNewFile();
 			BufferedWriter writer = new BufferedWriter(new FileWriter(lFileworld));

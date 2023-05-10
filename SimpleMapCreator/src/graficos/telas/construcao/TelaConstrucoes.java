@@ -138,8 +138,8 @@ public class TelaConstrucoes implements Tela {
 		return construcoes.get(index_construcao_selecionada);
 	}
 
-	public void adicionar_construcoes_salvas(ArrayList<Build> construcoes2) {
-		construcoes = construcoes2;
+	public void adicionar_construcoes_salvas(ArrayList<Build> prConstrucoes) {
+		construcoes = prConstrucoes;
 	}
 
 	@Override

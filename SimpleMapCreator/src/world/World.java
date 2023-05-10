@@ -305,6 +305,10 @@ public class World {
 
 	}
 
+	public static void definirArquivo(File arquivo) {
+		World.arquivo = arquivo;
+	}
+
 	public static void carregar_mundo() {
 		Gerador.aFileDialog.setFile(SalvarCarregar.name_file_world);
 		Gerador.aFileDialog.setDirectory(SalvarCarregar.localWorlds);
