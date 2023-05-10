@@ -185,8 +185,8 @@ public class World {
 		Tile t;
 		int maxZ = HIGH;
 		for (int i = 0; i < HIGH - Gerador.player.getZ() - 1; i++) {
-			t = pegar_chao(((Gerador.player.getX() >> log_ts) + (i + 1) + (i + 1) * WIDTH
-					+ (Gerador.player.getY() >> log_ts) * WIDTH) * HIGH + Gerador.player.getZ() + 1);
+			t = pegar_chao(Gerador.player.getX() + Gerador.TS, Gerador.player.getY() + Gerador.TS,
+					Gerador.player.getZ() + 1);
 
 			if (t != null && t.tem_sprites()) {
 				maxZ = t.getZ();
