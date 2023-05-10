@@ -1,8 +1,6 @@
 package files;
 
 import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -534,7 +532,8 @@ public class SalvarCarregar {
 			// Exporttar as imagens
 			int lTamanho, lLinhas, lColunas;
 			BufferedImage iBufferedImage;
-			Graphics iGraphics;
+			Graphics2D iGraphics;
+
 			BufferedWriter writer;
 			ExSpriteSheet lExSpriteSheet = new ExSpriteSheet();
 			for (Entry<String, ArrayList<BufferedImage>> iImagens : lImagensToExport.entrySet()) {
@@ -544,17 +543,20 @@ public class SalvarCarregar {
 				while (lLinhas * lColunas < iImagens.getValue().size())
 					lLinhas++;
 
-				iBufferedImage = new BufferedImage(lTamanho * lLinhas, lTamanho * lColunas, BufferedImage.TYPE_INT_RGB);
+				iBufferedImage = new BufferedImage(lTamanho * lLinhas, lTamanho * lColunas,
+						BufferedImage.TYPE_INT_ARGB);
 
-				iGraphics = iBufferedImage.getGraphics();
-				iGraphics.setColor(Color.black);
+				iGraphics = (Graphics2D) iBufferedImage.getGraphics();
+				iGraphics.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
 				iGraphics.fillRect(0, 0, iBufferedImage.getWidth(), iBufferedImage.getHeight());
+				iGraphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
 				for (int i = 0; i < iImagens.getValue().size(); i++) {
 					iGraphics.drawImage(iImagens.getValue().get(i), (i % lLinhas) * lTamanho, (i / lLinhas) * lTamanho,
 							null);
 				}
 
 				iGraphics.drawImage(iBufferedImage, 0, 0, iBufferedImage.getWidth(), iBufferedImage.getHeight(), null);
+
 				iGraphics.dispose();
 				lFileImagem = new File(lFileImagens, iImagens.getKey());
 
