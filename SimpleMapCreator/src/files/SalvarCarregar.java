@@ -467,7 +467,7 @@ public class SalvarCarregar {
 		String lNome = JOptionPane.showInputDialog("Insira um nome para a pasta a ser salvo o Mundo Exportado");
 		if (lNome != null && !lNome.isEmpty()) {
 			File lFileExportacao = new File(arquivoLocalExportacoes, lNome), lFileImagens, lFileMundoExportado,
-					lFileImagem, lFileConfig, lFileImageConfigs;
+					lFileImagem, lFileConfig, lFileImageConfigs, lFilePropriedades;
 			if (lFileExportacao.exists())
 				lFileExportacao = new File(arquivoLocalExportacoes,
 						lNome + "-" + new SimpleDateFormat("yyyy-MM-dd HH.mm").format(new Date()));
@@ -491,6 +491,7 @@ public class SalvarCarregar {
 			HashMap<String, ArrayList<Integer>> lFrom = new HashMap<>(), lTo = new HashMap<>();
 			Tile lTile;
 			ConjuntoSprites lConjuntoSprites;
+			HashMap<String, ArrayList<String>> lPropriedades = new HashMap<>();
 			for (Tile iTile : World.tiles) {
 				if (iTile == null) {
 					lExport.add(null);
@@ -498,6 +499,15 @@ public class SalvarCarregar {
 				}
 				lTile = new Tile(iTile.getX(), iTile.getY(), iTile.getZ());
 				lTile.getCoConjuntoSprites().remove(0);
+
+				if (iTile.getaPropriedades() != null)
+					for (Entry<String, Object> iEntry : iTile.getaPropriedades().entrySet()) {
+						if (!lPropriedades.containsKey(iEntry.getKey()))
+							lPropriedades.put(iEntry.getKey(), new ArrayList<>());
+
+						if (!lPropriedades.get(iEntry.getKey()).contains("\"" + iEntry.getValue() + "\""))
+							lPropriedades.get(iEntry.getKey()).add("\"" + iEntry.getValue() + "\"");
+					}
 
 				for (ConjuntoSprites iConjuntoSprites : iTile.getCoConjuntoSprites()) {
 					lConjuntoSprites = iConjuntoSprites.clone();
@@ -534,7 +544,6 @@ public class SalvarCarregar {
 			BufferedImage iBufferedImage;
 			Graphics2D iGraphics;
 
-			BufferedWriter writer;
 			ExSpriteSheet lExSpriteSheet = new ExSpriteSheet();
 			for (Entry<String, ArrayList<BufferedImage>> iImagens : lImagensToExport.entrySet()) {
 				lTamanho = iImagens.getValue().get(0).getHeight();
@@ -569,11 +578,7 @@ public class SalvarCarregar {
 					lFileImagem.createNewFile();
 					ImageIO.write(iBufferedImage, "PNG", lFileImagem);
 					lFileImageConfigs = new File(lFileImagem.getParentFile(), nomeDataSpritesExternos);
-					lFileImageConfigs.createNewFile();
-					writer = new BufferedWriter(new FileWriter(lFileImageConfigs));
-					writer.write(toJSON(lExSpriteSheet));
-					writer.flush();
-					writer.close();
+					escreverNoArquivo(lFileImageConfigs, toJSON(lExSpriteSheet));
 				} catch (IOException e) {
 					e.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Ocorreu um erro ao criar o arquivo de exportação, cancelando");
@@ -583,20 +588,26 @@ public class SalvarCarregar {
 			}
 
 			try {
-				writer = new BufferedWriter(new FileWriter(lFileMundoExportado));
-				String lConteudo = toJSON(lExport);
-				writer.write(lConteudo);
-				writer.flush();
-				writer.close();
-				writer = new BufferedWriter(new FileWriter(lFileConfig));
+				String lConteudo = "";
+				if (!lPropriedades.isEmpty()) {
+					lFilePropriedades = new File(lFileExportacao, "propriedades.txt");
+					lFilePropriedades.createNewFile();
+					for (String iKey : lPropriedades.keySet()) {
+						lConteudo += iKey + ":\n";
+						for (String iValor : lPropriedades.get(iKey)) {
+							lConteudo += "\t" + iValor + "\n";
+						}
+						lConteudo += "\n";
+					}
+					escreverNoArquivo(lFilePropriedades, lConteudo);
+				}
+				escreverNoArquivo(lFileMundoExportado, toJSON(lExport));
 				ExConfig lConfig = new ExConfig();
 				lConfig.fromConfig(Gerador.aConfig);
 				lConfig.setPlayerX(Gerador.player.getX());
 				lConfig.setPlayerY(Gerador.player.getY());
 				lConfig.setPlayerZ(Gerador.player.getZ());
-				writer.write(toJSON(lConfig));
-				writer.flush();
-				writer.close();
+				escreverNoArquivo(lFileConfig, toJSON(lConfig));
 			} catch (IOException e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(null, "Ocorreu um erro ao criar o arquivo de exportação, cancelando");
@@ -604,6 +615,15 @@ public class SalvarCarregar {
 			}
 		}
 
+	}
+
+	private static void escreverNoArquivo(File prFile, String prConteudo) throws IOException {
+		if (!prFile.exists())
+			prFile.createNewFile();
+		BufferedWriter writer = new BufferedWriter(new FileWriter(prFile));
+		writer.write(prConteudo);
+		writer.flush();
+		writer.close();
 	}
 
 	public static void deletarLivro(String prNomeLivro) {
