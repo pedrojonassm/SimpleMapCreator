@@ -27,7 +27,7 @@ public class World {
 	// escadas128
 	public static int log_ts;
 
-	public static int tiles_index, tiles_animation_time, max_tiles_animation_time;
+	public static int tiles_index, tiles_animation_time, max_tiles_animation_time, maxRenderingZ;
 	private static File arquivo;
 	public static boolean ready, ok;
 
@@ -174,34 +174,41 @@ public class World {
 		int xstart = Camera.x >> log_ts;
 		int ystart = Camera.y >> log_ts;
 
-		int xfinal = xstart + (Gerador.windowWidth >> log_ts) + 1;
-		int yfinal = ystart + (Gerador.windowHEIGHT >> log_ts) + 1;
+		int xfinal = xstart + (Gerador.windowWidth >> log_ts) + 2;
+		int yfinal = ystart + (Gerador.windowHEIGHT >> log_ts) + 2;
 
 		if ((xstart -= (Gerador.player.getZ() + 1)) < 0)
 			xstart = 0;
 		if ((ystart -= (Gerador.player.getZ() + 1)) < 0)
 			ystart = 0;
 
-		Tile t;
-		int maxZ = HIGH;
-		for (int i = 0; i < HIGH - Gerador.player.getZ() - 1; i++) {
-			t = pegar_chao(Gerador.player.getX() + Gerador.TS, Gerador.player.getY() + Gerador.TS,
-					Gerador.player.getZ() + 1);
+		Tile lTile;
+		maxRenderingZ = HIGH;
 
-			if (t != null && t.tem_sprites()) {
-				maxZ = t.getZ();
-				break;
-			}
-		}
+		boolean lBreak = false;
+
+		for (int xx = Gerador.player.getX() >> log_ts + 1; xx <= xfinal && !lBreak; xx++)
+			for (int yy = Gerador.player.getY() >> log_ts + 1; yy <= yfinal && !lBreak; yy++)
+				for (int zz = 1; zz < HIGH - Gerador.player.getZ() - 1 && !lBreak; zz++) {
+					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
+						continue;
+					}
+					lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
+
+					if (lTile != null && lTile.checkMaxRendering()) {
+						maxRenderingZ = lTile.getZ();
+						lBreak = true;
+					}
+				}
 
 		for (int xx = xstart; xx <= xfinal; xx++)
 			for (int yy = ystart; yy <= yfinal; yy++)
-				for (int zz = 0; zz < maxZ; zz++) {
+				for (int zz = 0; zz < maxRenderingZ; zz++) {
 					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
 					}
 
-					Tile lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
+					lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
 					if (lTile != null)
 						lTile.render(g);
 				}

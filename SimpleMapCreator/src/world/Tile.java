@@ -2,6 +2,7 @@ package world;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,6 +77,45 @@ public class Tile {
 		return CoConjuntoSprites.get(posicao_Conjunto).obterSprite_atual();
 	}
 
+	public boolean checkMaxRendering() {
+		if (z > Gerador.player.getZ()) {
+			int dx, dy, maxWidth = 0, maxHeight = 0;
+			if (posicao_Conjunto < CoConjuntoSprites.size() && CoConjuntoSprites.get(posicao_Conjunto) != null)
+				for (ArrayList<Sprite> imagens : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
+					if (imagens != null && imagens.size() > 0) {
+						Sprite sprite = imagens.get(World.tiles_index % imagens.size());
+
+						BufferedImage image = sprite.pegarImagem();
+
+						if (image.getWidth() > maxHeight) {
+							maxWidth = image.getWidth();
+						}
+						if (image.getHeight() > maxHeight) {
+							maxHeight = image.getHeight();
+						}
+
+					}
+				}
+
+			if (maxWidth > Gerador.quadrado.width || maxHeight > Gerador.quadrado.height) {
+				dx = x - Camera.x - Gerador.quadrado.width * ((maxWidth / Gerador.quadrado.width) - 1);
+				dy = y - Camera.y - Gerador.quadrado.height * ((maxHeight / Gerador.quadrado.width) - 1);
+			} else {
+				dx = x - Camera.x;
+				dy = y - Camera.y;
+			}
+			dx -= (z - Gerador.player.getZ()) * Gerador.quadrado.width;
+			dy -= (z - Gerador.player.getZ()) * Gerador.quadrado.height;
+
+			if (new Rectangle(dx, dy, maxWidth, maxHeight).intersects(new Rectangle(Gerador.player.getX() - Camera.x,
+					Gerador.player.getY() - Camera.y, Gerador.quadrado.width, Gerador.quadrado.height)))
+				return true;
+
+		}
+		return false;
+
+	}
+
 	public void desenharSprite(Graphics prGraphics, int prCameraX, int prCameraY, int prIndex, int prZ) {
 		if (posicao_Conjunto < CoConjuntoSprites.size() && CoConjuntoSprites.get(posicao_Conjunto) != null)
 			for (ArrayList<Sprite> imagens : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
@@ -84,8 +124,9 @@ public class Tile {
 					int dx, dy;
 					BufferedImage image = sprite.pegarImagem();
 					if (image.getWidth() > Gerador.quadrado.width || image.getHeight() > Gerador.quadrado.height) {
-						dx = x - prCameraX - Gerador.quadrado.width;
-						dy = y - prCameraY - Gerador.quadrado.height;
+						dx = x - Camera.x - Gerador.quadrado.width * ((image.getWidth() / Gerador.quadrado.width) - 1);
+						dy = y - Camera.y
+								- Gerador.quadrado.height * ((image.getHeight() / Gerador.quadrado.width) - 1);
 					} else {
 						dx = x - prCameraX;
 						dy = y - prCameraY;
