@@ -403,8 +403,13 @@ public class TelaSprites implements Tela {
 			} while (nome_livros.contains(nome));
 			adicionar_livro(nome);
 		} else if (py < pagina.size()) {
-			livro = py;
-			atualizar_caixinha();
+			if (Gerador.control) {
+				if (contemSpritesSelecionados())
+					adicionar_novo_tile_ao_livro(py);
+			} else {
+				livro = py;
+				atualizar_caixinha();
+			}
 		}
 	}
 
@@ -574,7 +579,7 @@ public class TelaSprites implements Tela {
 		if (conjuntos_salvos.get(prLivro - 1).size() % max_sprites_por_pagina >= max_sprites_por_pagina) {
 			max_pagina.set(prLivro, max_pagina.get(prLivro) + 1);
 		}
-		SalvarCarregar.salvar_livro(livro - 1);
+		SalvarCarregar.salvar_livro(prLivro - 1);
 	}
 
 	@Override
