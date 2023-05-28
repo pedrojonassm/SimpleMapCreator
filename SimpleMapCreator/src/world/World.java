@@ -201,9 +201,15 @@ public class World {
 					}
 				}
 
-		for (int xx = xstart; xx <= xfinal; xx++)
-			for (int yy = ystart; yy <= yfinal; yy++)
-				for (int zz = 0; zz < maxRenderingZ; zz++) {
+		renderTiles(g, xstart, xfinal, ystart, yfinal, maxRenderingZ);
+
+	}
+
+	public static void renderTiles(Graphics g, int prXStart, int prXFinal, int prYStart, int prYSfinal, int prMaxZ) {
+		Tile lTile;
+		for (int xx = prXStart; xx <= prXFinal; xx++)
+			for (int yy = prYStart; yy <= prYSfinal; yy++)
+				for (int zz = 0; zz < prMaxZ; zz++) {
 					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
 					}

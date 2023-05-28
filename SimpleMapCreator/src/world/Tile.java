@@ -124,8 +124,8 @@ public class Tile {
 					int dx, dy;
 					BufferedImage image = sprite.pegarImagem();
 					if (image.getWidth() > Gerador.quadrado.width || image.getHeight() > Gerador.quadrado.height) {
-						dx = x - Camera.x - Gerador.quadrado.width * ((image.getWidth() / Gerador.quadrado.width) - 1);
-						dy = y - Camera.y
+						dx = x - prCameraX - Gerador.quadrado.width * ((image.getWidth() / Gerador.quadrado.width) - 1);
+						dy = y - prCameraY
 								- Gerador.quadrado.height * ((image.getHeight() / Gerador.quadrado.width) - 1);
 					} else {
 						dx = x - prCameraX;

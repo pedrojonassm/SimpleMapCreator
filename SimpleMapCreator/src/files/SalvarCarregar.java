@@ -147,7 +147,7 @@ public class SalvarCarregar {
 			writer.write(lConteudo);
 			writer.flush();
 			writer.close();
-			criar_imagem(pasta);
+			criar_imagem(pasta, minX, maxX, minY, maxY, minZ, maxZ);
 			Build lBuild = new Build(horizontal, vertical, high, pasta);
 			TelaConstrucoes.instance.adicionar_construcao(lBuild);
 			return lBuild;
@@ -157,51 +157,31 @@ public class SalvarCarregar {
 		return null;
 	}
 
-	private static void criar_imagem(File pasta) {
-		Tile[] tiles;
-		BufferedReader reader;
-		try {
-			reader = new BufferedReader(new FileReader(new File(pasta, name_file_builds)));
-			String singleLine = null;
-			singleLine = reader.readLine();
-			String[] sla = singleLine.split(";");
-			int WIDTH = Integer.parseInt(sla[0]), HEIGHT = Integer.parseInt(sla[1]),
-					HIGH = Integer.parseInt(sla[2]) - 1;
-			String lConteudo = "";
-			while ((singleLine = reader.readLine()) != null)
-				lConteudo += singleLine;
+	private static void criar_imagem(File prPasta, int prMinX, int prMaxX, int prMinY, int prMaxY, int prMinZ,
+			int prMaxZ) throws IOException {
 
-			tiles = (Tile[]) SalvarCarregar.fromJson(lConteudo, Tile[].class);
-			int pX = tiles[0].getX(), pY = tiles[0].getY(), pZ = tiles[0].getZ();
-			for (Tile t : tiles) {
-				if (t.getX() < pX)
-					pX = t.getX();
-				if (t.getY() < pY)
-					pY = t.getY();
-				if (t.getZ() < pZ)
-					pZ = t.getZ();
-			}
-			BufferedImage image = new BufferedImage((WIDTH + HIGH) * Gerador.TS, (HEIGHT + HIGH) * Gerador.TS,
-					BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = (Graphics2D) image.getGraphics();
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
-			g.fillRect(0, 0, image.getWidth(), image.getHeight());
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+		BufferedImage image = new BufferedImage(prMaxX - prMinX + Gerador.TS * (prMaxZ - prMinZ),
+				prMaxY - prMinY + Gerador.TS * (prMaxZ - prMinZ), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = (Graphics2D) image.getGraphics();
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
+		g.fillRect(0, 0, image.getWidth(), image.getHeight());
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+		Tile lTile;
+		for (int xx = prMinX >> World.log_ts; xx <= prMaxX >> World.log_ts; xx++)
+			for (int yy = prMinY >> World.log_ts; yy <= prMaxY >> World.log_ts; yy++)
+				for (int zz = 0; zz <= prMaxZ; zz++) {
+					if (xx < 0 || yy < 0 || xx >= World.WIDTH || yy >= World.HEIGHT) {
+						continue;
+					}
 
-			for (Tile t : tiles) {
-				t.setX(t.getX() - pX);
-				t.setY(t.getY() - pY);
-				t.setZ(t.getZ() - pZ);
-				t.desenharSprite(g, 0, 0, 0, 0);
-			}
+					lTile = World.tiles[(xx + (yy * World.WIDTH)) * World.HIGH + zz];
+					if (lTile != null)
+						lTile.desenharSprite(g, prMinX, prMinY, World.tiles_index, prMinZ);
+				}
 
-			g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
-			g.dispose();
-			ImageIO.write(image, "PNG", new File(pasta, nameImagem));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
+		g.dispose();
+		ImageIO.write(image, "PNG", new File(prPasta, nameImagem));
 	}
 
 	public void carregar_construcoes() {
