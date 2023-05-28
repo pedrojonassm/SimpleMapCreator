@@ -584,20 +584,24 @@ public class TelaSprites implements Tela {
 				if (contemSpritesSelecionados()) {
 					if (encontrarProximoSpriteSelecionado())
 						atualizar_caixinha();
-					return true;
+				} else {
+					if (encontrarProximoConjuntoImagens(prRodinha))
+						atualizar_caixinha();
 				}
 			}
-			if (Gerador.shift) {
+			if (!Gerador.control && Gerador.shift) {
 				trocarLayerTiles(prRodinha);
-				return true;
 			}
 
-			pagina.set(livro, pagina.get(livro) + prRodinha);
-			if (pagina.get(livro) < 0) {
-				pagina.set(livro, max_pagina.get(livro));
-			} else if (pagina.get(livro) > max_pagina.get(livro)) {
-				pagina.set(livro, 0);
+			if (!Gerador.control && !Gerador.shift) {
+				pagina.set(livro, pagina.get(livro) + prRodinha);
+				if (pagina.get(livro) < 0) {
+					pagina.set(livro, max_pagina.get(livro));
+				} else if (pagina.get(livro) > max_pagina.get(livro)) {
+					pagina.set(livro, 0);
+				}
 			}
+
 			atualizar_caixinha();
 
 			return true;
@@ -660,6 +664,39 @@ public class TelaSprites implements Tela {
 
 		pagina.set(0, lNovaPagina);
 		return true;
+	}
+
+	private boolean encontrarProximoConjuntoImagens(int prRodinha) {
+		if (livro == 0) {
+			String lSpritesMostrando = "";
+
+			int lSpritesPassados = 0;
+
+			for (String iString : World.nomeSprites) {
+				lSpritesMostrando = iString;
+				lSpritesPassados += World.spritesCarregados.get(lSpritesMostrando).length;
+				if (pagina.get(0) * max_sprites_por_pagina <= lSpritesPassados && pagina.get(0) != (((prRodinha < 0)
+						? (lSpritesPassados - World.spritesCarregados.get(lSpritesMostrando).length)
+						: lSpritesPassados) / max_sprites_por_pagina))
+					break;
+			}
+
+			if (prRodinha < 0) {
+				lSpritesPassados -= World.spritesCarregados.get(lSpritesMostrando).length;
+			}
+
+			pagina.set(0, (lSpritesPassados / max_sprites_por_pagina));
+
+			if (pagina.get(0) < 0) {
+				pagina.set(0, max_pagina.get(0));
+			} else if (pagina.get(0) > max_pagina.get(0)) {
+				pagina.set(livro, 0);
+			}
+
+			return true;
+		}
+		return false;
+
 	}
 
 	public void trocarLayerTiles(int prWheelRotation) {
