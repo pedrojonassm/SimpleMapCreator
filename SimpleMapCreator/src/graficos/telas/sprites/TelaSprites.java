@@ -576,7 +576,8 @@ public class TelaSprites implements Tela {
 		ConjuntoSprites lConjuntoSprites = new ConjuntoSprites();
 		lConjuntoSprites.adicionar_sprite_selecionado();
 		conjuntos_salvos.get(prLivro - 1).add(lConjuntoSprites);
-		if (conjuntos_salvos.get(prLivro - 1).size() % max_sprites_por_pagina >= max_sprites_por_pagina) {
+
+		if (max_pagina.get(prLivro) < conjuntos_salvos.get(prLivro - 1).size() / max_sprites_por_pagina) {
 			max_pagina.set(prLivro, max_pagina.get(prLivro) + 1);
 		}
 		SalvarCarregar.salvar_livro(prLivro - 1);
