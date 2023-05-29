@@ -248,6 +248,10 @@ public class Gerador extends Canvas
 			int[] localDesenho = Uteis.calcularPosicaoSemAlturaIgnorandoCamera(aPos);
 			int desenharX, desenharY;
 			g.drawRect(localDesenho[0], localDesenho[1], quadrado.width, quadrado.height);
+			desenharX = g.getFontMetrics()
+					.stringWidth(aPos + "");
+			g.drawString(aPos + "",
+					localDesenho[0] + quadrado.width / 2 - desenharX / 2, localDesenho[1] + quadrado.height / 2);
 			if (TelaSprites.instance.contemSpritesSelecionados()) {
 				if (++sprite_selecionado_animation_time >= World.max_tiles_animation_time) {
 					sprite_selecionado_animation_time = 0;
