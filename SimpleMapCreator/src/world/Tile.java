@@ -136,7 +136,7 @@ public class Tile {
 					dy -= (z - prZ) * Gerador.quadrado.height;
 					if (getPropriedade("renderLayerPosWorldRender") != null
 							&& getPropriedade("renderLayerPosWorldRender").toString().contentEquals(iLayer + ""))
-						Ui.renderizarImagemDepois(prGraphics, image, dx, dy);
+						World.renderizarImagemDepois(prGraphics, image, dx, dy);
 					else
 						prGraphics.drawImage(image, dx, dy, null);
 				}

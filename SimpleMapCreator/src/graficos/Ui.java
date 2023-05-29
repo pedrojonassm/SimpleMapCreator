@@ -126,17 +126,17 @@ public class Ui implements Tela {
 	}
 
 	public static void renderizarEscritaDepois(Graphics prGraphics, String prString, int prPosX, int prPosY) {
-		Ui.renderizarDepois.add(() -> prGraphics.drawString(prString, prPosX, prPosY));
+		renderizarDepois.add(() -> prGraphics.drawString(prString, prPosX, prPosY));
 	}
 
 	public static void renderizarDesenharQuadradoDepois(Graphics prGraphics, int prPosX, int prPosY, int prWidth,
 			int prHeight) {
-		Ui.renderizarDepois.add(() -> prGraphics.drawRect(prPosX, prPosY, prWidth, prHeight));
+		renderizarDepois.add(() -> prGraphics.drawRect(prPosX, prPosY, prWidth, prHeight));
 	}
 
 	public static void renderizarDesenharArcoDepois(Graphics prGraphics, int prPosX, int prPosY, int prWidth,
 			int prHeight, int prStartAngle, int prArcAngle) {
-		Ui.renderizarDepois.add(() -> prGraphics.drawArc(prPosX, prPosY, prWidth, prHeight, prStartAngle, prArcAngle));
+		renderizarDepois.add(() -> prGraphics.drawArc(prPosX, prPosY, prWidth, prHeight, prStartAngle, prArcAngle));
 	}
 
 	public void render(Graphics g) {

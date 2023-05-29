@@ -31,11 +31,14 @@ public class World {
 	private static File arquivo;
 	public static boolean ready, ok;
 
+	private static ArrayList<Runnable> renderizarDepoisLinhaXX;
+
 	public World(File file) {
 		ready = false;
 		// *
 		tiles_index = tiles_animation_time = 0;
 		max_tiles_animation_time = 15;
+		renderizarDepoisLinhaXX = new ArrayList<>();
 		try {
 			ok = true;
 			if (file == null) {
@@ -205,10 +208,14 @@ public class World {
 
 	}
 
+	public static void renderizarImagemDepois(Graphics prGraphics, BufferedImage image, int prPosX, int prPosY) {
+		renderizarDepoisLinhaXX.add(() -> prGraphics.drawImage(image, prPosX, prPosY, null));
+	}
+
 	public static void renderTiles(Graphics g, int prXStart, int prXFinal, int prYStart, int prYSfinal, int prMaxZ) {
 		Tile lTile;
-		for (int xx = prXStart; xx <= prXFinal; xx++)
-			for (int yy = prYStart; yy <= prYSfinal; yy++)
+		for (int yy = prYStart; yy <= prYSfinal; yy++) {
+			for (int xx = prXStart; xx <= prXFinal; xx++)
 				for (int zz = 0; zz < prMaxZ; zz++) {
 					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
@@ -221,6 +228,11 @@ public class World {
 							Gerador.player.render(g);
 					}
 				}
+			while (renderizarDepoisLinhaXX.size() > 0) {
+				renderizarDepoisLinhaXX.get(0).run();
+				renderizarDepoisLinhaXX.remove(0);
+			}
+		}
 	}
 
 	public static void fill(ArrayList<Tile> prTilesSelecionados) {
