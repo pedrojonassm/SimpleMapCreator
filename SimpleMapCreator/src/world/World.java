@@ -215,8 +215,11 @@ public class World {
 					}
 
 					lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
-					if (lTile != null)
+					if (lTile != null) {
 						lTile.render(g);
+						if (lTile.getaPos() == Gerador.player.aPosAtual || lTile.getaPos() == Gerador.player.aPosAlvo)
+							Gerador.player.render(g);
+					}
 				}
 	}
 

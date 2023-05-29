@@ -280,7 +280,8 @@ public class Gerador extends Canvas
 					}
 			}
 			// */
-			player.render(g);
+			if (World.tiles[player.aPosAtual] == null)
+				player.render(g);
 			ui.render(g);
 		} else {
 			g.setColor(Color.white);

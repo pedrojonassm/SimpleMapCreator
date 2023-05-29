@@ -20,6 +20,7 @@ public class Player implements tickRender {
 	private int horizontal, vertical, speed;
 	public boolean left, right, up, down, aBloqueadoMovimentacao;
 	Tile sqm_alvo = null;
+	public int aPosAtual, aPosAlvo;
 
 	public Player(int x, int y, int z) {
 		this.x = x;
@@ -27,6 +28,8 @@ public class Player implements tickRender {
 		this.horizontal = z;
 		tile_speed = 0;
 		left = right = up = down = aBloqueadoMovimentacao = false;
+
+		aPosAtual = aPosAlvo = 0;
 
 		speed = 4;
 		horizontal = vertical = 0;
@@ -50,6 +53,7 @@ public class Player implements tickRender {
 			if (tile_speed == speed)
 				tile_speed--;
 			sqm_alvo = null;
+			aPosAtual = aPosAlvo;
 			Gerador.instance.calculcarPosMouse();
 		} else if (sqm_alvo == null) {
 			if (left) {
@@ -96,6 +100,8 @@ public class Player implements tickRender {
 							+ Uteis.modulo(tile_speed) * 2)
 						aBloqueadoMovimentacao = true;
 				}
+				if (sqm_alvo != null)
+					aPosAlvo = sqm_alvo.getaPos();
 				if (lInverteuVelocidade) {
 					horizontal *= -1;
 					vertical *= -1;
@@ -123,7 +129,7 @@ public class Player implements tickRender {
 		y = lTile.getY();
 		z = lTile.getZ();
 		sqm_alvo = lTile;
-
+		aPosAlvo = sqm_alvo.getaPos();
 	}
 
 	private void colidindoTransporte() {
