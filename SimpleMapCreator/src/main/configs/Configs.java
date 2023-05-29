@@ -58,6 +58,7 @@ public class Configs {
 		propriedades.add("ToOtherWorld");
 		propriedades.add("Solid");
 		propriedades.add("Speed");
+		propriedades.add("renderLayerPosWorldRender");
 	}
 
 	private void transportespadrao() {

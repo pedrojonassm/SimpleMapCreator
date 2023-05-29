@@ -118,7 +118,8 @@ public class Tile {
 
 	public void desenharSprite(Graphics prGraphics, int prCameraX, int prCameraY, int prIndex, int prZ) {
 		if (posicao_Conjunto < CoConjuntoSprites.size() && CoConjuntoSprites.get(posicao_Conjunto) != null)
-			for (ArrayList<Sprite> imagens : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
+			for (int iLayer = 0; iLayer < CoConjuntoSprites.get(posicao_Conjunto).getSprites().size(); iLayer++) {
+				ArrayList<Sprite> imagens = CoConjuntoSprites.get(posicao_Conjunto).getSprites().get(iLayer);
 				if (imagens != null && imagens.size() > 0) {
 					Sprite sprite = imagens.get(prIndex % imagens.size());
 					int dx, dy;
@@ -133,7 +134,11 @@ public class Tile {
 					}
 					dx -= (z - prZ) * Gerador.quadrado.width;
 					dy -= (z - prZ) * Gerador.quadrado.height;
-					prGraphics.drawImage(image, dx, dy, null);
+					if (getPropriedade("renderLayerPosWorldRender") != null
+							&& getPropriedade("renderLayerPosWorldRender").toString().contentEquals(iLayer + ""))
+						Ui.renderizarImagemDepois(prGraphics, image, dx, dy);
+					else
+						prGraphics.drawImage(image, dx, dy, null);
 				}
 			}
 	}
@@ -156,13 +161,14 @@ public class Tile {
 						.toString()
 						.substring(0, aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada())
 								.toString().length() / ((aux / Gerador.TS) + 1));
-				aux = prGraphics.getFontMetrics().stringWidth(lPropriedadeMostrada + "...");
-				Ui.renderizarDepois.add(() -> prGraphics.drawString(lPropriedadeMostrada + "...",
-						x + Gerador.TS / 2 - aux / 2 - Camera.x, y + Gerador.TS / 2 - Camera.y));
+				lPropriedadeMostrada = lPropriedadeMostrada + "...";
+				aux = prGraphics.getFontMetrics().stringWidth(lPropriedadeMostrada);
+				Ui.renderizarEscritaDepois(prGraphics, lPropriedadeMostrada, x + Gerador.TS / 2 - aux / 2 - Camera.x,
+						y + Gerador.TS / 2 - Camera.y);
 			} else
-				Ui.renderizarDepois.add(() -> prGraphics.drawString(
+				Ui.renderizarEscritaDepois(prGraphics,
 						aPropriedades.get(SubTelaPropriedade.instance.getPropriedadeSelecionada()).toString(),
-						x + Gerador.TS / 2 - aux / 2 - Camera.x, y + Gerador.TS / 2 - Camera.y));
+						x + Gerador.TS / 2 - aux / 2 - Camera.x, y + Gerador.TS / 2 - Camera.y);
 
 		} else if (Gerador.player.getZ() == z && Gerador.ui.getTela().getSubTela() instanceof SubTelaTransporte
 				&& aPropriedades != null) {
@@ -172,27 +178,25 @@ public class Tile {
 						&& SubTelaTransporte.instance.opcaoSelecionada.contentEquals(lHashMap.get("TYPE").toString())) {
 					prGraphics.setColor(new Color(255, 255, 255, 50));
 					prGraphics.fillRect(x - Camera.x, y - Camera.y, Gerador.TS, Gerador.TS);
-					if (Gerador.player.getZ() == z
-							&& Gerador.quadrado.intersects(x - Camera.x + Gerador.quadrado.x % Gerador.TS,
-									y - Camera.y + Gerador.quadrado.y % Gerador.TS, Gerador.TS, Gerador.TS)
+					if (Gerador.player.getZ() == z && Gerador.instance.getPos() == aPos
 							&& lHashMap.get("DESTINY") != null) {
 						prGraphics.setColor(Color.white);
 						Tile lTile = World.pegarAdicionarTileMundo(
 								Tile.pegarPosicaoRelativa(x, y, z, (List<Integer>) lHashMap.get("DESTINY")));
 						if (lTile != null) {
 							int lDiferencaNivel = lTile.getZ() - z, angulo = (lDiferencaNivel > 0) ? 45 : 225;
-							Ui.renderizarDepois.add(() -> prGraphics.drawRect(
+							Ui.renderizarDesenharQuadradoDepois(prGraphics,
 									lTile.getX() - Camera.x - Gerador.quadrado.width * lDiferencaNivel,
 									lTile.getY() - Camera.y - Gerador.quadrado.height * lDiferencaNivel, Gerador.TS,
-									Gerador.TS));
+									Gerador.TS);
 							for (aux = 0; aux < Uteis.modulo(lDiferencaNivel); aux++) {
-								Ui.renderizarDepois.add(() -> prGraphics.drawArc(
+								Ui.renderizarDesenharArcoDepois(prGraphics,
 										lTile.getX() - Camera.x + Gerador.quadrado.width / 2
 												- Gerador.quadrado.width * lDiferencaNivel,
 										lTile.getY() - Camera.y + Gerador.quadrado.height / 2
 												+ (aux + 1) * Gerador.TS / 10
 												- Gerador.quadrado.height * lDiferencaNivel,
-										Gerador.TS / 10, Gerador.TS / 10, angulo, 90));
+										Gerador.TS / 10, Gerador.TS / 10, angulo, 90);
 							}
 
 						}
