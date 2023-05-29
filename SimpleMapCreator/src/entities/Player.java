@@ -29,10 +29,9 @@ public class Player implements tickRender {
 		tile_speed = 0;
 		left = right = up = down = aBloqueadoMovimentacao = false;
 
-		aPosAtual = aPosAlvo = 0;
-
 		speed = 4;
-		horizontal = vertical = 0;
+		aPosAlvo = horizontal = vertical = 0;
+		aPosAtual = -1;
 	}
 
 	public int getSpeed() {
