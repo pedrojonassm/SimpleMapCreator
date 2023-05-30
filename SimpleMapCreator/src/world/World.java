@@ -233,14 +233,14 @@ public class World {
 							Gerador.player.render(g);
 					}
 				}
-			while (renderizarDepoisLinhaXX.size() > 0) {
-				renderizarDepoisLinhaXX.get(0).run();
-				renderizarDepoisLinhaXX.remove(0);
-			}
 		}
 		while (renderizarDepoisLinhaYY.size() > 0) {
 			renderizarDepoisLinhaYY.get(0).run();
 			renderizarDepoisLinhaYY.remove(0);
+		}
+		while (renderizarDepoisLinhaXX.size() > 0) {
+			renderizarDepoisLinhaXX.get(0).run();
+			renderizarDepoisLinhaXX.remove(0);
 		}
 
 	}
