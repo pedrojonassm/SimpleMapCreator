@@ -31,15 +31,14 @@ public class World {
 	private static File arquivo;
 	public static boolean ready, ok;
 
-	private static ArrayList<Runnable> renderizarDepoisLinhaXX, renderizarDepoisLinhaYY;
+	private static HashMap<Integer, HashMap<Integer, ArrayList<Runnable>>> renderizarDepois;
 
 	public World(File file) {
 		ready = false;
 		// *
 		tiles_index = tiles_animation_time = 0;
 		max_tiles_animation_time = 15;
-		renderizarDepoisLinhaXX = new ArrayList<>();
-		renderizarDepoisLinhaYY = new ArrayList<>();
+		renderizarDepois = new HashMap<Integer, HashMap<Integer, ArrayList<Runnable>>>();
 		try {
 			ok = true;
 			if (file == null) {
@@ -209,18 +208,19 @@ public class World {
 
 	}
 
-	public static void renderizarImagemDepoisXX(Graphics prGraphics, BufferedImage image, int prPosX, int prPosY) {
-		renderizarDepoisLinhaXX.add(() -> prGraphics.drawImage(image, prPosX, prPosY, null));
-	}
-
-	public static void renderizarImagemDepoisYY(Graphics prGraphics, BufferedImage image, int prPosX, int prPosY) {
-		renderizarDepoisLinhaYY.add(() -> prGraphics.drawImage(image, prPosX, prPosY, null));
+	public static void renderizarImagemDepois(int prXX, int prYY, Graphics prGraphics, BufferedImage image, int prPosX,
+			int prPosY) {
+		if (!renderizarDepois.containsKey(prXX))
+			renderizarDepois.put(prXX, new HashMap<Integer, ArrayList<Runnable>>());
+		if (!renderizarDepois.get(prXX).containsKey(prYY))
+			renderizarDepois.get(prXX).put(prYY, new ArrayList<Runnable>());
+		renderizarDepois.get(prXX).get(prYY).add(() -> prGraphics.drawImage(image, prPosX, prPosY, null));
 	}
 
 	public static void renderTiles(Graphics g, int prXStart, int prXFinal, int prYStart, int prYSfinal, int prMaxZ) {
 		Tile lTile;
-		for (int yy = prYStart; yy <= prYSfinal; yy++) {
-			for (int xx = prXStart; xx <= prXFinal; xx++)
+		for (int xx = prXStart; xx <= prXFinal; xx++) {
+			for (int yy = prYStart; yy <= prYSfinal; yy++) {
 				for (int zz = 0; zz < prMaxZ; zz++) {
 					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
@@ -233,15 +233,17 @@ public class World {
 							Gerador.player.render(g);
 					}
 				}
+				if (renderizarDepois.get(xx) != null && renderizarDepois.get(xx).get(yy) != null) {
+					while (renderizarDepois.get(xx).get(yy).size() > 0) {
+						renderizarDepois.get(xx).get(yy).get(0).run();
+						renderizarDepois.get(xx).get(yy).remove(0);
+					}
+				}
+			}
+
 		}
-		while (renderizarDepoisLinhaYY.size() > 0) {
-			renderizarDepoisLinhaYY.get(0).run();
-			renderizarDepoisLinhaYY.remove(0);
-		}
-		while (renderizarDepoisLinhaXX.size() > 0) {
-			renderizarDepoisLinhaXX.get(0).run();
-			renderizarDepoisLinhaXX.remove(0);
-		}
+
+		renderizarDepois.clear();
 
 	}
 
