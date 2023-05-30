@@ -77,8 +77,8 @@ public class Tile {
 		return CoConjuntoSprites.get(posicao_Conjunto).obterSprite_atual();
 	}
 
-	public boolean checkMaxRendering() {
-		if (z > Gerador.player.getZ()) {
+	public boolean isTileEmCima(int prX, int prY, int prZ) {
+		if (z > prZ) {
 			int dx, dy, maxWidth = 0, maxHeight = 0;
 			if (posicao_Conjunto < CoConjuntoSprites.size() && CoConjuntoSprites.get(posicao_Conjunto) != null)
 				for (ArrayList<Sprite> imagens : CoConjuntoSprites.get(posicao_Conjunto).getSprites()) {
@@ -98,22 +98,34 @@ public class Tile {
 				}
 
 			if (maxWidth > Gerador.quadrado.width || maxHeight > Gerador.quadrado.height) {
-				dx = x - Camera.x - Gerador.quadrado.width * ((maxWidth / Gerador.quadrado.width) - 1);
-				dy = y - Camera.y - Gerador.quadrado.height * ((maxHeight / Gerador.quadrado.width) - 1);
+				dx = x - Gerador.quadrado.width * ((maxWidth / Gerador.quadrado.width) - 1);
+				dy = y - Gerador.quadrado.height * ((maxHeight / Gerador.quadrado.width) - 1);
 			} else {
-				dx = x - Camera.x;
-				dy = y - Camera.y;
+				dx = x;
+				dy = y;
 			}
-			dx -= (z - Gerador.player.getZ()) * Gerador.quadrado.width;
-			dy -= (z - Gerador.player.getZ()) * Gerador.quadrado.height;
+			dx -= (z - prZ) * Gerador.quadrado.width;
+			dy -= (z - prZ) * Gerador.quadrado.height;
 
-			if (new Rectangle(dx, dy, maxWidth, maxHeight).intersects(new Rectangle(Gerador.player.getX() - Camera.x,
-					Gerador.player.getY() - Camera.y, Gerador.quadrado.width, Gerador.quadrado.height)))
+			if (new Rectangle(dx, dy, maxWidth, maxHeight)
+					.intersects(new Rectangle(prX, prY, Gerador.quadrado.width, Gerador.quadrado.height)))
 				return true;
 
 		}
 		return false;
 
+	}
+
+	private boolean temTileAcima() {
+		Tile lTile;
+		if (aPos == 2800)
+			aPos = 2800;
+		for (int zz = z + 1; zz < World.maxRenderingZ; zz++) {
+			lTile = World.pegar_chao(x + Gerador.TS * (zz - z), y + Gerador.TS * (zz - z), zz);
+			if (lTile != null && lTile.isTileEmCima(x, y, z))
+				return true;
+		}
+		return false;
 	}
 
 	public void desenharSprite(Graphics prGraphics, int prCameraX, int prCameraY, int prIndex, int prZ) {
@@ -134,7 +146,7 @@ public class Tile {
 					}
 					dx -= (z - prZ) * Gerador.quadrado.width;
 					dy -= (z - prZ) * Gerador.quadrado.height;
-					if (z == Gerador.player.getZ()) {
+					if (z == Gerador.player.getZ() && !temTileAcima()) {
 						if (getPropriedade("renderLayerPosWorldRender") != null
 								&& getPropriedade("renderLayerPosWorldRender").toString()
 										.contentEquals((iLayer + 1) + ""))

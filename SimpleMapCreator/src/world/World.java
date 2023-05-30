@@ -198,7 +198,8 @@ public class World {
 					}
 					lTile = tiles[(xx + (yy * WIDTH)) * HIGH + zz];
 
-					if (lTile != null && lTile.checkMaxRendering()) {
+					if (lTile != null && lTile.isTileEmCima(Gerador.player.getX(), Gerador.player.getY(),
+							Gerador.player.getZ())) {
 						maxRenderingZ = lTile.getZ();
 						lBreak = true;
 					}
