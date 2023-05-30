@@ -118,8 +118,6 @@ public class Tile {
 
 	private boolean temTileAcima() {
 		Tile lTile;
-		if (aPos == 2800)
-			aPos = 2800;
 		for (int zz = z + 1; zz < World.maxRenderingZ; zz++) {
 			lTile = World.pegar_chao(x + Gerador.TS * (zz - z), y + Gerador.TS * (zz - z), zz);
 			if (lTile != null && lTile.isTileEmCima(x, y, z))
