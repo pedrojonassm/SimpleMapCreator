@@ -116,9 +116,9 @@ public class Tile {
 
 	}
 
-	private boolean temTileAcima() {
+	private boolean temTileAcima(int prMaxZ) {
 		Tile lTile;
-		for (int zz = z + 1; zz < World.maxRenderingZ; zz++) {
+		for (int zz = z + 1; zz < prMaxZ; zz++) {
 			lTile = World.pegar_chao(x + Gerador.TS * (zz - z), y + Gerador.TS * (zz - z), zz);
 			if (lTile != null && lTile.isTileEmCima(x, y, z))
 				return true;
@@ -144,7 +144,7 @@ public class Tile {
 					}
 					dx -= (z - prZ) * Gerador.quadrado.width;
 					dy -= (z - prZ) * Gerador.quadrado.height;
-					if (z == Gerador.player.getZ() && !temTileAcima()) {
+					if (z == Gerador.player.getZ() && !temTileAcima(prZ)) {
 						if (getPropriedade("renderLayerPosWorldRender") != null
 								&& getPropriedade("renderLayerPosWorldRender").toString()
 										.contentEquals((iLayer + 1) + ""))
