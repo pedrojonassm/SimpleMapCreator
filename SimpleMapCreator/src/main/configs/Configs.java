@@ -59,6 +59,8 @@ public class Configs {
 		propriedades.add("Solid");
 		propriedades.add("Speed");
 		propriedades.add("renderLayerPosWorldRender");
+		propriedades.add("renderLayerPosWorldRenderHorizontal");
+		propriedades.add("renderLayerPosWorldRenderVertical");
 	}
 
 	private void transportespadrao() {

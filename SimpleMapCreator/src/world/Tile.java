@@ -136,7 +136,15 @@ public class Tile {
 					dy -= (z - prZ) * Gerador.quadrado.height;
 					if (getPropriedade("renderLayerPosWorldRender") != null
 							&& getPropriedade("renderLayerPosWorldRender").toString().contentEquals(iLayer + ""))
-						World.renderizarImagemDepois(prGraphics, image, dx, dy);
+						Ui.renderizarImagemDepois(prGraphics, image, dx, dy);
+					else if (getPropriedade("renderLayerPosWorldRenderHorizontal") != null
+							&& getPropriedade("renderLayerPosWorldRenderHorizontal").toString()
+									.contentEquals(iLayer + ""))
+						World.renderizarImagemDepoisXX(prGraphics, image, dx, dy);
+					else if (getPropriedade("renderLayerPosWorldRenderVertical") != null
+							&& getPropriedade("renderLayerPosWorldRenderVertical").toString()
+									.contentEquals(iLayer + ""))
+						World.renderizarImagemDepoisYY(prGraphics, image, dx, dy);
 					else
 						prGraphics.drawImage(image, dx, dy, null);
 				}

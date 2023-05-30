@@ -31,7 +31,7 @@ public class World {
 	private static File arquivo;
 	public static boolean ready, ok;
 
-	private static ArrayList<Runnable> renderizarDepoisLinhaXX;
+	private static ArrayList<Runnable> renderizarDepoisLinhaXX, renderizarDepoisLinhaYY;
 
 	public World(File file) {
 		ready = false;
@@ -39,6 +39,7 @@ public class World {
 		tiles_index = tiles_animation_time = 0;
 		max_tiles_animation_time = 15;
 		renderizarDepoisLinhaXX = new ArrayList<>();
+		renderizarDepoisLinhaYY = new ArrayList<>();
 		try {
 			ok = true;
 			if (file == null) {
@@ -208,8 +209,12 @@ public class World {
 
 	}
 
-	public static void renderizarImagemDepois(Graphics prGraphics, BufferedImage image, int prPosX, int prPosY) {
+	public static void renderizarImagemDepoisXX(Graphics prGraphics, BufferedImage image, int prPosX, int prPosY) {
 		renderizarDepoisLinhaXX.add(() -> prGraphics.drawImage(image, prPosX, prPosY, null));
+	}
+
+	public static void renderizarImagemDepoisYY(Graphics prGraphics, BufferedImage image, int prPosX, int prPosY) {
+		renderizarDepoisLinhaYY.add(() -> prGraphics.drawImage(image, prPosX, prPosY, null));
 	}
 
 	public static void renderTiles(Graphics g, int prXStart, int prXFinal, int prYStart, int prYSfinal, int prMaxZ) {
@@ -233,6 +238,11 @@ public class World {
 				renderizarDepoisLinhaXX.remove(0);
 			}
 		}
+		while (renderizarDepoisLinhaYY.size() > 0) {
+			renderizarDepoisLinhaYY.get(0).run();
+			renderizarDepoisLinhaYY.remove(0);
+		}
+
 	}
 
 	public static void fill(ArrayList<Tile> prTilesSelecionados) {
