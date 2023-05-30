@@ -134,18 +134,21 @@ public class Tile {
 					}
 					dx -= (z - prZ) * Gerador.quadrado.width;
 					dy -= (z - prZ) * Gerador.quadrado.height;
-					if (getPropriedade("renderLayerPosWorldRender") != null
-							&& getPropriedade("renderLayerPosWorldRender").toString().contentEquals(iLayer + ""))
-						Ui.renderizarImagemDepois(prGraphics, image, dx, dy);
-					else if (getPropriedade("renderLayerPosWorldRenderHorizontal") != null
-							&& getPropriedade("renderLayerPosWorldRenderHorizontal").toString()
-									.contentEquals(iLayer + ""))
-						World.renderizarImagemDepoisXX(prGraphics, image, dx, dy);
-					else if (getPropriedade("renderLayerPosWorldRenderVertical") != null
-							&& getPropriedade("renderLayerPosWorldRenderVertical").toString()
-									.contentEquals(iLayer + ""))
-						World.renderizarImagemDepoisYY(prGraphics, image, dx, dy);
-					else
+					if (z == Gerador.player.getZ()) {
+						if (getPropriedade("renderLayerPosWorldRender") != null
+								&& getPropriedade("renderLayerPosWorldRender").toString().contentEquals(iLayer + ""))
+							Ui.renderizarImagemDepois(prGraphics, image, dx, dy);
+						else if (getPropriedade("renderLayerPosWorldRenderHorizontal") != null
+								&& getPropriedade("renderLayerPosWorldRenderHorizontal").toString()
+										.contentEquals(iLayer + ""))
+							World.renderizarImagemDepoisXX(prGraphics, image, dx, dy);
+						else if (getPropriedade("renderLayerPosWorldRenderVertical") != null
+								&& getPropriedade("renderLayerPosWorldRenderVertical").toString()
+										.contentEquals(iLayer + ""))
+							World.renderizarImagemDepoisYY(prGraphics, image, dx, dy);
+						else
+							prGraphics.drawImage(image, dx, dy, null);
+					} else
 						prGraphics.drawImage(image, dx, dy, null);
 				}
 			}
