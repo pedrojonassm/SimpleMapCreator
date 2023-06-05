@@ -189,10 +189,9 @@ public class World {
 		maxRenderingZ = HIGH;
 
 		boolean lBreak = false;
-
-		for (int xx = Gerador.player.getX() >> log_ts + 1; xx <= xfinal && !lBreak; xx++)
-			for (int yy = Gerador.player.getY() >> log_ts + 1; yy <= yfinal && !lBreak; yy++)
-				for (int zz = 1; zz < HIGH - Gerador.player.getZ() - 1 && !lBreak; zz++) {
+		for (int zz = 1; zz < HIGH - Gerador.player.getZ() - 1 && !lBreak; zz++)
+			for (int xx = Gerador.player.getX() >> log_ts + 1; xx <= xfinal && !lBreak; xx++)
+				for (int yy = Gerador.player.getY() >> log_ts + 1; yy <= yfinal && !lBreak; yy++) {
 					if (xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
 					}
