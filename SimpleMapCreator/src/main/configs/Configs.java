@@ -11,6 +11,8 @@ import javax.swing.JTextField;
 import files.SalvarCarregar;
 import graficos.telas.configuracao.subtelas.SubTelaPropriedade;
 import main.Gerador;
+import world.Camera;
+import world.Tile;
 import world.World;
 
 public class Configs {
@@ -19,6 +21,7 @@ public class Configs {
 	private ArrayList<String> propriedades, transportes, nomeModosSprites, spriteSheetExternos, spritesIgnorados;
 	private String nomeAlturaUi, nomeLimparUi, nomeCaixaUi, nomePreencherUi, nomeSubstituirUi, nomeSalva_construcaoUi,
 			nomeTilesNivel, nomeModo, nomeTrocar;
+	private Boolean seguindoJogador;
 
 	public Configs() {
 		worldWidth = 20;
@@ -45,6 +48,7 @@ public class Configs {
 		nomeTilesNivel = "layer dos tiles: ";
 		nomeModo = "Modo e colocação dos Sprites";
 		nomeTrocar = "Trocar";
+		seguindoJogador = true;
 	}
 
 	private void listasPadrao() {
@@ -71,9 +75,18 @@ public class Configs {
 	}
 
 	public void atualizarAntesSalvar() {
+		if (!Gerador.player.aSeguindo) {
+			Tile lTile = World.pegar_chao(Camera.x + Gerador.windowWidth / 2, Camera.y + Gerador.windowHEIGHT / 2,
+					Gerador.player.getZ());
+			if (lTile != null) {
+				Gerador.player.setX(lTile.getX());
+				Gerador.player.setY(lTile.getY());
+			}
+		}
 		Gerador.aConfig.setPlayerX(Gerador.player.getX() - Gerador.player.getX() % Gerador.TS);
 		Gerador.aConfig.setPlayerY(Gerador.player.getY() - Gerador.player.getY() % Gerador.TS);
 		Gerador.aConfig.setPlayerZ(Gerador.player.getZ());
+		Gerador.aConfig.seguindoJogador = Gerador.player.aSeguindo;
 		propriedades = SubTelaPropriedade.instance.getaCoPropriedades();
 	}
 
@@ -320,6 +333,14 @@ public class Configs {
 
 	public void setNomeTrocar(String nomeTrocar) {
 		this.nomeTrocar = nomeTrocar;
+	}
+
+	public Boolean getSeguindoJogador() {
+		return seguindoJogador;
+	}
+
+	public void setSeguindoJogador(Boolean seguindoJogador) {
+		this.seguindoJogador = seguindoJogador;
 	}
 
 	public ArrayList<String> getSpriteSheetExternos() {

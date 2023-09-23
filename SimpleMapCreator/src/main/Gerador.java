@@ -99,6 +99,7 @@ public class Gerador extends Canvas
 		VariavelX = 64;
 		VariavelY = 64;
 		player = new Player(aConfig.getPlayerX(), aConfig.getPlayerY(), 0);
+		player.aSeguindo = aConfig.getSeguindoJogador();
 		World.log_ts = Uteis.log(Gerador.TS, 2);
 		quadrado = new Rectangle(Gerador.TS, Gerador.TS);
 		ui = new Ui();
@@ -556,23 +557,60 @@ public class Gerador extends Canvas
 		Menu lMenuPlayer = new Menu("Player");
 		MenuItem lMenuItem;
 
-		lMenuItem = new MenuItem("Esconder Jogaddor");
+		lMenuItem = new MenuItem("Seguir Jogador");
 
 		lMenuItem.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (Gerador.player.aGuardado) {
-					Tile lTile = World.pegar_chao(Camera.x + windowWidth / 2, Camera.y + windowHEIGHT / 2,
-							player.getZ());
-					if (lTile != null) {
-						player.setX(lTile.getX());
-						player.setY(lTile.getY());
-					}
+				Gerador.player.aSeguindo = true;
+			}
+		});
+
+		lMenuPlayer.add(lMenuItem);
+
+		lMenuItem = new MenuItem("Deixar de Seguir Jogador");
+
+		lMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				Gerador.player.aSeguindo = false;
+			}
+		});
+
+		lMenuPlayer.add(lMenuItem);
+
+		lMenuItem = new MenuItem("Mover Jogador pra cá");
+
+		lMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				Tile lTile = World.pegar_chao(Camera.x + windowWidth / 2, Camera.y + windowHEIGHT / 2,
+						player.getZ());
+				if (lTile != null) {
+					player.setX(lTile.getX());
+					player.setY(lTile.getY());
 				}
 
-				Gerador.player.aGuardado = !Gerador.player.aGuardado;
+			}
+		});
+
+		lMenuPlayer.add(lMenuItem);
+
+		lMenuItem = new MenuItem("Ir até o jogador");
+
+		lMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				player.updateCamera();
+
 			}
 		});
 

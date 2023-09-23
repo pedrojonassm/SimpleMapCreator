@@ -18,7 +18,7 @@ import world.World;
 public class Player implements tickRender {
 	private int x, y, z, tile_speed;
 	private int horizontal, vertical, speed;
-	public boolean left, right, up, down, aBloqueadoMovimentacao, aGuardado;
+	public boolean left, right, up, down, aBloqueadoMovimentacao, aSeguindo;
 	Tile sqm_alvo = null;
 	public int aPosAtual, aPosAlvo;
 
@@ -32,7 +32,7 @@ public class Player implements tickRender {
 		speed = 4;
 		aPosAlvo = horizontal = vertical = 0;
 		aPosAtual = -1;
-		aGuardado = false;
+		aSeguindo = true;
 	}
 
 	public int getSpeed() {
@@ -113,7 +113,7 @@ public class Player implements tickRender {
 		}
 
 		colidindoTransporte();
-		if (!aGuardado && !Gerador.space)
+		if (aSeguindo && !Gerador.space)
 			updateCamera();
 	}
 
@@ -198,18 +198,14 @@ public class Player implements tickRender {
 	}
 
 	public void render(Graphics g) {
-		if (!aGuardado) {
-			g.setColor(Color.WHITE);
-			g.fillRect(x - Camera.x, y - Camera.y, Gerador.quadrado.width, Gerador.quadrado.height);
+		g.setColor(Color.WHITE);
+		g.fillRect(x - Camera.x, y - Camera.y, Gerador.quadrado.width, Gerador.quadrado.height);
 
-			if (sqm_alvo != null) {
-				g.setColor(new Color(175, 75, 50, 50));
-				g.fillRect(
-						sqm_alvo.getX() - Camera.x - (sqm_alvo.getZ() - Gerador.player.getZ()) * Gerador.quadrado.width,
-						sqm_alvo.getY() - Camera.y
-								- (sqm_alvo.getZ() - Gerador.player.getZ()) * Gerador.quadrado.height,
-						Gerador.TS, Gerador.TS);
-			}
+		if (sqm_alvo != null) {
+			g.setColor(new Color(175, 75, 50, 50));
+			g.fillRect(sqm_alvo.getX() - Camera.x - (sqm_alvo.getZ() - Gerador.player.getZ()) * Gerador.quadrado.width,
+					sqm_alvo.getY() - Camera.y - (sqm_alvo.getZ() - Gerador.player.getZ()) * Gerador.quadrado.height,
+					Gerador.TS, Gerador.TS);
 		}
 	}
 
