@@ -198,14 +198,18 @@ public class Player implements tickRender {
 	}
 
 	public void render(Graphics g) {
-		g.setColor(Color.WHITE);
-		g.fillRect(x - Camera.x, y - Camera.y, Gerador.quadrado.width, Gerador.quadrado.height);
+		if (!aGuardado) {
+			g.setColor(Color.WHITE);
+			g.fillRect(x - Camera.x, y - Camera.y, Gerador.quadrado.width, Gerador.quadrado.height);
 
-		if (sqm_alvo != null) {
-			g.setColor(new Color(175, 75, 50, 50));
-			g.fillRect(sqm_alvo.getX() - Camera.x - (sqm_alvo.getZ() - Gerador.player.getZ()) * Gerador.quadrado.width,
-					sqm_alvo.getY() - Camera.y - (sqm_alvo.getZ() - Gerador.player.getZ()) * Gerador.quadrado.height,
-					Gerador.TS, Gerador.TS);
+			if (sqm_alvo != null) {
+				g.setColor(new Color(175, 75, 50, 50));
+				g.fillRect(
+						sqm_alvo.getX() - Camera.x - (sqm_alvo.getZ() - Gerador.player.getZ()) * Gerador.quadrado.width,
+						sqm_alvo.getY() - Camera.y
+								- (sqm_alvo.getZ() - Gerador.player.getZ()) * Gerador.quadrado.height,
+						Gerador.TS, Gerador.TS);
+			}
 		}
 	}
 

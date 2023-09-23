@@ -173,6 +173,11 @@ public class Gerador extends Canvas
 				if (space) {
 					Camera.x += aSpaceClickX - quadrado.x;
 					Camera.y += aSpaceClickY - quadrado.y;
+
+					if (Camera.x < -1 * windowWidth / 2)
+						Camera.x = -1 * windowWidth / 2;
+					if (Camera.y < -1 * windowHEIGHT / 2)
+						Camera.y = -1 * windowHEIGHT / 2;
 					aSpaceClickX = quadrado.x;
 					aSpaceClickY = quadrado.y;
 				} else {
@@ -180,8 +185,8 @@ public class Gerador extends Canvas
 						clique_no_mapa = false;
 					}
 					if (shift) {
-						if (World.tiles[aPos] != null)
-							World.tiles[aPos].copiarPraTela();
+						if (World.pegar_chao(aPos) != null)
+							World.pegar_chao(aPos).copiarPraTela();
 						clique_no_mapa = false;
 					} else if (ui.getTela() instanceof TelaSprites) {
 						Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
@@ -379,8 +384,8 @@ public class Gerador extends Canvas
 		}
 		if (control) {
 			if (e.getKeyCode() == KeyEvent.VK_C)
-				if (World.tiles[aPos] != null)
-					World.tiles[aPos].copiarPraTela();
+				if (World.pegar_chao(aPos) != null)
+					World.pegar_chao(aPos).copiarPraTela();
 
 		} else if (Gerador.ui.getTela().getSubTela() instanceof SubTelaPropriedade) {
 			if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
@@ -437,7 +442,7 @@ public class Gerador extends Canvas
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		Tile lEscolhido = World.tiles[aPos];
+		Tile lEscolhido = World.pegar_chao(aPos);
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			if (space || !Ui.mostrar || !ui.clicou(e.getX(), e.getY())) {
 				clique_no_mapa = true;
@@ -521,7 +526,8 @@ public class Gerador extends Canvas
 				player.camada(e.getWheelRotation());
 				calculcarPosMouse();
 			} else if (shift && ui.getTela().getSubTela() instanceof SubTelaMultiplosSprites) {
-				Tile lEscolhido = World.tiles[aPos];
+
+				Tile lEscolhido = World.pegar_chao(aPos);
 				lEscolhido.trocar_pagina(e.getX(), e.getY(), e.getWheelRotation());
 			}
 		}
@@ -536,11 +542,45 @@ public class Gerador extends Canvas
 
 		lMenuBar.add(createMenuFile());
 
+		lMenuBar.add(createMenuConfig());
+
 		lMenuBar.add(createMenuImportar());
 
 		lMenuBar.add(createMenuExportar());
 
 		return lMenuBar;
+	}
+
+	private Menu createMenuConfig() {
+		Menu lMenuConfig = new Menu("Config");
+		Menu lMenuPlayer = new Menu("Player");
+		MenuItem lMenuItem;
+
+		lMenuItem = new MenuItem("Esconder Jogaddor");
+
+		lMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				if (Gerador.player.aGuardado) {
+					Tile lTile = World.pegar_chao(Camera.x + windowWidth / 2, Camera.y + windowHEIGHT / 2,
+							player.getZ());
+					if (lTile != null) {
+						player.setX(lTile.getX());
+						player.setY(lTile.getY());
+					}
+				}
+
+				Gerador.player.aGuardado = !Gerador.player.aGuardado;
+			}
+		});
+
+		lMenuPlayer.add(lMenuItem);
+
+		lMenuConfig.add(lMenuPlayer);
+
+		return lMenuConfig;
 	}
 
 	private Menu createMenuFile() {
