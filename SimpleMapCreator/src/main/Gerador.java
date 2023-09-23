@@ -70,7 +70,7 @@ public class Gerador extends Canvas
 	SalvarCarregar memoria;
 
 	public static Rectangle quadrado;
-	private int aPos, aPosOld, aCliqueMouse;
+	private int aPos, aPosOld, aCliqueMouse, aSpaceClickX, aSpaceClickY;
 	private Tile aTileCliqueDireitoInicial;
 	private boolean clique_no_mapa, aTrocouPosicao;
 	public static boolean control, shift, space;
@@ -169,33 +169,41 @@ public class Gerador extends Canvas
 	public void tick() {
 		if (clique_no_mapa && aTrocouPosicao) {
 			aTrocouPosicao = false;
-			if (aCliqueMouse == 1 && !space) {
-				if (!control) {
-					clique_no_mapa = false;
-				}
-				if (shift) {
-					if (World.tiles[aPos] != null)
-						World.tiles[aPos].copiarPraTela();
-					clique_no_mapa = false;
-				} else if (ui.getTela() instanceof TelaSprites) {
-					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
-					if (lEscolhido != null) {
+			if (aCliqueMouse == 1) {
+				if (space) {
+					Camera.x += aSpaceClickX - quadrado.x;
+					Camera.y += aSpaceClickY - quadrado.y;
+					aSpaceClickX = quadrado.x;
+					aSpaceClickY = quadrado.y;
+				} else {
+					if (!control) {
+						clique_no_mapa = false;
+					}
+					if (shift) {
+						if (World.tiles[aPos] != null)
+							World.tiles[aPos].copiarPraTela();
+						clique_no_mapa = false;
+					} else if (ui.getTela() instanceof TelaSprites) {
+						Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
+						if (lEscolhido != null) {
 
-						if (!TelaSprites.instance.contemSpritesSelecionados()
-								&& ui.getTela().getSubTela() instanceof SubTelaMultiplosSprites) {
-							lEscolhido.adicionarMultiplosSprites();
-						} else {
-							lEscolhido.adicionar_sprite_selecionado();
+							if (!TelaSprites.instance.contemSpritesSelecionados()
+									&& ui.getTela().getSubTela() instanceof SubTelaMultiplosSprites) {
+								lEscolhido.adicionarMultiplosSprites();
+							} else {
+								lEscolhido.adicionar_sprite_selecionado();
+							}
 						}
+					} else if (ui.getTela() instanceof TelaConfiguracao) {
+						Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
+						if (ui.getTela().getSubTela() instanceof SubTelaPropriedade) {
+							SubTelaPropriedade.instance.adicionarPropriedadeTile(lEscolhido);
+						}
+					} else if (ui.getTela() instanceof TelaConstrucoes) {
+						World.colocar_construcao(aPos, TelaConstrucoes.instance.pegar_construcao_selecionada());
 					}
-				} else if (ui.getTela() instanceof TelaConfiguracao) {
-					Tile lEscolhido = World.pegarAdicionarTileMundo(aPos);
-					if (ui.getTela().getSubTela() instanceof SubTelaPropriedade) {
-						SubTelaPropriedade.instance.adicionarPropriedadeTile(lEscolhido);
-					}
-				} else if (ui.getTela() instanceof TelaConstrucoes) {
-					World.colocar_construcao(aPos, TelaConstrucoes.instance.pegar_construcao_selecionada());
 				}
+
 			} else if (aCliqueMouse == 3) {
 				boolean lAdicionar = (Tile.tileExisteLista(aPos, Ui.aTilesSelecionados) >= 0);
 				if ((ui.getTela() instanceof TelaSprites || ui.getTela() instanceof TelaConfiguracao)
@@ -435,6 +443,10 @@ public class Gerador extends Canvas
 				clique_no_mapa = true;
 				aTrocouPosicao = true;
 				aCliqueMouse = 1;
+				if (space) {
+					aSpaceClickX = e.getX();
+					aSpaceClickY = e.getY();
+				}
 				return;
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON2) {
@@ -482,10 +494,10 @@ public class Gerador extends Canvas
 	public void mouseDragged(MouseEvent e) {
 		if (e.getX() < 0 || e.getY() < 0 || e.getX() > windowWidth || e.getY() > windowHEIGHT)
 			return;
-		if (space)
-			moverCameraComMouse(e.getX(), e.getY());
 		quadrado.x = e.getX();
 		quadrado.y = e.getY();
+		if (space)
+			aTrocouPosicao = true;
 		calculcarPosMouse();
 
 	}
@@ -494,17 +506,9 @@ public class Gerador extends Canvas
 	public void mouseMoved(MouseEvent e) {
 		if (e.getX() < 0 || e.getY() < 0 || e.getX() > windowWidth || e.getY() > windowHEIGHT)
 			return;
-		if (space)
-			moverCameraComMouse(e.getX(), e.getY());
 		quadrado.x = e.getX();
 		quadrado.y = e.getY();
 		calculcarPosMouse();
-
-	}
-
-	private void moverCameraComMouse(int prMouseX, int prMouseY) {
-		Camera.x += quadrado.x - prMouseX;
-		Camera.y += quadrado.y - prMouseY;
 
 	}
 
