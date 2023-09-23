@@ -73,7 +73,7 @@ public class Gerador extends Canvas
 	private int aPos, aPosOld, aCliqueMouse;
 	private Tile aTileCliqueDireitoInicial;
 	private boolean clique_no_mapa, aTrocouPosicao;
-	public static boolean control, shift;
+	public static boolean control, shift, space;
 	public static Random random;
 	public static Ui ui;
 	private int sprite_selecionado_animation_time, aEstadoTile;
@@ -169,7 +169,7 @@ public class Gerador extends Canvas
 	public void tick() {
 		if (clique_no_mapa && aTrocouPosicao) {
 			aTrocouPosicao = false;
-			if (aCliqueMouse == 1) {
+			if (aCliqueMouse == 1 && !space) {
 				if (!control) {
 					clique_no_mapa = false;
 				}
@@ -363,6 +363,8 @@ public class Gerador extends Canvas
 			control = true;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT)
 			shift = true;
+		if (e.getKeyCode() == KeyEvent.VK_SPACE)
+			space = true;
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			Ui.mostrar = !Ui.mostrar;
 			return;
@@ -400,6 +402,8 @@ public class Gerador extends Canvas
 			control = false;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT)
 			shift = false;
+		if (e.getKeyCode() == KeyEvent.VK_SPACE)
+			space = false;
 		if (e.getKeyCode() == KeyEvent.VK_DELETE)
 			World.deletarSelecionados();
 	}
@@ -427,7 +431,7 @@ public class Gerador extends Canvas
 	public void mousePressed(MouseEvent e) {
 		Tile lEscolhido = World.tiles[aPos];
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			if (!Ui.mostrar || !ui.clicou(e.getX(), e.getY())) {
+			if (space || !Ui.mostrar || !ui.clicou(e.getX(), e.getY())) {
 				clique_no_mapa = true;
 				aTrocouPosicao = true;
 				aCliqueMouse = 1;
@@ -478,6 +482,8 @@ public class Gerador extends Canvas
 	public void mouseDragged(MouseEvent e) {
 		if (e.getX() < 0 || e.getY() < 0 || e.getX() > windowWidth || e.getY() > windowHEIGHT)
 			return;
+		if (space)
+			moverCameraComMouse(e.getX(), e.getY());
 		quadrado.x = e.getX();
 		quadrado.y = e.getY();
 		calculcarPosMouse();
@@ -488,9 +494,17 @@ public class Gerador extends Canvas
 	public void mouseMoved(MouseEvent e) {
 		if (e.getX() < 0 || e.getY() < 0 || e.getX() > windowWidth || e.getY() > windowHEIGHT)
 			return;
+		if (space)
+			moverCameraComMouse(e.getX(), e.getY());
 		quadrado.x = e.getX();
 		quadrado.y = e.getY();
 		calculcarPosMouse();
+
+	}
+
+	private void moverCameraComMouse(int prMouseX, int prMouseY) {
+		Camera.x += quadrado.x - prMouseX;
+		Camera.y += quadrado.y - prMouseY;
 
 	}
 

@@ -18,7 +18,7 @@ import world.World;
 public class Player implements tickRender {
 	private int x, y, z, tile_speed;
 	private int horizontal, vertical, speed;
-	public boolean left, right, up, down, aBloqueadoMovimentacao;
+	public boolean left, right, up, down, aBloqueadoMovimentacao, aGuardado;
 	Tile sqm_alvo = null;
 	public int aPosAtual, aPosAlvo;
 
@@ -32,6 +32,7 @@ public class Player implements tickRender {
 		speed = 4;
 		aPosAlvo = horizontal = vertical = 0;
 		aPosAtual = -1;
+		aGuardado = false;
 	}
 
 	public int getSpeed() {
@@ -112,7 +113,8 @@ public class Player implements tickRender {
 		}
 
 		colidindoTransporte();
-		updateCamera();
+		if (!aGuardado && !Gerador.space)
+			updateCamera();
 	}
 
 	@SuppressWarnings("unchecked")
