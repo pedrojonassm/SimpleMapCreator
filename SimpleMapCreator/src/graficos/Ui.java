@@ -298,7 +298,7 @@ public class Ui implements Tela {
 			boolean lAdicionado = false;
 			for (int i = 0; i < aTilesSelecionados.size(); i++) {
 				Tile iTile = aTilesSelecionados.get(i);
-				if (prPos < iTile.getaPos()) {
+				if (iTile != null && prPos < iTile.getaPos()) {
 					lAdicionado = true;
 					aTilesSelecionados.add(i, t);
 					break;

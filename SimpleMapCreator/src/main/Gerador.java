@@ -213,7 +213,8 @@ public class Gerador extends Canvas
 			} else if (aCliqueMouse == 3) {
 				boolean lAdicionar = (Tile.tileExisteLista(aPos, Ui.aTilesSelecionados) >= 0);
 				if ((ui.getTela() instanceof TelaSprites || ui.getTela() instanceof TelaConfiguracao)
-						&& ((lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1)))
+						&& ((lAdicionar && aEstadoTile >= 0) || (!lAdicionar && aEstadoTile == -1))
+						&& aTileCliqueDireitoInicial != null)
 					if (control || aTileCliqueDireitoInicial.getaPos() == aPos) {
 						ui.selecionarTile(aPos);
 					} else {
@@ -590,8 +591,7 @@ public class Gerador extends Canvas
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				Tile lTile = World.pegar_chao(Camera.x + windowWidth / 2, Camera.y + windowHEIGHT / 2,
-						player.getZ());
+				Tile lTile = World.pegar_chao(Camera.x + windowWidth / 2, Camera.y + windowHEIGHT / 2, player.getZ());
 				if (lTile != null) {
 					player.setX(lTile.getX());
 					player.setY(lTile.getY());
