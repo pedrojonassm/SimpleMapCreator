@@ -49,4 +49,8 @@ public class Uteis {
 		return retorno;
 	}
 
+	public static boolean isEnumValueValid(Integer prValor, Class prEnum) {
+		return prValor != null && prEnum.isEnum() && prValor >= 0 && prValor < prEnum.getEnumConstants().length;
+	}
+
 }
