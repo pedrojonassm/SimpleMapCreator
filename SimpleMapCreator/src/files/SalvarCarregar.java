@@ -18,7 +18,9 @@ import java.util.Map.Entry;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -337,6 +339,8 @@ public class SalvarCarregar {
 
 		try {
 			lObjectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true);
+            lObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            lObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 			lJSON = lObjectMapper.writeValueAsString(prObj) + "\n";
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
@@ -348,6 +352,8 @@ public class SalvarCarregar {
 		ObjectMapper lObjectMapper = new ObjectMapper();
 		try {
 			lObjectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_INDEX, true);
+            lObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            lObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 			return lObjectMapper.readValue(prJson, prClass);
 		} catch (Exception e) {
 			e.printStackTrace();
